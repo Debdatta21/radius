@@ -334,6 +334,67 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
 .pac-item:hover,.pac-item-selected{background:#FFF8F5!important;}
 .pac-item-query{color:var(--text)!important;}
 .pac-matched{color:var(--accent)!important;font-weight:700!important;}
+
+/* ─── MOBILE RESPONSIVE ─── */
+@media (max-width:768px){
+  body{overflow:auto;}
+  .screen{height:100dvh;}
+
+  /* AUTH — stack vertically, hide orange side panel */
+  #screen-auth{align-items:flex-start;overflow-y:auto;}
+  .auth-wrap{flex-direction:column;width:100%;max-width:100%;height:auto;min-height:100dvh;border-radius:0;box-shadow:none;}
+  .auth-side{width:100%;height:auto;padding:24px 20px 20px;flex-direction:row;align-items:center;justify-content:flex-start;gap:12px;}
+  .auth-side .brand h1{font-size:22px;}
+  .auth-side .brand p{display:none;}
+  .auth-side .features{display:none;}
+  .auth-side .tagline{display:none;}
+  .auth-main{padding:24px 20px;flex:1;}
+
+  /* LOCATION SCREEN */
+  .loc-card{width:100%;max-width:100%;border-radius:0;box-shadow:none;min-height:100dvh;}
+  .mode-toggle{grid-template-columns:1fr;}
+
+  /* NAV — compact */
+  .nav{padding:0 12px;gap:8px;height:54px;}
+  .nav .logo{font-size:18px;}
+  .lunch-countdown{display:none;}
+  .team-badge{display:none;}
+  .role-badge{display:none;}
+  .nav-btn{padding:6px 10px;font-size:11px;}
+
+  /* APP BODY — full-width panel, map hidden by default */
+  .app-body{flex-direction:column;}
+  .map-container{display:none;}
+  .right-panel{width:100%;border-left:none;border-top:1px solid var(--border);height:calc(100dvh - 54px);box-shadow:none;}
+
+  /* DETAIL DRAWER — full screen on mobile */
+  .detail-modal{justify-content:flex-start;}
+  .detail-drawer{width:100%;animation:slideUp2 .25s ease;}
+  @keyframes slideUp2{from{transform:translateY(60px);opacity:0;}to{transform:none;opacity:1;}}
+
+  /* MODALS — full width */
+  .modal-box{width:100%!important;max-width:100%;border-radius:16px 16px 0 0;position:fixed;bottom:0;left:0;right:0;max-height:88vh;}
+  .modal-overlay{align-items:flex-end;}
+
+  /* TEAM CARDS — stack vertically */
+  .team-cards{grid-template-columns:1fr;}
+
+  /* FORM ROWS — stack */
+  .form-row{grid-template-columns:1fr;}
+
+  /* VOTE + CART modals */
+  .vote-modal .modal-box,.cart-modal .modal-box{width:100%!important;}
+  .vote-list{max-height:55vh;}
+
+  /* INFO CARDS — 2-col stays fine, but shrink slightly */
+  .info-cards{grid-template-columns:1fr 1fr;}
+
+  /* TOAST — keep centered but ensure fits */
+  .toast{width:90%;text-align:center;white-space:normal;}
+
+  /* STEP NAV — ensure buttons don't overflow */
+  .step-nav{flex-wrap:wrap;}
+}
 </style>
 </head>
 <body>
@@ -587,6 +648,7 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
     <div class="nav-actions">
       <div class="team-badge" id="nav-team-badge" style="display:none" id="nav-team-name-wrap">🏢 <span id="nav-team-name">—</span></div>
       <div class="role-badge" id="nav-role-badge" style="display:none">—</div>
+      <button class="nav-btn" id="map-toggle-btn" onclick="toggleMobileMap()" style="display:none;">🗺️ Map</button>
       <button class="nav-btn" id="vote-btn" onclick="openVote()">🗳️ Vote <span id="vote-count-label"></span></button>
       <button class="nav-btn" id="cart-btn" onclick="openCart()">🛒 Cart<span class="badge" id="cart-badge" style="display:none">0</span></button>
       <div class="user-area">
@@ -1566,8 +1628,27 @@ function showToast(msg,dur=2800){
   if(toastTimer)clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove('show'),dur);
 }
 
+/* ═══ MOBILE MAP TOGGLE ═══ */
+let mapVisible=false;
+function toggleMobileMap(){
+  const mc=document.querySelector('.map-container');
+  const rp=document.querySelector('.right-panel');
+  const btn=document.getElementById('map-toggle-btn');
+  if(!mc||!rp||!btn)return;
+  mapVisible=!mapVisible;
+  if(mapVisible){mc.style.display='block';mc.style.height='50vh';rp.style.height='50vh';btn.textContent='📋 List';}
+  else{mc.style.display='none';rp.style.height='';btn.textContent='🗺️ Map';}
+}
+function initMobileNav(){
+  const isMobile=window.matchMedia('(max-width:768px)').matches;
+  const btn=document.getElementById('map-toggle-btn');
+  if(btn)btn.style.display=isMobile?'':'none';
+}
+
 /* ═══ INIT ═══ */
 window.addEventListener('load',()=>{
+  initMobileNav();
+  window.addEventListener('resize',initMobileNav);
   const sess=loadSession();if(sess){currentUser=sess;goToLocation();}
 });
 </script>
