@@ -1,0 +1,1576 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Radius — Office Lunch OS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --bg:#F7F3EE;--surface:#FFFFFF;--surface2:#F5F0EB;--border:#E5DDD4;
+  --text:#1A1208;--muted:#8A7A6A;--accent:#E8503A;--accent2:#FF6B35;
+  --green:#1E8A4C;--yellow:#D97706;--blue:#2B6CB0;
+  --shadow:0 2px 12px rgba(0,0,0,.08);--shadow-lg:0 8px 32px rgba(0,0,0,.12);
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--text);height:100vh;overflow:hidden;}
+.screen{display:none;width:100%;height:100vh;}
+.screen.active{display:flex;}
+
+/* ─── AUTH / ONBOARDING ─── */
+#screen-auth{align-items:center;justify-content:center;background:linear-gradient(135deg,#FFF8F5 0%,#FFEEE8 100%);}
+.auth-wrap{display:flex;width:860px;max-width:97vw;height:580px;max-height:95vh;border-radius:24px;overflow:hidden;box-shadow:var(--shadow-lg);}
+.auth-side{width:320px;flex-shrink:0;background:linear-gradient(160deg,var(--accent) 0%,#FF8C42 100%);padding:40px 32px;display:flex;flex-direction:column;justify-content:space-between;}
+.auth-side .brand h1{font-size:32px;font-weight:800;color:#fff;letter-spacing:-1px;}
+.auth-side .brand p{font-size:14px;color:rgba(255,255,255,.75);margin-top:6px;line-height:1.5;}
+.auth-side .features{display:flex;flex-direction:column;gap:14px;}
+.auth-feat{display:flex;align-items:center;gap:12px;color:rgba(255,255,255,.9);font-size:13px;}
+.auth-feat .af-icon{width:34px;height:34px;background:rgba(255,255,255,.2);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
+.auth-side .tagline{font-size:12px;color:rgba(255,255,255,.55);line-height:1.5;}
+.auth-main{flex:1;background:#fff;padding:36px 32px;overflow-y:auto;display:flex;flex-direction:column;}
+
+/* Steps */
+.step-indicator{display:flex;align-items:center;gap:8px;margin-bottom:24px;}
+.step-dot{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;transition:all .2s;flex-shrink:0;}
+.step-dot.done{background:var(--green);color:#fff;}
+.step-dot.active{background:var(--accent);color:#fff;}
+.step-dot.pending{background:#F0EBE6;color:var(--muted);}
+.step-line{flex:1;height:2px;background:#F0EBE6;border-radius:1px;}
+.step-line.done{background:var(--green);}
+
+.auth-step{display:none;flex-direction:column;flex:1;}
+.auth-step.active{display:flex;}
+.auth-step h2{font-size:20px;font-weight:700;margin-bottom:4px;}
+.auth-step .sub{font-size:13px;color:var(--muted);margin-bottom:24px;line-height:1.5;}
+
+.form-group{margin-bottom:14px;}
+.form-group label{display:block;font-size:11px;color:var(--muted);margin-bottom:5px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;}
+.form-group input,.form-group select{width:100%;padding:11px 14px;background:#FAFAFA;border:1.5px solid var(--border);border-radius:10px;color:var(--text);font-size:14px;outline:none;transition:border .2s;font-family:inherit;}
+.form-group input:focus,.form-group select:focus{border-color:var(--accent);background:#fff;}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+
+/* Role cards (Slack-style) */
+.role-cards{display:flex;flex-direction:column;gap:10px;margin-bottom:20px;}
+.role-card{padding:14px 16px;border:2px solid var(--border);border-radius:12px;cursor:pointer;transition:all .2s;display:flex;align-items:flex-start;gap:12px;background:#fff;}
+.role-card:hover{border-color:var(--accent);background:#FFF8F6;}
+.role-card.selected{border-color:var(--accent);background:#FFF3F0;}
+.role-card .rc-icon{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;}
+.role-card .rc-icon.manager{background:#FFF3F0;}
+.role-card .rc-icon.editor{background:#F0FFF4;}
+.role-card .rc-icon.guest{background:#EBF4FF;}
+.role-card .rc-body{flex:1;}
+.role-card .rc-title{font-size:14px;font-weight:700;margin-bottom:2px;}
+.role-card .rc-desc{font-size:12px;color:var(--muted);line-height:1.4;}
+.role-card .rc-check{width:18px;height:18px;border-radius:50%;border:2px solid var(--border);flex-shrink:0;margin-top:2px;display:flex;align-items:center;justify-content:center;transition:all .2s;}
+.role-card.selected .rc-check{border-color:var(--accent);background:var(--accent);}
+.role-card.selected .rc-check::after{content:'✓';font-size:10px;color:#fff;font-weight:700;}
+
+/* Team cards */
+.team-cards{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;}
+.team-card{padding:18px 16px;border:2px solid var(--border);border-radius:12px;cursor:pointer;transition:all .2s;text-align:center;background:#fff;}
+.team-card:hover{border-color:var(--accent);background:#FFF8F6;}
+.team-card.selected{border-color:var(--accent);background:#FFF3F0;}
+.team-card .tc-icon{font-size:28px;margin-bottom:8px;}
+.team-card .tc-title{font-size:14px;font-weight:700;margin-bottom:3px;}
+.team-card .tc-desc{font-size:11px;color:var(--muted);}
+
+.step-nav{display:flex;gap:10px;margin-top:auto;padding-top:20px;}
+.btn-next{flex:1;padding:12px;background:var(--accent);color:#fff;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer;transition:opacity .2s;}
+.btn-next:hover{opacity:.88;}
+.btn-back{padding:12px 20px;background:#F5F0EB;color:var(--text);border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;}
+.btn-skip{padding:12px 16px;background:none;color:var(--muted);border:none;font-size:13px;cursor:pointer;text-decoration:underline;}
+
+.auth-error{background:#FFF0EE;border:1.5px solid #FFCCC7;border-radius:10px;padding:10px 14px;font-size:13px;color:#C0392B;margin-bottom:14px;display:none;}
+.auth-note{font-size:11px;color:var(--muted);text-align:center;margin-top:12px;line-height:1.5;}
+
+/* Sign-in tab */
+.signin-link{text-align:center;font-size:13px;color:var(--muted);margin-top:14px;}
+.signin-link a{color:var(--accent);font-weight:600;cursor:pointer;text-decoration:none;}
+.signin-link a:hover{text-decoration:underline;}
+.divider{text-align:center;color:var(--muted);font-size:12px;margin:16px 0;position:relative;}
+.divider::before,.divider::after{content:'';position:absolute;top:50%;width:40%;height:1px;background:var(--border);}
+.divider::before{left:0;}.divider::after{right:0;}
+.btn-demo{width:100%;padding:11px;background:#F5F0EB;color:var(--text);border:1.5px solid var(--border);border-radius:10px;font-size:14px;cursor:pointer;font-weight:500;transition:border .2s;}
+.btn-demo:hover{border-color:var(--accent);}
+.remember-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;}
+.check-label{display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;color:var(--muted);}
+.check-label input{accent-color:var(--accent);}
+.forgot-link{font-size:13px;color:var(--accent);cursor:pointer;background:none;border:none;font-weight:500;}
+
+/* MODAL */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.35);backdrop-filter:blur(3px);z-index:1000;align-items:center;justify-content:center;}
+.modal-overlay.open{display:flex;}
+.modal-box{background:#fff;border-radius:20px;padding:28px;width:480px;max-width:95vw;max-height:88vh;overflow-y:auto;box-shadow:var(--shadow-lg);}
+.modal-box h3{font-size:18px;font-weight:700;margin-bottom:6px;}
+.modal-box p{color:var(--muted);font-size:13px;margin-bottom:14px;line-height:1.5;}
+.modal-actions{display:flex;gap:10px;margin-top:16px;}
+.btn-secondary{flex:1;padding:11px;background:#F5F0EB;color:var(--text);border:1.5px solid var(--border);border-radius:10px;cursor:pointer;font-size:14px;font-weight:500;}
+.reset-result{border-radius:10px;padding:10px 14px;font-size:13px;margin-top:10px;display:none;}
+
+/* ─── LOCATION SCREEN ─── */
+#screen-location{align-items:center;justify-content:center;flex-direction:column;background:linear-gradient(135deg,#FFF8F5 0%,#FFEEE8 100%);}
+.loc-card{background:#fff;border-radius:24px;padding:40px;width:520px;max-width:95vw;box-shadow:var(--shadow-lg);}
+.loc-card h2{font-size:22px;font-weight:800;margin-bottom:4px;}
+.loc-card .sub{color:var(--muted);font-size:14px;margin-bottom:28px;}
+.loc-input-row{display:flex;gap:10px;margin-bottom:20px;}
+.loc-input-row input{flex:1;padding:12px 14px;background:#FAFAFA;border:1.5px solid var(--border);border-radius:12px;color:var(--text);font-size:14px;outline:none;font-family:inherit;}
+.loc-input-row input:focus{border-color:var(--accent);}
+.gps-btn{padding:12px 14px;background:#FFF3F0;border:1.5px solid var(--border);border-radius:12px;cursor:pointer;font-size:18px;transition:border .2s;}
+.gps-btn:hover{border-color:var(--accent);}
+
+/* MODE TOGGLE */
+.mode-toggle-label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);margin-bottom:10px;}
+.mode-toggle{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:22px;}
+.mode-card{padding:14px;border:2px solid var(--border);border-radius:14px;cursor:pointer;transition:all .2s;text-align:center;background:#fff;}
+.mode-card:hover{border-color:var(--accent);}
+.mode-card.selected{border-color:var(--accent);background:#FFF3F0;}
+.mode-card .mc-icon{font-size:26px;margin-bottom:6px;}
+.mode-card .mc-title{font-size:14px;font-weight:700;margin-bottom:2px;}
+.mode-card .mc-desc{font-size:11px;color:var(--muted);}
+
+.radius-label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);}
+.r-val{font-size:22px;font-weight:800;color:var(--accent);margin:6px 0;}
+.radius-slider-input{width:100%;accent-color:var(--accent);margin-bottom:16px;}
+.ring-legend{display:flex;gap:14px;margin-bottom:24px;}
+.ring-item{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);}
+.ring-dot{width:10px;height:10px;border-radius:50%;}
+.btn-go{width:100%;padding:14px;background:var(--accent);color:#fff;border:none;border-radius:12px;font-size:16px;font-weight:700;cursor:pointer;transition:opacity .2s;box-shadow:0 4px 12px rgba(232,80,58,.3);}
+.btn-go:hover{opacity:.88;}
+
+/* ─── APP SCREEN ─── */
+#screen-app{flex-direction:column;}
+
+/* NAV */
+.nav{height:60px;background:#fff;border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 20px;gap:14px;flex-shrink:0;z-index:100;box-shadow:0 1px 8px rgba(0,0,0,.05);}
+.nav .logo{font-weight:800;font-size:20px;letter-spacing:-1px;color:var(--text);flex-shrink:0;}
+.nav .logo span{color:var(--accent);}
+.lunch-countdown{flex:1;text-align:center;font-size:13px;color:var(--muted);}
+.lunch-countdown strong{color:var(--text);}
+.nav-actions{display:flex;align-items:center;gap:8px;}
+.team-badge{font-size:11px;background:#FFF3F0;border:1px solid #FFCCC7;border-radius:20px;padding:4px 12px;color:var(--accent);font-weight:600;flex-shrink:0;}
+.role-badge{font-size:10px;border-radius:20px;padding:3px 10px;font-weight:700;flex-shrink:0;}
+.role-manager{background:#FFF3F0;color:#C0392B;border:1px solid #FFCCC7;}
+.role-editor{background:#F0FFF4;color:#1E8A4C;border:1px solid #9AE6B4;}
+.role-guest{background:#EBF4FF;color:#2B6CB0;border:1px solid #BEE3F8;}
+.nav-btn{padding:7px 14px;border-radius:20px;border:1.5px solid var(--border);background:#fff;color:var(--text);font-size:12px;cursor:pointer;position:relative;font-weight:600;white-space:nowrap;transition:all .2s;}
+.nav-btn:hover{border-color:var(--accent);color:var(--accent);}
+.nav-btn .badge{position:absolute;top:-5px;right:-5px;background:var(--accent);color:#fff;font-size:10px;font-weight:700;border-radius:10px;padding:1px 5px;min-width:16px;text-align:center;}
+.nav-btn.vote-open{border-color:var(--yellow);color:var(--yellow);}
+.nav-btn.vote-closed{border-color:var(--green);color:var(--green);}
+.avatar-btn{width:34px;height:34px;border-radius:50%;background:var(--accent);color:#fff;font-weight:700;font-size:13px;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(232,80,58,.3);}
+.user-area{position:relative;}
+.user-dropdown{position:absolute;right:0;top:42px;background:#fff;border:1px solid var(--border);border-radius:14px;padding:6px;min-width:180px;z-index:200;display:none;box-shadow:var(--shadow-lg);}
+.user-dropdown.open{display:block;}
+.user-dropdown .dd-user{padding:10px 12px;border-bottom:1px solid var(--border);margin-bottom:4px;}
+.user-dropdown .dd-name{font-size:13px;font-weight:700;margin-bottom:1px;}
+.user-dropdown .dd-email{font-size:11px;color:var(--muted);}
+.user-dropdown button{width:100%;text-align:left;padding:8px 12px;background:none;border:none;color:var(--text);cursor:pointer;border-radius:8px;font-size:13px;font-weight:500;}
+.user-dropdown button:hover{background:var(--surface2);}
+.user-dropdown button.danger{color:#C0392B;}
+
+/* APP BODY */
+.app-body{flex:1;display:flex;overflow:hidden;}
+
+/* MAP - left side now */
+.map-container{flex:1;position:relative;}
+#map{width:100%;height:100%;}
+.map-placeholder{width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:#F0EBE6;color:var(--muted);flex-direction:column;gap:12px;}
+.spinner{width:36px;height:36px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+/* RIGHT PANEL - list + filters */
+.right-panel{width:380px;background:#fff;border-left:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0;box-shadow:-2px 0 12px rgba(0,0,0,.04);}
+
+/* Filter bar */
+.filter-bar{padding:14px 14px 0;border-bottom:1px solid var(--border);}
+.filter-search-row{display:flex;gap:8px;margin-bottom:12px;}
+.filter-search{flex:1;padding:9px 14px;background:#FAFAFA;border:1.5px solid var(--border);border-radius:10px;color:var(--text);font-size:13px;outline:none;font-family:inherit;}
+.filter-search:focus{border-color:var(--accent);}
+.radius-chip{padding:9px 14px;background:#FFF3F0;border:1.5px solid #FFCCC7;border-radius:10px;font-size:13px;font-weight:700;color:var(--accent);white-space:nowrap;cursor:pointer;}
+.cuisine-scroll{display:flex;gap:7px;overflow-x:auto;padding-bottom:12px;scrollbar-width:none;}
+.cuisine-scroll::-webkit-scrollbar{display:none;}
+.chip{padding:6px 14px;border-radius:20px;border:1.5px solid var(--border);font-size:12px;cursor:pointer;background:#fff;color:var(--muted);transition:all .15s;white-space:nowrap;font-weight:500;}
+.chip.active{background:var(--accent);color:#fff;border-color:var(--accent);font-weight:700;}
+.quick-filter-row{display:flex;gap:6px;padding-bottom:12px;overflow-x:auto;scrollbar-width:none;}
+.quick-filter-row::-webkit-scrollbar{display:none;}
+.qf-btn{padding:5px 12px;border-radius:20px;border:1.5px solid var(--border);font-size:11px;cursor:pointer;background:#fff;color:var(--muted);white-space:nowrap;font-weight:500;transition:all .15s;}
+.qf-btn.active{background:#1E8A4C;color:#fff;border-color:#1E8A4C;}
+
+/* Restaurant list */
+.list-header{padding:12px 14px 6px;display:flex;align-items:center;justify-content:space-between;}
+.list-header .list-count{font-size:12px;color:var(--muted);font-weight:500;}
+.list-header .list-sort{font-size:12px;color:var(--accent);cursor:pointer;font-weight:600;}
+.rest-list{flex:1;overflow-y:auto;}
+
+/* Restaurant cards */
+.rest-card{display:flex;gap:12px;padding:14px;border-bottom:1px solid var(--border);cursor:pointer;transition:background .15s;}
+.rest-card:hover{background:#FFF8F5;}
+.rest-card.selected{background:#FFF3F0;border-left:3px solid var(--accent);}
+.rest-thumb{width:72px;height:72px;border-radius:12px;overflow:hidden;flex-shrink:0;background:var(--surface2);}
+.rest-thumb img{width:100%;height:100%;object-fit:cover;}
+.rest-thumb .rest-emoji{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:28px;}
+.rest-card-info{flex:1;min-width:0;}
+.rest-card-name{font-size:14px;font-weight:700;margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.rest-card-type{font-size:11px;color:var(--muted);margin-bottom:5px;}
+.rest-card-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+.rest-rating{display:flex;align-items:center;gap:3px;background:#F0FFF4;color:#1E8A4C;font-size:11px;font-weight:700;padding:2px 7px;border-radius:6px;}
+.rest-walk{font-size:11px;font-weight:600;padding:2px 7px;border-radius:6px;}
+.rest-walk.walkable{background:#F0FFF4;color:#1E8A4C;}
+.rest-walk.delivery{background:#EBF4FF;color:#2B6CB0;}
+.rest-tried{font-size:10px;background:#FFF3F0;color:var(--accent);padding:2px 7px;border-radius:6px;font-weight:600;}
+.rest-card-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-left:auto;margin-top:4px;}
+
+/* DETAIL PANEL as modal */
+.detail-modal{position:fixed;inset:0;background:rgba(0,0,0,.3);backdrop-filter:blur(2px);z-index:500;display:none;align-items:flex-start;justify-content:flex-end;}
+.detail-modal.open{display:flex;}
+.detail-drawer{width:400px;height:100%;background:#fff;overflow-y:auto;box-shadow:-4px 0 24px rgba(0,0,0,.12);animation:slideLeft .25s ease;}
+@keyframes slideLeft{from{transform:translateX(400px);}to{transform:none;}}
+.detail-top{position:sticky;top:0;background:#fff;border-bottom:1px solid var(--border);padding:12px 16px;display:flex;align-items:center;gap:10px;z-index:10;}
+.detail-close{width:32px;height:32px;border-radius:50%;background:#F5F0EB;border:none;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;color:var(--muted);}
+.detail-close:hover{background:var(--accent);color:#fff;}
+.detail-top-name{font-size:15px;font-weight:700;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.detail-photo{width:100%;height:200px;object-fit:cover;}
+.detail-photo-placeholder{width:100%;height:200px;background:var(--surface2);display:flex;align-items:center;justify-content:center;font-size:56px;}
+.detail-body{padding:20px;}
+.detail-name{font-size:22px;font-weight:800;margin-bottom:4px;}
+.detail-meta-row{display:flex;align-items:center;gap:8px;margin-bottom:16px;flex-wrap:wrap;}
+.d-rating{display:flex;align-items:center;gap:4px;background:#F0FFF4;color:#1E8A4C;padding:4px 10px;border-radius:8px;font-size:13px;font-weight:700;}
+.d-type{font-size:12px;color:var(--muted);background:var(--surface2);padding:4px 10px;border-radius:8px;}
+.d-open{font-size:12px;font-weight:600;padding:4px 10px;border-radius:8px;}
+.d-open.yes{background:#F0FFF4;color:#1E8A4C;}
+.d-open.no{background:#FFF0EE;color:#C0392B;}
+
+.info-cards{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px;}
+.info-card{background:#FAFAFA;border-radius:14px;padding:16px;text-align:center;border:1.5px solid var(--border);}
+.info-card .ic-icon{font-size:24px;margin-bottom:6px;}
+.info-card .ic-val{font-size:18px;font-weight:800;margin-bottom:2px;}
+.info-card .ic-label{font-size:11px;color:var(--muted);}
+.info-card.walk{border-color:#9AE6B4;}
+.info-card.delivery{border-color:#BEE3F8;}
+
+.dsec{font-size:11px;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);font-weight:700;margin-bottom:10px;}
+.delivery-links{display:flex;flex-direction:column;gap:8px;margin-bottom:20px;}
+.delivery-link{display:flex;align-items:center;gap:12px;padding:12px 14px;background:#FAFAFA;border-radius:12px;text-decoration:none;color:var(--text);font-size:13px;font-weight:600;border:1.5px solid var(--border);transition:all .2s;}
+.delivery-link:hover{border-color:var(--accent);background:#FFF8F5;}
+.delivery-link .dl-logo{font-size:20px;}
+
+.action-btn-row{display:flex;gap:8px;margin-bottom:16px;}
+.action-btn{flex:1;padding:11px;border-radius:12px;font-size:13px;font-weight:700;cursor:pointer;border:1.5px solid var(--border);background:#FAFAFA;color:var(--text);transition:all .2s;}
+.action-btn:hover{border-color:var(--accent);color:var(--accent);background:#FFF8F5;}
+.action-btn.visited{background:#F0FFF4;color:#1E8A4C;border-color:#9AE6B4;}
+.action-btn.voted{background:#FFF3F0;color:var(--accent);border-color:#FFCCC7;}
+
+.star-row{display:flex;gap:6px;margin-bottom:8px;}
+.star{font-size:24px;cursor:pointer;color:var(--border);transition:color .1s;}
+.star.filled{color:#F5A623;}
+.review-input{width:100%;padding:10px 12px;background:#FAFAFA;border:1.5px solid var(--border);border-radius:10px;color:var(--text);font-size:13px;resize:none;outline:none;font-family:inherit;min-height:64px;margin-bottom:8px;}
+.review-input:focus{border-color:var(--accent);}
+.btn-sm{padding:9px 16px;background:var(--accent);color:#fff;border:none;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;}
+
+.g-reviews{display:flex;flex-direction:column;gap:10px;margin-bottom:20px;}
+.g-review{background:#FAFAFA;border-radius:12px;padding:12px;}
+.g-review .gr-author{font-size:13px;font-weight:700;margin-bottom:3px;}
+.g-review .gr-stars{color:#F5A623;font-size:12px;margin-bottom:4px;}
+.g-review .gr-text{font-size:12px;color:var(--muted);line-height:1.5;}
+.hours-list{display:flex;flex-direction:column;gap:4px;margin-bottom:20px;}
+.hour-row{display:flex;justify-content:space-between;font-size:12px;padding:4px 0;border-bottom:1px solid #F5F0EB;}
+.hour-row .day{color:var(--muted);font-weight:500;}
+
+/* CART MODAL */
+.cart-modal .modal-box{width:540px;}
+.cart-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;}
+.cart-empty{text-align:center;padding:32px;color:var(--muted);font-size:13px;}
+.cart-empty .ce-icon{font-size:40px;margin-bottom:10px;}
+.cart-group{background:#FAFAFA;border-radius:14px;padding:16px;margin-bottom:12px;}
+.cart-group-name{font-size:13px;font-weight:700;margin-bottom:12px;display:flex;align-items:center;gap:8px;}
+.cart-item{display:flex;align-items:center;gap:10px;background:#fff;border-radius:10px;padding:10px 12px;margin-bottom:7px;border:1px solid var(--border);}
+.cart-item .ci-info{flex:1;}
+.cart-item .ci-dish{font-size:13px;font-weight:600;}
+.cart-item .ci-by{font-size:11px;color:var(--muted);margin-top:1px;}
+.ci-remove{background:none;border:none;color:var(--muted);cursor:pointer;font-size:16px;padding:0 2px;}
+.ci-remove:hover{color:var(--accent);}
+.cart-section-title{font-size:11px;color:var(--muted);font-weight:600;margin:12px 0 8px;text-transform:uppercase;letter-spacing:.4px;}
+.order-links{display:flex;gap:8px;flex-wrap:wrap;}
+.order-link{padding:9px 16px;border-radius:10px;background:#fff;border:1.5px solid var(--border);color:var(--text);font-size:12px;text-decoration:none;font-weight:600;transition:all .2s;}
+.order-link:hover{border-color:var(--accent);}
+.manager-only-note{font-size:11px;color:var(--muted);background:#FFF8F5;border-radius:8px;padding:8px 12px;text-align:center;margin-top:8px;}
+
+/* VOTE MODAL */
+.vote-modal .modal-box{width:560px;}
+.vote-header{margin-bottom:16px;}
+.vote-status-row{display:flex;align-items:center;gap:10px;margin-top:6px;flex-wrap:wrap;}
+.badge-open{padding:4px 12px;background:#FFFBEB;border:1px solid #FCD34D;border-radius:20px;color:#B45309;font-size:11px;font-weight:700;}
+.badge-closed{padding:4px 12px;background:#F0FFF4;border:1px solid #9AE6B4;border-radius:20px;color:#1E8A4C;font-size:11px;font-weight:700;}
+.vote-winner-card{background:linear-gradient(135deg,#FFF8F5,#FFF3F0);border:2px solid #FFCCC7;border-radius:16px;padding:16px 20px;margin-bottom:16px;display:flex;align-items:center;gap:14px;}
+.vwc-trophy{font-size:36px;}
+.vwc-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--accent);margin-bottom:3px;}
+.vwc-name{font-size:18px;font-weight:800;}
+.vote-list{display:flex;flex-direction:column;gap:8px;max-height:380px;overflow-y:auto;}
+.vote-item{display:flex;align-items:center;gap:10px;padding:12px 14px;background:#FAFAFA;border-radius:12px;border:1.5px solid var(--border);}
+.vote-item.winner{border-color:#FFCCC7;background:#FFF8F5;}
+.vi-thumb{width:44px;height:44px;border-radius:10px;overflow:hidden;flex-shrink:0;background:#F0EBE6;}
+.vi-thumb img{width:100%;height:100%;object-fit:cover;}
+.vi-info{flex:1;min-width:0;}
+.vi-name{font-size:13px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.vi-meta{font-size:11px;color:var(--muted);margin-top:1px;}
+.vi-bar-wrap{width:80px;flex-shrink:0;}
+.vi-bar-bg{height:6px;background:#E5DDD4;border-radius:3px;overflow:hidden;}
+.vi-bar-fill{height:100%;background:var(--accent);border-radius:3px;transition:width .4s;}
+.vi-count{font-size:10px;color:var(--muted);text-align:right;margin-top:2px;}
+.vote-btn{padding:7px 14px;border-radius:20px;font-size:12px;font-weight:700;cursor:pointer;border:1.5px solid var(--border);background:#fff;color:var(--text);transition:all .2s;white-space:nowrap;}
+.vote-btn:hover:not(:disabled){border-color:var(--accent);color:var(--accent);}
+.vote-btn.voted{background:#FFF3F0;border-color:var(--accent);color:var(--accent);}
+.vote-btn:disabled{opacity:.45;cursor:not-allowed;}
+
+/* TOAST */
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#1A1208;color:#fff;border-radius:12px;padding:12px 20px;font-size:13px;font-weight:500;z-index:9999;display:none;white-space:nowrap;box-shadow:0 8px 24px rgba(0,0,0,.2);}
+.toast.show{display:block;animation:slideUp .3s ease;}
+@keyframes slideUp{from{opacity:0;transform:translateX(-50%) translateY(8px);}to{opacity:1;transform:translateX(-50%) translateY(0);}}
+
+/* Autocomplete */
+.pac-container{background:#fff!important;border:1.5px solid var(--border)!important;border-radius:12px!important;box-shadow:var(--shadow)!important;}
+.pac-item{color:var(--text)!important;background:#fff!important;border-top:1px solid var(--border)!important;padding:8px 12px!important;font-size:13px!important;}
+.pac-item:hover,.pac-item-selected{background:#FFF8F5!important;}
+.pac-item-query{color:var(--text)!important;}
+.pac-matched{color:var(--accent)!important;font-weight:700!important;}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════ AUTH / ONBOARDING ═══════════════════════ -->
+<div id="screen-auth" class="screen active">
+  <div class="auth-wrap">
+    <!-- Brand side -->
+    <div class="auth-side">
+      <div class="brand">
+        <h1>Radius</h1>
+        <p>Your team's office lunch OS — vote, order, and walk together.</p>
+      </div>
+      <div class="features">
+        <div class="auth-feat"><div class="af-icon">🗳️</div>Daily team votes at 11 AM</div>
+        <div class="auth-feat"><div class="af-icon">🛒</div>Shared team cart by role</div>
+        <div class="auth-feat"><div class="af-icon">🚶</div>Walk times &amp; delivery rings</div>
+        <div class="auth-feat"><div class="af-icon">📍</div>Real Google Maps data</div>
+      </div>
+      <div class="tagline">Tired of "where do you want to eat?" — let Radius decide.</div>
+    </div>
+
+    <!-- Auth main -->
+    <div class="auth-main" id="auth-main">
+
+      <!-- SIGN IN VIEW -->
+      <div id="view-signin" style="display:flex;flex-direction:column;flex:1;">
+        <div style="margin-bottom:24px;">
+          <h2 style="font-size:20px;font-weight:800;margin-bottom:4px;">Welcome back 👋</h2>
+          <p style="font-size:13px;color:var(--muted);">Sign in to your Radius workspace</p>
+        </div>
+        <div id="si-error" class="auth-error"></div>
+        <div class="form-group"><label>Email</label><input type="email" id="si-email" placeholder="you@company.com"/></div>
+        <div class="form-group"><label>Password</label><input type="password" id="si-pass" placeholder="••••••••" onkeydown="if(event.key==='Enter')doSignIn()"/></div>
+        <div class="remember-row">
+          <label class="check-label"><input type="checkbox" id="si-remember"/> Remember me</label>
+          <button class="forgot-link" onclick="openForgot()">Forgot password?</button>
+        </div>
+        <button class="btn-next" onclick="doSignIn()">Sign In →</button>
+        <div class="divider">or</div>
+        <button class="btn-demo" onclick="doDemo()">🎭 &nbsp;Try Demo — no account needed</button>
+        <p class="auth-note">🔒 All data stored locally in your browser.</p>
+        <div class="signin-link" style="margin-top:12px;">New to Radius? <a onclick="showView('signup')">Create an account</a></div>
+      </div>
+
+      <!-- SIGN UP WIZARD -->
+      <div id="view-signup" style="display:none;flex-direction:column;flex:1;">
+        <!-- Step indicator -->
+        <div class="step-indicator" id="step-indicator">
+          <div class="step-dot active" id="sd-1">1</div>
+          <div class="step-line" id="sl-1"></div>
+          <div class="step-dot pending" id="sd-2">2</div>
+          <div class="step-line" id="sl-2"></div>
+          <div class="step-dot pending" id="sd-3">3</div>
+          <div class="step-line" id="sl-3"></div>
+          <div class="step-dot pending" id="sd-4">4</div>
+        </div>
+
+        <div id="su-error" class="auth-error"></div>
+
+        <!-- Step 1: Your details -->
+        <div class="auth-step active" id="step-1">
+          <h2>Create your account</h2>
+          <p class="sub">Tell us who you are — this takes 30 seconds.</p>
+          <div class="form-row">
+            <div class="form-group"><label>First Name</label><input type="text" id="su-fname" placeholder="Alex"/></div>
+            <div class="form-group"><label>Last Name</label><input type="text" id="su-lname" placeholder="Johnson"/></div>
+          </div>
+          <div class="form-group"><label>Work Email</label><input type="email" id="su-email" placeholder="you@company.com"/></div>
+          <div class="step-nav">
+            <button class="btn-next" onclick="stepNext(1)">Continue →</button>
+          </div>
+          <div class="signin-link" style="margin-top:10px;">Already have an account? <a onclick="showView('signin')">Sign in</a></div>
+        </div>
+
+        <!-- Step 2: Password -->
+        <div class="auth-step" id="step-2">
+          <h2>Secure your account</h2>
+          <p class="sub">Choose a strong password for your Radius account.</p>
+          <div class="form-group"><label>Password</label><input type="password" id="su-pass" placeholder="At least 6 characters"/></div>
+          <div class="form-group"><label>Confirm Password</label><input type="password" id="su-pass2" placeholder="••••••••"/></div>
+          <div class="step-nav">
+            <button class="btn-back" onclick="stepBack(2)">← Back</button>
+            <button class="btn-next" onclick="stepNext(2)">Continue →</button>
+          </div>
+        </div>
+
+        <!-- Step 3: Role -->
+        <div class="auth-step" id="step-3">
+          <h2>Pick your role</h2>
+          <p class="sub">Your role controls what you can do in the team cart.</p>
+          <div class="role-cards">
+            <div class="role-card selected" id="rc-editor" onclick="selectRole('editor')">
+              <div class="rc-icon editor">✏️</div>
+              <div class="rc-body">
+                <div class="rc-title">Editor</div>
+                <div class="rc-desc">Add your own items to the shared team cart. Vote on where to eat.</div>
+              </div>
+              <div class="rc-check"></div>
+            </div>
+            <div class="role-card" id="rc-manager" onclick="selectRole('manager')">
+              <div class="rc-icon manager">👑</div>
+              <div class="rc-body">
+                <div class="rc-title">Manager</div>
+                <div class="rc-desc">Place the final order for the whole team. Manage cart items.</div>
+              </div>
+              <div class="rc-check"></div>
+            </div>
+            <div class="role-card" id="rc-guest" onclick="selectRole('guest')">
+              <div class="rc-icon guest">👁</div>
+              <div class="rc-body">
+                <div class="rc-title">Guest</div>
+                <div class="rc-desc">Vote on restaurant choices. View-only access to the team cart.</div>
+              </div>
+              <div class="rc-check"></div>
+            </div>
+          </div>
+          <div class="step-nav">
+            <button class="btn-back" onclick="stepBack(3)">← Back</button>
+            <button class="btn-next" onclick="stepNext(3)">Continue →</button>
+          </div>
+        </div>
+
+        <!-- Step 4: Team -->
+        <div class="auth-step" id="step-4">
+          <h2>Join your team</h2>
+          <p class="sub">The shared cart and votes are tied to your team.</p>
+          <div class="team-cards">
+            <div class="team-card selected" id="tc-create" onclick="setTeamMode('create')">
+              <div class="tc-icon">🏢</div>
+              <div class="tc-title">Create a team</div>
+              <div class="tc-desc">Start a new workspace for your group</div>
+            </div>
+            <div class="team-card" id="tc-join" onclick="setTeamMode('join')">
+              <div class="tc-icon">🔗</div>
+              <div class="tc-title">Join a team</div>
+              <div class="tc-desc">Enter the invite code from your manager</div>
+            </div>
+          </div>
+          <div id="team-create-fields">
+            <div class="form-group"><label>Team Name</label><input type="text" id="su-teamname" placeholder="e.g. Engineering Lunch Crew"/></div>
+          </div>
+          <div id="team-join-fields" style="display:none;">
+            <div class="form-group">
+              <label>Invite Code</label>
+              <input type="text" id="su-teamcode" placeholder="e.g. AX7K2P" style="text-transform:uppercase;letter-spacing:4px;font-size:18px;font-weight:700" maxlength="6"/>
+            </div>
+          </div>
+          <div class="step-nav">
+            <button class="btn-back" onclick="stepBack(4)">← Back</button>
+            <button class="btn-next" onclick="finishSignUp()">Create Account 🎉</button>
+          </div>
+        </div>
+
+      </div><!-- /view-signup -->
+    </div><!-- /auth-main -->
+  </div>
+</div>
+
+<!-- ═══════════════════════ FORGOT PASSWORD ═══════════════════════ -->
+<div id="modal-forgot" class="modal-overlay">
+  <div class="modal-box">
+    <h3>Reset Password</h3>
+    <p>Enter your email. Your password will be reset to <strong>radius123</strong> — sign in with that, then update it in your profile.</p>
+    <p style="font-size:11px;color:var(--muted);margin-top:-10px;margin-bottom:14px;">⚠️ Passwords are stored locally (no server). This only works on the same browser/device.</p>
+    <div class="form-group"><label>Email</label><input type="email" id="forgot-email" placeholder="you@company.com"/></div>
+    <div id="reset-result" class="reset-result"></div>
+    <div class="modal-actions">
+      <button class="btn-secondary" onclick="closeForgot()">Cancel</button>
+      <button class="btn-next" style="flex:1;padding:11px" onclick="doForgot()">Reset Password</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════ CART MODAL ═══════════════════════ -->
+<div id="modal-cart" class="modal-overlay cart-modal">
+  <div class="modal-box">
+    <div class="cart-header">
+      <div>
+        <h3>🛒 Team Cart</h3>
+        <div style="font-size:12px;color:var(--muted)" id="cart-team-label">—</div>
+      </div>
+      <button class="btn-secondary" style="width:auto;padding:8px 16px" onclick="closeCart()">Close</button>
+    </div>
+    <div id="cart-howto" style="background:#FFF8F5;border:1.5px solid #FFCCC7;border-radius:12px;padding:12px 14px;font-size:12px;color:var(--muted);margin-bottom:14px;line-height:1.6;">
+      <strong style="color:var(--text);">How the shared cart works:</strong><br>
+      ✏️ <strong>Editors</strong> tap "Add to Cart" on any restaurant → enter dish + qty.<br>
+      👑 <strong>Managers</strong> review the cart and click a delivery link to place the final order.<br>
+      🔒 <em>Demo note: cart is shared via your browser's localStorage — all team members must use the same device/browser for the demo. Real deployment needs a backend.</em>
+    </div>
+    <div id="cart-body"></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════ VOTE MODAL ═══════════════════════ -->
+<div id="modal-vote" class="modal-overlay vote-modal">
+  <div class="modal-box">
+    <div class="vote-header">
+      <h3>🗳️ Daily Lunch Vote</h3>
+      <div class="vote-status-row" id="vote-status-row"></div>
+    </div>
+    <div id="vote-winner-card" style="display:none" class="vote-winner-card"></div>
+    <div id="vote-body" class="vote-list"></div>
+    <div class="modal-actions" style="margin-top:16px;">
+      <button class="btn-secondary" onclick="closeVote()">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════ LOCATION ═══════════════════════ -->
+<div id="screen-location" class="screen">
+  <div class="loc-card">
+    <h2>📍 Where are you today?</h2>
+    <p class="sub">Set your office location to find food places around you</p>
+    <div class="loc-input-row">
+      <input type="text" id="loc-input" placeholder="Search office address…"/>
+      <button class="gps-btn" onclick="useGPS()" title="Use GPS">📡</button>
+    </div>
+    <div class="mode-toggle-label">How do you want to get food?</div>
+    <div class="mode-toggle">
+      <div class="mode-card selected" id="mc-walk" onclick="setMode('walk')">
+        <div class="mc-icon">🚶</div>
+        <div class="mc-title">Walk there</div>
+        <div class="mc-desc">Show walkable spots within your radius</div>
+      </div>
+      <div class="mode-card" id="mc-order" onclick="setMode('order')">
+        <div class="mc-icon">🛵</div>
+        <div class="mc-title">Order delivery</div>
+        <div class="mc-desc">Find places that deliver to your office</div>
+      </div>
+    </div>
+    <div id="walk-radius-section">
+      <div class="radius-label">Walk Radius</div>
+      <div class="r-val" id="loc-radius-val">10 min walk</div>
+      <input type="range" class="radius-slider-input" id="loc-radius" min="5" max="15" step="5" value="10" oninput="document.getElementById('loc-radius-val').textContent=this.value+' min walk'"/>
+      <div class="ring-legend">
+        <div class="ring-item"><div class="ring-dot" style="background:#1E8A4C"></div>5 min</div>
+        <div class="ring-item"><div class="ring-dot" style="background:#D97706"></div>10 min</div>
+        <div class="ring-item"><div class="ring-dot" style="background:#2B6CB0"></div>15 min</div>
+      </div>
+    </div>
+    <button class="btn-go" onclick="goToApp()">Find Lunch Spots →</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════ APP ═══════════════════════ -->
+<div id="screen-app" class="screen">
+  <nav class="nav">
+    <div class="logo">Ra<span>d</span>ius</div>
+    <div class="lunch-countdown" id="lunch-timer">⏱ Loading…</div>
+    <div class="nav-actions">
+      <div class="team-badge" id="nav-team-badge" style="display:none" id="nav-team-name-wrap">🏢 <span id="nav-team-name">—</span></div>
+      <div class="role-badge" id="nav-role-badge" style="display:none">—</div>
+      <button class="nav-btn" id="vote-btn" onclick="openVote()">🗳️ Vote <span id="vote-count-label"></span></button>
+      <button class="nav-btn" id="cart-btn" onclick="openCart()">🛒 Cart<span class="badge" id="cart-badge" style="display:none">0</span></button>
+      <div class="user-area">
+        <button class="avatar-btn" id="avatar-btn" onclick="toggleDropdown()">D</button>
+        <div class="user-dropdown" id="user-dropdown">
+          <div class="dd-user">
+            <div class="dd-name" id="dd-name">—</div>
+            <div class="dd-email" id="dd-email">—</div>
+          </div>
+          <div id="dd-team-members" style="padding:8px 0;border-top:1px solid var(--border);border-bottom:1px solid var(--border);margin:4px 0;display:none;"></div>
+          <button onclick="goLocation()">📍 Change Location</button>
+          <button onclick="doLogout()" class="danger">🚪 Sign Out</button>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <div class="app-body">
+
+    <!-- MAP -->
+    <div class="map-container">
+      <div id="map-placeholder" class="map-placeholder">
+        <div class="spinner"></div><span style="font-size:14px;font-weight:500;">Loading map…</span>
+      </div>
+      <div id="map" style="display:none"></div>
+    </div>
+
+    <!-- RIGHT PANEL -->
+    <div class="right-panel">
+      <!-- Filter bar -->
+      <div class="filter-bar">
+        <div class="filter-search-row">
+          <input type="text" class="filter-search" id="rest-search" placeholder="🔍 Search restaurants…" oninput="filterByName(this.value)"/>
+          <div class="radius-chip" onclick="document.getElementById('screen-location').classList.toggle('active')">🚶 <span id="radius-chip-val">10m</span></div>
+        </div>
+        <!-- Cuisine chips - horizontal scroll -->
+        <div class="cuisine-scroll" id="cuisine-chips">
+          <div class="chip active" onclick="toggleCuisine(this,'All')">All</div>
+          <div class="chip" onclick="toggleCuisine(this,'Indian')">🍛 Indian</div>
+          <div class="chip" onclick="toggleCuisine(this,'Japanese')">🍣 Japanese</div>
+          <div class="chip" onclick="toggleCuisine(this,'Italian')">🍕 Italian</div>
+          <div class="chip" onclick="toggleCuisine(this,'Chinese')">🥡 Chinese</div>
+          <div class="chip" onclick="toggleCuisine(this,'Mexican')">🌮 Mexican</div>
+          <div class="chip" onclick="toggleCuisine(this,'American')">🍔 American</div>
+          <div class="chip" onclick="toggleCuisine(this,'Thai')">🍜 Thai</div>
+          <div class="chip" onclick="toggleCuisine(this,'Cafe')">☕ Cafe</div>
+          <div class="chip" onclick="toggleCuisine(this,'Bakery')">🥐 Bakery</div>
+          <div class="chip" onclick="toggleCuisine(this,'Bar')">🍺 Bar&Grill</div>
+          <div class="chip" onclick="toggleCuisine(this,'Salad')">🥗 Salads</div>
+          <div class="chip" onclick="toggleCuisine(this,'Pizza')">🍕 Pizza</div>
+          <div class="chip" onclick="toggleCuisine(this,'Burger')">🍔 Burgers</div>
+          <div class="chip" onclick="toggleCuisine(this,'Sushi')">🍣 Sushi</div>
+          <div class="chip" onclick="toggleCuisine(this,'Sandwich')">🥪 Sandwiches</div>
+          <div class="chip" onclick="toggleCuisine(this,'Korean')">🍱 Korean</div>
+        </div>
+        <!-- Quick filter pills -->
+        <div class="quick-filter-row">
+          <button class="qf-btn" id="qf-walk" onclick="toggleQF(this,'walk')">🚶 Walkable</button>
+          <button class="qf-btn" id="qf-notried" onclick="toggleQF(this,'notried')">🆕 Not tried</button>
+          <button class="qf-btn" id="qf-stars" onclick="toggleQF(this,'stars')">⭐ 4.0+</button>
+          <button class="qf-btn" id="qf-open" onclick="toggleQF(this,'open')">🟢 Open now</button>
+          <button class="qf-btn" id="qf-order" onclick="toggleQF(this,'order')">🛵 Delivery</button>
+        </div>
+      </div>
+
+      <!-- List header -->
+      <div class="list-header">
+        <div class="list-count" id="list-count">Loading…</div>
+        <div class="list-sort" onclick="toggleSort()">⬆ Distance</div>
+      </div>
+
+      <div class="rest-list" id="rest-list">
+        <div style="padding:24px;text-align:center;color:var(--muted);font-size:13px;">
+          <div class="spinner" style="margin:0 auto 12px;"></div>
+          Finding food places near you…
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- DETAIL DRAWER -->
+<div class="detail-modal" id="detail-modal">
+  <div class="detail-drawer">
+    <div class="detail-top">
+      <button class="detail-close" onclick="closeDetail()">✕</button>
+      <div class="detail-top-name" id="detail-top-name">—</div>
+    </div>
+    <div id="detail-content"></div>
+  </div>
+</div>
+
+
+<!-- CART ITEM MODAL -->
+<div id="modal-add-item" class="modal-overlay" style="z-index:600;">
+  <div class="modal-box" style="width:440px;">
+    <h3>🛒 Add to Team Cart</h3>
+    <div id="aim-place-name" style="font-size:13px;color:var(--muted);margin-bottom:14px;padding:8px 12px;background:#FFF8F5;border-radius:8px;font-weight:600;"></div>
+    <div style="font-size:12px;color:var(--muted);margin-bottom:12px;">Don't know what to order? <span id="aim-menu-links" style="display:inline;"></span></div>
+    <div class="form-group">
+      <label>Dish / Item Name</label>
+      <input type="text" id="aim-dish" placeholder="e.g. Seoul Burrito, Spicy Kimchi Tacos…" onkeydown="if(event.key==='Enter')submitCartItem()"/>
+    </div>
+    <div class="form-group">
+      <label>Qty</label>
+      <div style="display:flex;gap:8px;align-items:center;">
+        <button onclick="changeQty(-1)" style="width:34px;height:34px;border-radius:8px;border:1.5px solid var(--border);background:#FAFAFA;font-size:18px;cursor:pointer;">−</button>
+        <div id="aim-qty" style="font-size:18px;font-weight:700;min-width:32px;text-align:center;">1</div>
+        <button onclick="changeQty(1)" style="width:34px;height:34px;border-radius:8px;border:1.5px solid var(--border);background:#FAFAFA;font-size:18px;cursor:pointer;">+</button>
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Special Instructions <span style="font-weight:400;text-transform:none;">(optional)</span></label>
+      <input type="text" id="aim-note" placeholder="e.g. No onions, extra sauce…"/>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-secondary" onclick="closeItemModal()">Cancel</button>
+      <button class="btn-next" style="flex:1;padding:11px;" onclick="submitCartItem()">Add to Cart</button>
+    </div>
+  </div>
+</div>
+
+<!-- ROLE SETUP MODAL (shown on first login if no role set) -->
+<div id="modal-role-setup" class="modal-overlay" style="z-index:700;">
+  <div class="modal-box" style="width:480px;">
+    <h3>👋 One quick thing</h3>
+    <p>Set your role so your team knows what you can do in the shared cart.</p>
+    <div class="role-cards" id="role-setup-cards">
+      <div class="role-card selected" id="rsc-editor" onclick="selectSetupRole('editor')">
+        <div class="rc-icon editor">✏️</div>
+        <div class="rc-body"><div class="rc-title">Editor</div><div class="rc-desc">Add your own items to the shared cart. Vote on where to eat.</div></div>
+        <div class="rc-check"></div>
+      </div>
+      <div class="role-card" id="rsc-manager" onclick="selectSetupRole('manager')">
+        <div class="rc-icon manager">👑</div>
+        <div class="rc-body"><div class="rc-title">Manager</div><div class="rc-desc">Place the final order. Manage cart items for the whole team.</div></div>
+        <div class="rc-check"></div>
+      </div>
+      <div class="role-card" id="rsc-guest" onclick="selectSetupRole('guest')">
+        <div class="rc-icon guest">👁</div>
+        <div class="rc-body"><div class="rc-title">Guest</div><div class="rc-desc">Vote only. No cart access. Good for one-time visitors.</div></div>
+        <div class="rc-check"></div>
+      </div>
+    </div>
+    <div id="role-setup-team" style="margin-bottom:16px;">
+      <p style="margin-bottom:10px;">Join a team? Enter the invite code from your manager (skip if solo).</p>
+      <input type="text" id="role-setup-code" placeholder="6-char code e.g. AX7K2P" style="width:100%;padding:10px 14px;background:#FAFAFA;border:1.5px solid var(--border);border-radius:10px;font-size:14px;text-transform:uppercase;letter-spacing:3px;font-weight:700;outline:none;font-family:inherit;" maxlength="6"/>
+    </div>
+    <button class="btn-next" onclick="saveRoleSetup()">Save & Continue →</button>
+  </div>
+</div>
+
+<!-- TEAM CODE SHARE MODAL -->
+<div id="modal-team-code" class="modal-overlay" style="z-index:700;">
+  <div class="modal-box" style="width:400px;text-align:center;">
+    <div style="font-size:40px;margin-bottom:12px;">🎉</div>
+    <h3>Team Created!</h3>
+    <p>Share this invite code with your teammates so they can join your team when signing up.</p>
+    <div style="font-size:36px;font-weight:800;letter-spacing:8px;color:var(--accent);background:#FFF3F0;border:2px dashed #FFCCC7;border-radius:14px;padding:20px;margin:16px 0;" id="team-code-display">——</div>
+    <div style="font-size:12px;color:var(--muted);margin-bottom:20px;">They enter this code in the "Join a team" step during sign-up.</div>
+    <button class="btn-next" onclick="document.getElementById('modal-team-code').classList.remove('open');goToLocation();">Continue to App →</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ═══ CONSTANTS ═══ */
+const API_KEY='AIzaSyCuKosHUQSijkJkcn-rnjhUeENiahhru4A';
+const WALK_SPEED=83;
+const RING_DEFS=[
+  {mins:5, color:'#1E8A4C',opacity:0.15,strokeOpacity:0.9,label:'5 min'},
+  {mins:10,color:'#D97706',opacity:0.09,strokeOpacity:0.75,label:'10 min'},
+  {mins:15,color:'#2B6CB0',opacity:0.06,strokeOpacity:0.6,label:'15 min'},
+];
+const MAP_STYLE=[
+  {featureType:'all',elementType:'labels.text.fill',stylers:[{color:'#555'}]},
+  {featureType:'landscape',stylers:[{color:'#F5F0EB'}]},
+  {featureType:'road',elementType:'geometry',stylers:[{color:'#FFFFFF'}]},
+  {featureType:'road',elementType:'geometry.stroke',stylers:[{color:'#E5DDD4'}]},
+  {featureType:'road',elementType:'labels.text.fill',stylers:[{color:'#888'}]},
+  {featureType:'water',elementType:'geometry',stylers:[{color:'#C8DFF0'}]},
+  {featureType:'poi.park',elementType:'geometry',stylers:[{color:'#D1EAC8'}]},
+  {featureType:'poi',elementType:'labels',stylers:[{visibility:'off'}]},
+  {featureType:'transit',stylers:[{visibility:'off'}]},
+];
+const FOOD_TYPES=['restaurant','cafe','bakery','bar','meal_takeaway','meal_delivery'];
+const TODAY=()=>new Date().toISOString().slice(0,10);
+
+/* ═══ STATE ═══ */
+let currentUser=null,userLocation=null,radiusMin=10,activeCuisine='All',orderMode='walk';
+let restaurants=[],filteredRestaurants=[],selectedId=null,sortByRating=false;
+let map=null,markers=[],circles=[],hoverWindow=null,placesService=null,autocomplete=null;
+let activeQF=new Set();
+let currentStep=1,selectedRole='editor',teamMode='create';
+const visitedKey=()=>'rv_'+(currentUser?.email||'demo');
+const reviewsKey=()=>'rr_'+(currentUser?.email||'demo');
+const cartKey=()=>'rc_'+(currentUser?.teamId||'demo')+'_'+TODAY();
+const votesKey=()=>'rvo_'+(currentUser?.teamId||'demo')+'_'+TODAY();
+
+/* ═══ VIEW SWITCHING ═══ */
+function showView(v){
+  document.getElementById('view-signin').style.display=v==='signin'?'flex':'none';
+  document.getElementById('view-signup').style.display=v==='signup'?'flex':'none';
+}
+
+/* ═══ STEP WIZARD ═══ */
+function updateStepIndicator(){
+  for(let i=1;i<=4;i++){
+    const dot=document.getElementById('sd-'+i);
+    if(i<currentStep){dot.className='step-dot done';dot.textContent='✓';}
+    else if(i===currentStep){dot.className='step-dot active';dot.textContent=i;}
+    else{dot.className='step-dot pending';dot.textContent=i;}
+    if(i<4){const line=document.getElementById('sl-'+i);line.className='step-line'+(i<currentStep?' done':'');}
+  }
+  for(let i=1;i<=4;i++){const s=document.getElementById('step-'+i);s.classList.toggle('active',i===currentStep);}
+}
+function stepNext(from){
+  const errEl=document.getElementById('su-error');errEl.style.display='none';
+  if(from===1){
+    const fname=document.getElementById('su-fname').value.trim();
+    const lname=document.getElementById('su-lname').value.trim();
+    const email=document.getElementById('su-email').value.trim();
+    if(!fname||!lname||!email){errEl.textContent='Please fill in all fields.';errEl.style.display='block';return;}
+    if(!email.includes('@')){errEl.textContent='Please enter a valid email.';errEl.style.display='block';return;}
+    const users=getUsers();if(users.find(u=>u.email===email)){errEl.textContent='An account with this email already exists.';errEl.style.display='block';return;}
+  }
+  if(from===2){
+    const p=document.getElementById('su-pass').value;const p2=document.getElementById('su-pass2').value;
+    if(p.length<6){errEl.textContent='Password must be at least 6 characters.';errEl.style.display='block';return;}
+    if(p!==p2){errEl.textContent='Passwords do not match.';errEl.style.display='block';return;}
+  }
+  currentStep=from+1;updateStepIndicator();
+}
+function stepBack(from){currentStep=from-1;updateStepIndicator();}
+function selectRole(role){
+  selectedRole=role;
+  ['editor','manager','guest'].forEach(r=>{document.getElementById('rc-'+r).classList.toggle('selected',r===role);});
+}
+function setTeamMode(mode){
+  teamMode=mode;
+  document.getElementById('tc-create').classList.toggle('selected',mode==='create');
+  document.getElementById('tc-join').classList.toggle('selected',mode==='join');
+  document.getElementById('team-create-fields').style.display=mode==='create'?'':'none';
+  document.getElementById('team-join-fields').style.display=mode==='join'?'':'none';
+}
+function setMode(mode){
+  orderMode=mode;
+  document.getElementById('mc-walk').classList.toggle('selected',mode==='walk');
+  document.getElementById('mc-order').classList.toggle('selected',mode==='order');
+  document.getElementById('walk-radius-section').style.display=mode==='walk'?'':'none';
+}
+
+/* ═══ AUTH HELPERS ═══ */
+function getUsers(){return JSON.parse(localStorage.getItem('radius_users')||'[]');}
+function saveUsers(u){localStorage.setItem('radius_users',JSON.stringify(u));}
+function getTeams(){return JSON.parse(localStorage.getItem('radius_teams')||'[]');}
+function saveTeams(t){localStorage.setItem('radius_teams',JSON.stringify(t));}
+function hashPass(p){let h=0;for(let i=0;i<p.length;i++)h=Math.imul(31,h)+p.charCodeAt(i)|0;return h.toString(36);}
+function saveSession(u,persist){const s=JSON.stringify(u);if(persist)localStorage.setItem('radius_session',s);sessionStorage.setItem('radius_session',s);}
+function loadSession(){const s=sessionStorage.getItem('radius_session')||localStorage.getItem('radius_session');return s?JSON.parse(s):null;}
+function clearSession(){sessionStorage.removeItem('radius_session');localStorage.removeItem('radius_session');}
+function genCode(){return Math.random().toString(36).slice(2,8).toUpperCase();}
+
+function showAuthError(id,msg){const el=document.getElementById(id);el.textContent=msg;el.style.display='block';}
+
+function doSignIn(){
+  const email=document.getElementById('si-email').value.trim();
+  const pass=document.getElementById('si-pass').value;
+  const remember=document.getElementById('si-remember').checked;
+  if(!email||!pass)return showAuthError('si-error','Please fill in all fields.');
+  const user=getUsers().find(u=>u.email===email&&u.hash===hashPass(pass));
+  if(!user)return showAuthError('si-error','Invalid email or password.');
+  currentUser=user;saveSession(user,remember);
+  // If user has no role assigned (legacy account), show role setup
+  if(!currentUser.role){showScreen('location');setTimeout(()=>document.getElementById('modal-role-setup').classList.add('open'),400);}
+  else goToLocation();
+}
+
+let _setupRole='editor';
+function selectSetupRole(role){
+  _setupRole=role;
+  ['editor','manager','guest'].forEach(r=>{document.getElementById('rsc-'+r).classList.toggle('selected',r===role);});
+}
+function saveRoleSetup(){
+  const code=document.getElementById('role-setup-code').value.trim().toUpperCase();
+  currentUser.role=_setupRole;
+  if(code&&code.length===6){
+    const teams=getTeams();const team=teams.find(t=>t.code===code);
+    if(team){team.members.push({email:currentUser.email,name:currentUser.name,role:_setupRole});saveTeams(teams);currentUser.teamId=team.id;currentUser.teamName=team.name;currentUser.teamCode=team.code;}
+    else{showToast('Team code not found — role saved without team');currentUser.teamId=null;}
+  }
+  // Update stored user
+  const users=getUsers();const idx=users.findIndex(u=>u.email===currentUser.email);
+  if(idx>=0){users[idx]=Object.assign(users[idx],{role:currentUser.role,teamId:currentUser.teamId,teamName:currentUser.teamName,teamCode:currentUser.teamCode});saveUsers(users);}
+  saveSession(currentUser,!!localStorage.getItem('radius_session'));
+  document.getElementById('modal-role-setup').classList.remove('open');
+  updateNav();showToast('Role set to '+_setupRole+'!');
+}
+function finishSignUp(){
+  const errEl=document.getElementById('su-error');errEl.style.display='none';
+  const fname=document.getElementById('su-fname').value.trim();
+  const lname=document.getElementById('su-lname').value.trim();
+  const email=document.getElementById('su-email').value.trim();
+  const pass=document.getElementById('su-pass').value;
+  let teamId=null,teamName='—',teamCode='';
+  const teams=getTeams();
+  if(selectedRole!=='guest'){
+    if(teamMode==='create'){
+      teamName=document.getElementById('su-teamname').value.trim();
+      if(!teamName){errEl.textContent='Please enter a team name.';errEl.style.display='block';return;}
+      teamCode=genCode();
+      const team={id:'t_'+Date.now(),name:teamName,code:teamCode,members:[{email,name:fname+' '+lname,role:selectedRole}]};
+      teams.push(team);saveTeams(teams);teamId=team.id;
+    } else {
+      const code=document.getElementById('su-teamcode').value.trim().toUpperCase();
+      const team=teams.find(t=>t.code===code);
+      if(!team){errEl.textContent='Team code not found. Ask your manager for the code.';errEl.style.display='block';return;}
+      team.members.push({email,name:fname+' '+lname,role:selectedRole});saveTeams(teams);
+      teamId=team.id;teamName=team.name;teamCode=team.code;
+    }
+  }
+  const user={name:fname+' '+lname,email,hash:hashPass(pass),initials:(fname[0]+(lname[0]||'')).toUpperCase(),role:selectedRole,teamId,teamName,teamCode};
+  const users=getUsers();users.push(user);saveUsers(users);
+  currentUser=user;saveSession(user,false);
+  if(teamCode&&teamMode==='create'){
+    showScreen('location');
+    setTimeout(()=>{
+      document.getElementById('team-code-display').textContent=teamCode;
+      document.getElementById('modal-team-code').classList.add('open');
+    },300);
+  } else goToLocation();
+}
+function doDemo(){currentUser={name:'Demo User',email:'demo@radius.app',initials:'DU',demo:true,role:'manager',teamId:'demo_team',teamName:'Demo Team',teamCode:'DEMO01'};saveSession(currentUser,false);goToLocation();}
+function doLogout(){clearSession();currentUser=null;userLocation=null;restaurants=[];filteredRestaurants=[];markers=[];circles=[];map=null;showScreen('auth');closeDropdown();}
+function openForgot(){document.getElementById('modal-forgot').classList.add('open');document.getElementById('reset-result').style.display='none';document.getElementById('forgot-email').value=document.getElementById('si-email').value||'';}
+function closeForgot(){document.getElementById('modal-forgot').classList.remove('open');}
+function doForgot(){
+  const email=document.getElementById('forgot-email').value.trim();if(!email)return;
+  const users=getUsers();const idx=users.findIndex(u=>u.email===email);
+  const r=document.getElementById('reset-result');r.style.display='block';
+  if(idx===-1){r.style.cssText='display:block;background:#FFF0EE;border:1.5px solid #FFCCC7;color:#C0392B;border-radius:10px;padding:10px 14px;font-size:13px;margin-top:10px';r.textContent='No account found with that email.';return;}
+  users[idx].hash=hashPass('radius123');saveUsers(users);
+  r.style.cssText='display:block;background:#F0FFF4;border:1.5px solid #9AE6B4;color:#1E8A4C;border-radius:10px;padding:10px 14px;font-size:13px;margin-top:10px';
+  r.textContent='✓ Password reset to: radius123 — sign in and change it.';
+}
+
+/* ═══ SCREENS ═══ */
+function showScreen(n){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById('screen-'+n).classList.add('active');}
+function goToLocation(){showScreen('location');}
+function goLocation(){showScreen('location');closeDropdown();}
+function goToApp(){
+  if(!userLocation){showToast('Please set a location first');return;}
+  radiusMin=orderMode==='walk'?parseInt(document.getElementById('loc-radius').value):15;
+  document.getElementById('radius-chip-val').textContent=orderMode==='order'?'Delivery':radiusMin+'m';
+  showScreen('app');updateNav();initMap();
+}
+function useGPS(){
+  const btn=document.querySelector('.gps-btn');btn.textContent='⏳';
+  navigator.geolocation.getCurrentPosition(
+    pos=>{userLocation={lat:pos.coords.latitude,lng:pos.coords.longitude};btn.textContent='✅';document.getElementById('loc-input').value='📡 Current location';showToast('Location set!');},
+    ()=>{btn.textContent='📡';showToast('Could not get GPS location');}
+  );
+}
+
+/* ═══ NAV ═══ */
+function updateNav(){
+  if(!currentUser)return;
+  document.getElementById('avatar-btn').textContent=currentUser.initials||currentUser.name[0];
+  document.getElementById('dd-name').textContent=currentUser.name;
+  document.getElementById('dd-email').textContent=currentUser.email;
+  if(currentUser.teamName){
+    document.getElementById('nav-team-badge').style.display='';
+    const allTeams=getTeams();
+    const myTeam=allTeams.find(t=>t.id===currentUser.teamId);
+    const memberCount=myTeam?myTeam.members.length:1;
+    const codeStr=currentUser.teamCode&&currentUser.role==='manager'?' ('+currentUser.teamCode+')':'';
+    document.getElementById('nav-team-name').textContent=currentUser.teamName+codeStr+' · '+memberCount+(memberCount===1?' member':' members');
+    // Populate dropdown team member list
+    const ddm=document.getElementById('dd-team-members');
+    if(myTeam&&myTeam.members.length>0){
+      ddm.style.display='';
+      ddm.innerHTML='<div style="font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;padding:0 16px;margin-bottom:6px;">Team Members ('+myTeam.members.length+')</div>'+
+        myTeam.members.map(m=>{
+          const roleIco={manager:'👑',editor:'✏️',guest:'👁'}[m.role]||'👤';
+          const initials=(m.name||'?').split(' ').map(p=>p[0]).join('').slice(0,2).toUpperCase();
+          return`<div style="display:flex;align-items:center;gap:8px;padding:4px 16px;font-size:12px;">
+            <div style="width:22px;height:22px;border-radius:50%;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;flex-shrink:0;">${initials}</div>
+            <span style="flex:1;font-weight:500;">${m.name}</span>
+            <span style="font-size:11px;color:var(--muted);">${roleIco} ${m.role||''}</span>
+          </div>`;
+        }).join('');
+    }else{ddm.style.display='none';}
+  }
+  const rb=document.getElementById('nav-role-badge');
+  if(currentUser.role){
+    rb.style.display='';
+    const labels={manager:'👑 Manager',editor:'✏️ Editor',guest:'👁 Guest'};
+    const cls={manager:'role-manager',editor:'role-editor',guest:'role-guest'};
+    rb.textContent=labels[currentUser.role]||currentUser.role;
+    rb.className='role-badge '+(cls[currentUser.role]||'');
+  }
+  updateLunchTimer();setInterval(updateLunchTimer,60000);
+  updateCartBadge();updateVoteBtn();
+}
+function updateLunchTimer(){
+  const now=new Date(),lunch=new Date(now);lunch.setHours(12,30,0,0);
+  const diff=lunch-now,el=document.getElementById('lunch-timer');
+  if(diff<0){el.innerHTML='🍴 Lunch time!';return;}
+  const h=Math.floor(diff/3600000),m=Math.floor((diff%3600000)/60000);
+  el.innerHTML=h>0?`⏱ Lunch in <strong>${h}h ${m}m</strong>`:`⏱ Lunch in <strong>${m} min</strong>`;
+}
+function updateCartBadge(){
+  const total=getCart().reduce((s,c)=>s+c.items.length,0);
+  const b=document.getElementById('cart-badge');
+  if(total>0){b.style.display='';b.textContent=total;}else b.style.display='none';
+}
+function updateVoteBtn(){
+  const votes=getVotes();const myVote=votes.find(v=>v.votes.includes(currentUser?.email));
+  const closed=isVotingClosed();const total=votes.reduce((s,v)=>s+v.votes.length,0);
+  const btn=document.getElementById('vote-btn');
+  btn.className='nav-btn '+(closed?'vote-closed':(myVote?'vote-open':''));
+  document.getElementById('vote-count-label').textContent=total>0?'('+total+')':'';
+}
+function isVotingClosed(){const n=new Date();return n.getHours()>=11;}
+function toggleDropdown(){document.getElementById('user-dropdown').classList.toggle('open');}
+function closeDropdown(){document.getElementById('user-dropdown').classList.remove('open');}
+document.addEventListener('click',e=>{if(!e.target.closest('.user-area'))closeDropdown();});
+
+/* ═══ MAPS ═══ */
+window.initMapsCallback=function(){
+  const li=document.getElementById('loc-input');
+  if(li){
+    autocomplete=new google.maps.places.Autocomplete(li,{types:['establishment','geocode']});
+    autocomplete.addListener('place_changed',()=>{
+      const p=autocomplete.getPlace();
+      if(p.geometry)userLocation={lat:p.geometry.location.lat(),lng:p.geometry.location.lng()};
+    });
+  }
+};
+function initMap(){
+  if(map){drawCircles();searchRestaurants();return;}
+  if(!window.google){setTimeout(initMap,800);return;}
+  document.getElementById('map-placeholder').style.display='none';
+  document.getElementById('map').style.display='block';
+  map=new google.maps.Map(document.getElementById('map'),{center:userLocation,zoom:15,styles:MAP_STYLE,disableDefaultUI:false,zoomControl:true,mapTypeControl:false,streetViewControl:false,fullscreenControl:false});
+  new google.maps.Marker({position:userLocation,map,icon:{path:google.maps.SymbolPath.CIRCLE,scale:10,fillColor:'#E8503A',fillOpacity:1,strokeColor:'#fff',strokeWeight:2.5},zIndex:100,title:'You are here'});
+  hoverWindow=new google.maps.InfoWindow({disableAutoPan:true});
+  placesService=new google.maps.places.PlacesService(map);
+  drawCircles();searchRestaurants();
+}
+function drawCircles(){
+  circles.forEach(c=>c.setMap(null));circles=[];
+  if(orderMode==='order')return;
+  RING_DEFS.forEach(def=>{
+    const rm=def.mins*WALK_SPEED,isActive=def.mins<=radiusMin;
+    const circle=new google.maps.Circle({
+      map,center:userLocation,radius:rm,
+      strokeColor:def.color,
+      strokeOpacity:isActive?def.strokeOpacity:0.3,
+      strokeWeight:isActive?3:1.5,
+      fillColor:def.color,
+      fillOpacity:isActive?def.opacity:0.02,
+      clickable:false,zIndex:1
+    });
+    circles.push(circle);
+    // Add time label marker at top of each circle
+    if(isActive){
+      const labelPos=google.maps.geometry.spherical.computeOffset(
+        new google.maps.LatLng(userLocation.lat,userLocation.lng), rm, 0
+      );
+      const lbl=new google.maps.Marker({
+        position:labelPos,map,clickable:false,zIndex:2,
+        icon:{
+          url:'data:image/svg+xml;charset=UTF-8,'+encodeURIComponent(
+            '<svg xmlns="http://www.w3.org/2000/svg" width="52" height="22"><rect x="0" y="0" width="52" height="22" rx="11" fill="'+def.color+'" opacity="0.9"/><text x="26" y="15" font-family="Inter,system-ui,sans-serif" font-size="11" font-weight="700" fill="white" text-anchor="middle">'+def.label+'</text></svg>'
+          ),
+          scaledSize:new google.maps.Size(52,22),anchor:new google.maps.Point(26,22)
+        }
+      });
+      circles.push(lbl);
+    }
+  });
+}
+
+/* ═══ SEARCH ═══ */
+function searchRestaurants(){
+  if(!placesService||!userLocation)return;
+  document.getElementById('rest-list').innerHTML='<div style="padding:24px;text-align:center;color:var(--muted);font-size:13px"><div class="spinner" style="margin:0 auto 10px"></div>Finding food places near you…</div>';
+  restaurants=[];
+  const seen=new Set();
+  let passesComplete=0;
+  // 2 distance-ranked passes + 1 per food type
+  const DIST_KEYWORDS=['food restaurant','taco korean mexican sandwich burger deli local'];
+  const TEXT_QUERIES_LEN=10; // matches TEXT_QUERIES array below
+  const TOTAL_PASSES=FOOD_TYPES.length+DIST_KEYWORDS.length+TEXT_QUERIES_LEN;
+
+  function onPassDone(){
+    passesComplete++;
+    if(passesComplete===TOTAL_PASSES&&!restaurants.length){
+      document.getElementById('rest-list').innerHTML='<div style="padding:24px;text-align:center;color:var(--muted)">No food places found nearby.</div>';
+    }
+  }
+
+  // Distance-ranked passes (no radius cap) — first: general, second: targets local ethnic spots
+  DIST_KEYWORDS.forEach(kw=>{
+    placesService.nearbySearch(
+      {location:userLocation,rankBy:google.maps.places.RankBy.DISTANCE,keyword:kw},
+      function handleDistPage(results,status,pagination){
+        if(status===google.maps.places.PlacesServiceStatus.OK){
+          results.forEach(r=>{if(!seen.has(r.place_id)){seen.add(r.place_id);restaurants.push(processPlace(r));}});
+          applyFilters();
+          if(pagination&&pagination.hasNextPage&&restaurants.length<80){setTimeout(()=>pagination.nextPage(),1000);}
+          else onPassDone();
+        } else onPassDone();
+      }
+    );
+  });
+
+  // Type-based searches up to 5km for broader discovery
+  FOOD_TYPES.forEach(type=>{
+    function handlePage(results,status,pagination){
+      if(status===google.maps.places.PlacesServiceStatus.OK){
+        results.forEach(r=>{if(!seen.has(r.place_id)){seen.add(r.place_id);restaurants.push(processPlace(r));}});
+        applyFilters();
+        if(pagination&&pagination.hasNextPage&&restaurants.length<120){setTimeout(()=>pagination.nextPage(),1200);}
+        else onPassDone();
+      } else onPassDone();
+    }
+    placesService.nearbySearch({location:userLocation,radius:5000,type},handlePage);
+  });
+
+  // textSearch passes — these find LOCAL named places that nearbySearch misses
+  // (e.g. "Tacos for Life", "Shortwave Coffee", "Seoul Taco")
+  const TEXT_QUERIES=['taco tacos','coffee cafe espresso','korean bbq','sandwich sub deli','burger smash','pizza','indian curry','chinese noodle','thai vietnamese','local restaurant lunch'];
+  // Adjust TOTAL_PASSES now that we know TEXT_QUERIES length
+  // (already set above — we patch via a runtime counter approach)
+  TEXT_QUERIES.forEach(q=>{
+    placesService.textSearch(
+      {query:q,location:new google.maps.LatLng(userLocation.lat,userLocation.lng),radius:3000},
+      function(results,status){
+        if(status===google.maps.places.PlacesServiceStatus.OK){
+          results.forEach(r=>{if(!seen.has(r.place_id)){seen.add(r.place_id);restaurants.push(processPlace(r));}});
+          applyFilters();
+        }
+        onPassDone();
+      }
+    );
+  });
+}
+function processPlace(place){
+  const visited=JSON.parse(localStorage.getItem(visitedKey())||'{}');
+  const distM=google.maps.geometry.spherical.computeDistanceBetween(new google.maps.LatLng(userLocation.lat,userLocation.lng),place.geometry.location);
+  const walkMins=Math.round(distM/WALK_SPEED);
+  return{id:place.place_id,name:place.name,rating:place.rating||0,userRatingsTotal:place.user_ratings_total||0,types:place.types||[],vicinity:place.vicinity||'',location:{lat:place.geometry.location.lat(),lng:place.geometry.location.lng()},photo:place.photos?place.photos[0].getUrl({maxWidth:600}):null,openNow:place.opening_hours?place.opening_hours.open_now:null,distM:Math.round(distM),walkMins,inRadius:walkMins<=radiusMin,tried:!!visited[place.place_id],details:null};
+}
+
+/* ═══ FILTERS ═══ */
+// Extended cuisine map — matches BOTH Google types AND restaurant name keywords
+const CUISINE_MAP={
+  Indian:    'indian|tikka|curry|biryani|masala|tandoor|dal|naan|chai|punjabi|mughal',
+  Japanese:  'japanese|sushi|ramen|udon|teriyaki|bento|sake|miso|yakitori|tonkatsu|izakaya',
+  Italian:   'italian|pizza|pasta|risotto|lasagna|trattoria|osteria|gelato|calzone|penne',
+  Chinese:   'chinese|dim.sum|wonton|dumpling|panda|szechuan|cantonese|mongolian|fried.rice|noodle',
+  Mexican:   'mexican|taco|burrito|quesadilla|enchilada|salsa|guacamole|nacho|tamale|fajita|carnitas|chipotle',
+  American:  'american|burger|bbq|grill|diner|wings|steak|ribeye|smash|shake.shack|wendy|mcdonald|five.guys|whataburger',
+  Thai:      'thai|pad.thai|satay|green.curry|tom.yum|massaman',
+  Cafe:      'cafe|coffee|espresso|latte|starbucks|brew|roast|biscuit|brunch',
+  Bakery:    'bakery|pastry|bread|croissant|muffin|donut|bagel|pretzel|boulangerie',
+  Bar:       'bar|pub|tavern|brewery|taproom|ale|craft.beer|gastropub',
+  Salad:     'salad|healthy|greens|bowl|fresh|poke|acai|smoothie',
+  Pizza:     'pizza|pizzeria|pie|flatbread|calzone',
+  Burger:    'burger|hamburger|smash|slider|patty',
+  Sushi:     'sushi|roll|sashimi|nigiri|maki|temaki|omakase',
+  Sandwich:  'sandwich|sub|deli|hoagie|wrap|panini|jersey.mike|subway|grinder',
+  Korean:    'korean|seoul|kimchi|bibimbap|bulgogi|galbi|kbbq|k-bbq|tofu',
+};
+function matchesCuisine(r,cuisine){
+  if(cuisine==='All')return true;
+  const hay=(r.name+' '+r.types.join(' ')+' '+(r.vicinity||'')).toLowerCase().replace(/[^a-z0-9 ]/g,' ');
+  const pat=CUISINE_MAP[cuisine]||cuisine.toLowerCase();
+  return new RegExp(pat,'i').test(hay);
+}
+function applyFilters(){
+  filteredRestaurants=restaurants.filter(r=>{
+    if(activeQF.has('notried')&&r.tried)return false;
+    if(activeQF.has('stars')&&r.rating<4)return false;
+    if(activeQF.has('open')&&r.openNow===false)return false;
+    if(activeQF.has('walk')&&!r.inRadius)return false;
+    if(activeQF.has('order')&&r.inRadius)return false;
+    if(!matchesCuisine(r,activeCuisine))return false;
+    return true;
+  });
+  if(sortByRating)filteredRestaurants.sort((a,b)=>b.rating-a.rating);
+  else filteredRestaurants.sort((a,b)=>a.distM-b.distM);
+  document.getElementById('list-count').textContent=filteredRestaurants.length+' places found';
+  renderList();renderMarkers();
+}
+function toggleQF(el,key){
+  if(activeQF.has(key)){activeQF.delete(key);el.classList.remove('active');}
+  else{activeQF.add(key);el.classList.add('active');}
+  applyFilters();
+}
+function toggleCuisine(el,cuisine){
+  document.querySelectorAll('.chip').forEach(c=>c.classList.remove('active'));
+  el.classList.add('active');activeCuisine=cuisine;applyFilters();
+}
+let _searchTimer=null;
+function filterByName(q){
+  const query=q.toLowerCase().trim();
+  // Step 1: show/hide cards from what's already loaded
+  let anyVisible=false;
+  document.querySelectorAll('.rest-card').forEach((row,i)=>{
+    const r=filteredRestaurants[i];
+    const name=(r?.name||'').toLowerCase();
+    const addr=(r?.vicinity||'').toLowerCase();
+    const visible=!query||name.includes(query)||addr.includes(query);
+    row.style.display=visible?'':'none';
+    if(visible)anyVisible=true;
+  });
+  // Step 2: if nothing visible and user typed 3+ chars, do a live Google textSearch
+  if(!anyVisible&&query.length>=3&&placesService&&userLocation){
+    if(_searchTimer)clearTimeout(_searchTimer);
+    _searchTimer=setTimeout(()=>liveTextSearch(query),600);
+  }
+}
+function liveTextSearch(q){
+  document.getElementById('list-count').textContent='Searching Google for "'+q+'"…';
+  const seen=new Set(restaurants.map(r=>r.id));
+  placesService.textSearch(
+    {query:q,location:new google.maps.LatLng(userLocation.lat,userLocation.lng),radius:5000},
+    function(results,status){
+      if(status===google.maps.places.PlacesServiceStatus.OK&&results.length){
+        let added=0;
+        results.forEach(r=>{
+          if(!seen.has(r.place_id)){
+            seen.add(r.place_id);
+            restaurants.push(processPlace(r));
+            added++;
+          }
+        });
+        if(added>0){applyFilters();}
+        // Re-run the name filter now that list is updated
+        document.querySelectorAll('.rest-card').forEach((row,i)=>{
+          const name=(filteredRestaurants[i]?.name||'').toLowerCase();
+          const addr=(filteredRestaurants[i]?.vicinity||'').toLowerCase();
+          row.style.display=(name.includes(q)||addr.includes(q))?'':'none';
+        });
+        document.getElementById('list-count').textContent=filteredRestaurants.length+' places found';
+      }else{
+        document.getElementById('list-count').textContent='No results for "'+q+'"';
+      }
+    }
+  );
+}
+function toggleSort(){
+  sortByRating=!sortByRating;
+  document.querySelector('.list-sort').textContent=sortByRating?'⭐ Rating':'⬆ Distance';
+  applyFilters();
+}
+
+/* ═══ EMOJI / FORMAT ═══ */
+function getEmoji(types){
+  const t=(types||[]).join(' ');
+  if(/sushi|japanese/i.test(t))return'🍣';if(/pizza|italian/i.test(t))return'🍕';
+  if(/chinese/i.test(t))return'🥡';if(/indian/i.test(t))return'🍛';
+  if(/mexican|taco/i.test(t))return'🌮';if(/thai/i.test(t))return'🍜';
+  if(/burger|american/i.test(t))return'🍔';if(/salad/i.test(t))return'🥗';
+  if(/coffee|cafe/i.test(t))return'☕';if(/bakery/i.test(t))return'🥐';
+  if(/bar|pub/i.test(t))return'🍺';if(/sandwich/i.test(t))return'🥪';
+  return'🍽️';
+}
+function formatTypes(types){
+  const skip=['point_of_interest','establishment','food','store'];
+  const clean=(types||[]).filter(t=>!skip.includes(t)).map(t=>t.replace(/_/g,' '));
+  return clean.slice(0,2).map(t=>t.charAt(0).toUpperCase()+t.slice(1)).join(' · ')||'Food & Drink';
+}
+
+/* ═══ RENDER LIST ═══ */
+function renderList(){
+  const container=document.getElementById('rest-list');
+  if(!filteredRestaurants.length){container.innerHTML='<div style="padding:32px;text-align:center;color:var(--muted);font-size:13px">No places match your filters.</div>';return;}
+  container.innerHTML=filteredRestaurants.map((r,i)=>{
+    const walkLabel=r.inRadius?`🚶 ${r.walkMins} min`:`🛵 ${r.walkMins} min`;
+    const walkClass=r.inRadius?'walkable':'delivery';
+    const ratingHtml=r.rating?`<div class="rest-rating">⭐ ${r.rating.toFixed(1)}</div>`:'';
+    const triedHtml=r.tried?'<div class="rest-tried">Tried</div>':'';
+    const photoHtml=r.photo?`<img src="${r.photo}" alt=""/>`:`<div class="rest-emoji">${getEmoji(r.types)}</div>`;
+    const dotColor=r.tried?'#D97706':r.inRadius?'#1E8A4C':'#2B6CB0';
+    return `<div class="rest-card${selectedId===r.id?' selected':''}" onclick="selectRestaurant(${i})">
+      <div class="rest-thumb">${photoHtml}</div>
+      <div class="rest-card-info">
+        <div class="rest-card-name">${r.name}</div>
+        <div class="rest-card-type">${formatTypes(r.types)}</div>
+        <div class="rest-card-row">
+          ${ratingHtml}
+          <div class="rest-walk ${walkClass}">${walkLabel}</div>
+          ${triedHtml}
+        </div>
+      </div>
+      <div class="rest-card-dot" style="background:${dotColor}"></div>
+    </div>`;
+  }).join('');
+}
+
+/* ═══ MAP MARKERS ═══ */
+function makePinIcon(color){
+  const svg=`<svg xmlns="http://www.w3.org/2000/svg" width="28" height="36" viewBox="0 0 28 36"><filter id="s"><feDropShadow dx="0" dy="2" stdDeviation="1.5" flood-opacity="0.3"/></filter><path d="M14 0C8.5 0 4 4.5 4 10c0 7.5 10 26 10 26S24 17.5 24 10C24 4.5 19.5 0 14 0z" fill="${color}" filter="url(#s)"/><circle cx="14" cy="10" r="4.5" fill="white" opacity="0.9"/></svg>`;
+  return{url:'data:image/svg+xml;charset=UTF-8,'+encodeURIComponent(svg),scaledSize:new google.maps.Size(28,36),anchor:new google.maps.Point(14,36)};
+}
+function renderMarkers(){
+  markers.forEach(m=>m.setMap(null));markers=[];
+  filteredRestaurants.forEach((r,i)=>{
+    const color=r.tried?'#D97706':r.inRadius?'#1E8A4C':'#2B6CB0';
+    const mk=new google.maps.Marker({position:r.location,map,icon:makePinIcon(color),title:r.name,zIndex:r.inRadius?10:5});
+    mk.addListener('click',()=>selectRestaurant(i));
+    mk.addListener('mouseover',()=>{
+      const photoHtml=r.photo?`<img src="${r.photo}" style="width:100%;height:68px;object-fit:cover;border-radius:8px;margin-bottom:8px;" alt=""/>`:'';
+      const walkStr=r.inRadius?`<span style="color:#1E8A4C;font-weight:700">🚶 ${r.walkMins} min</span>`:`<span style="color:#2B6CB0;font-weight:700">🛵 ${r.walkMins} min</span>`;
+      const stars=r.rating?`<span style="color:#F5A623;font-weight:700">⭐ ${r.rating.toFixed(1)}</span>`:'';
+      hoverWindow.setContent(`<div style="background:#fff;border-radius:12px;padding:10px;min-width:160px;max-width:195px;font-family:Inter,system-ui,sans-serif;box-shadow:none;">${photoHtml}<div style="font-size:13px;font-weight:700;color:#1A1208;margin-bottom:3px;">${r.name}</div><div style="font-size:11px;color:#8A7A6A;margin-bottom:5px;">${formatTypes(r.types)}</div><div style="display:flex;gap:8px;font-size:11px;">${stars}${walkStr}</div></div>`);
+      hoverWindow.open(map,mk);
+    });
+    mk.addListener('mouseout',()=>hoverWindow.close());
+    markers.push(mk);
+  });
+}
+
+/* ═══ SELECT + DETAIL ═══ */
+function selectRestaurant(idx){
+  const r=filteredRestaurants[idx];selectedId=r.id;
+  renderList();map.panTo(r.location);
+  document.getElementById('detail-top-name').textContent=r.name;
+  document.getElementById('detail-modal').classList.add('open');
+  renderDetailContent(r);fetchDetails(r);
+}
+function fetchDetails(r){
+  if(!placesService)return;
+  placesService.getDetails({placeId:r.id,fields:['opening_hours','reviews','photos','website']},(place,status)=>{
+    if(status===google.maps.places.PlacesServiceStatus.OK){r.details=place;if(selectedId===r.id)renderDetailContent(r);}
+  });
+}
+function closeDetail(){document.getElementById('detail-modal').classList.remove('open');selectedId=null;renderList();}
+
+function renderDetailContent(r){
+  const visited=JSON.parse(localStorage.getItem(visitedKey())||'{}');
+  const myReviews=JSON.parse(localStorage.getItem(reviewsKey())||'{}');
+  const isVisited=!!visited[r.id];const myReview=myReviews[r.id]||{stars:0,text:''};
+  const votes=getVotes();const myVotedThis=votes.find(v=>v.placeId===r.id&&v.votes.includes(currentUser?.email));
+  const myVote=votes.find(v=>v.votes.includes(currentUser?.email));
+  const vClosed=isVotingClosed();
+  const photoHtml=r.photo?`<img class="detail-photo" src="${r.photo}" alt="">`:`<div class="detail-photo-placeholder">${getEmoji(r.types)}</div>`;
+  const openStr=r.openNow===true?'<div class="d-open yes">🟢 Open</div>':r.openNow===false?'<div class="d-open no">🔴 Closed</div>':'';
+  const walkCard=r.inRadius?`<div class="info-card walk"><div class="ic-icon">🚶</div><div class="ic-val">${r.walkMins} min</div><div class="ic-label">Walk time</div></div>`:'';
+  const orderCard=`<div class="info-card delivery"><div class="ic-icon">🛵</div><div class="ic-val">${r.inRadius?'Also':''+r.walkMins+' min'}</div><div class="ic-label">${r.inRadius?'Order too':'Delivery only'}</div></div>`;
+  const enc=encodeURIComponent(r.name);
+  const starHtml=[1,2,3,4,5].map(n=>`<span class="star${myReview.stars>=n?' filled':''}" onclick="setMyStar('${r.id}',${n})">★</span>`).join('');
+  let revHtml='';
+  if(r.details?.reviews?.length)revHtml='<div class="dsec" style="margin-top:16px">Google Reviews</div><div class="g-reviews">'+r.details.reviews.slice(0,3).map(rv=>`<div class="g-review"><div class="gr-author">${rv.author_name}</div><div class="gr-stars">${'★'.repeat(rv.rating)}${'☆'.repeat(5-rv.rating)}</div><div class="gr-text">${(rv.text||'').slice(0,160)}</div></div>`).join('')+'</div>';
+  let hoursHtml='';
+  if(r.details?.opening_hours?.weekday_text?.length)hoursHtml='<div class="dsec" style="margin-top:16px">Hours</div><div class="hours-list">'+r.details.opening_hours.weekday_text.map(line=>{const[d,...t]=line.split(': ');return`<div class="hour-row"><span class="day">${d}</span><span>${t.join(': ')}</span></div>`;}).join('')+'</div>';
+  const cartBtn=(currentUser?.role==='editor'||currentUser?.role==='manager')?`<button class="action-btn" onclick="addToCart('${r.id}','${r.name.replace(/'/g,"\\'")}')">🛒 Add to Cart</button>`:'';
+  const voteBtn=vClosed?'':(myVotedThis?`<button class="action-btn voted">🗳️ Voted!</button>`:(myVote?'':`<button class="action-btn" onclick="voteFor('${r.id}','${r.name.replace(/'/g,"\\'")}')">🗳️ Vote here</button>`));
+
+  document.getElementById('detail-content').innerHTML=`
+    ${photoHtml}
+    <div class="detail-body">
+      <div class="detail-name">${r.name}</div>
+      <div class="detail-meta-row">
+        ${r.rating?`<div class="d-rating">⭐ ${r.rating.toFixed(1)} <span style="font-size:10px;font-weight:400;color:#1E8A4C">(${r.userRatingsTotal})</span></div>`:''}
+        <div class="d-type">${formatTypes(r.types)}</div>
+        ${openStr}
+      </div>
+      <div class="action-btn-row">
+        ${voteBtn}
+        ${cartBtn}
+        <button class="action-btn${isVisited?' visited':''}" onclick="toggleVisited('${r.id}')">${isVisited?'✓ Visited':'+ Visited'}</button>
+      </div>
+      <div class="info-cards">${walkCard}${orderCard}</div>
+      <div class="dsec">Order Delivery</div>
+      <div class="delivery-links">
+        <a class="delivery-link" href="https://www.doordash.com/search/store/${enc}/" target="_blank"><span class="dl-logo">🔴</span>DoorDash</a>
+        <a class="delivery-link" href="https://www.ubereats.com/search?q=${enc}" target="_blank"><span class="dl-logo">⚫</span>Uber Eats</a>
+        <a class="delivery-link" href="https://www.grubhub.com/search?queryText=${enc}" target="_blank"><span class="dl-logo">🟠</span>Grubhub</a>
+      </div>
+      <div class="dsec">My Rating</div>
+      <div class="star-row" id="star-row-${r.id}">${starHtml}</div>
+      <textarea class="review-input" id="review-text-${r.id}" placeholder="Add a note about this place…">${myReview.text}</textarea>
+      <button class="btn-sm" onclick="saveMyReview('${r.id}')">Save Note</button>
+      ${renderTeamStats(r)}
+      ${revHtml}${hoursHtml}
+    </div>`;
+}
+
+/* ═══ TEAM RATINGS + ORDER COUNT ═══ */
+function teamRatingKey(pid){return 'rtr_'+(currentUser?.teamId||'demo')+'_'+pid;}
+function teamOrderKey(pid){return 'rto_'+(currentUser?.teamId||'demo')+'_'+pid;}
+function getTeamRatings(pid){return JSON.parse(localStorage.getItem(teamRatingKey(pid))||'[]');}
+function getTeamOrders(pid){return JSON.parse(localStorage.getItem(teamOrderKey(pid))||'[]');}
+function saveTeamRating(pid,stars){
+  const ratings=getTeamRatings(pid);
+  const idx=ratings.findIndex(r=>r.email===currentUser.email);
+  const entry={email:currentUser.email,name:currentUser.name,initials:currentUser.initials||currentUser.name[0],stars,date:TODAY()};
+  if(idx>=0)ratings[idx]=entry;else ratings.push(entry);
+  localStorage.setItem(teamRatingKey(pid),JSON.stringify(ratings));
+}
+function recordTeamOrder(pid,pname){
+  const orders=getTeamOrders(pid);
+  orders.push({by:currentUser.name,email:currentUser.email,date:TODAY(),place:pname});
+  localStorage.setItem(teamOrderKey(pid),JSON.stringify(orders));
+  showToast('Order recorded for team stats 📊');
+}
+function renderTeamStats(r){
+  const ratings=getTeamRatings(r.id);
+  const orders=getTeamOrders(r.id);
+  const myTeamRating=ratings.find(x=>x.email===currentUser.email);
+  const avgStars=ratings.length?Math.round(ratings.reduce((s,x)=>s+x.stars,0)/ratings.length*10)/10:0;
+  const starBar=n=>[1,2,3,4,5].map(i=>`<span style="color:${n>=i?'#F5A623':'#E5DDD4'};font-size:16px;cursor:pointer;" onclick="saveTeamRating('${r.id}',${i});renderDetailContent(restaurants.find(x=>x.id==='${r.id}')||filteredRestaurants.find(x=>x.id==='${r.id}'));">★</span>`).join('');
+  return `
+    <div style="background:#FAFAFA;border:1.5px solid var(--border);border-radius:14px;padding:16px;margin-bottom:20px;">
+      <div class="dsec" style="margin-bottom:12px;">📊 Team Stats${currentUser.teamName?' — '+currentUser.teamName:''}</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;">
+        <div style="background:#fff;border-radius:10px;padding:12px;text-align:center;border:1px solid var(--border);">
+          <div style="font-size:22px;font-weight:800;color:#F5A623;">${avgStars||'—'}</div>
+          <div style="font-size:10px;color:var(--muted);margin-top:2px;">Team Avg Rating</div>
+          <div style="font-size:11px;color:var(--muted)">${ratings.length} rating${ratings.length!==1?'s':''}</div>
+        </div>
+        <div style="background:#fff;border-radius:10px;padding:12px;text-align:center;border:1px solid var(--border);">
+          <div style="font-size:22px;font-weight:800;color:var(--accent);">${orders.length}</div>
+          <div style="font-size:10px;color:var(--muted);margin-top:2px;">Team Orders</div>
+          <div style="font-size:11px;color:var(--muted)">${orders.length?'Last: '+orders[orders.length-1].date:'Never ordered'}</div>
+        </div>
+      </div>
+      <div style="font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;margin-bottom:8px;">Your Team Rating</div>
+      <div style="display:flex;align-items:center;gap:10px;">
+        <div>${starBar(myTeamRating?.stars||0)}</div>
+        <div style="font-size:11px;color:var(--muted)">${myTeamRating?'Your rating: '+myTeamRating.stars+'★':'Tap to rate'}</div>
+      </div>
+      ${ratings.length>0?`<div style="margin-top:12px;display:flex;flex-direction:column;gap:6px;">
+        ${ratings.slice(0,5).map(x=>`<div style="display:flex;align-items:center;gap:8px;font-size:12px;">
+          <div style="width:26px;height:26px;border-radius:50%;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0;">${x.initials||x.name[0]}</div>
+          <span style="flex:1;font-weight:500;">${x.name}</span>
+          <span style="color:#F5A623;font-weight:700">${'★'.repeat(x.stars)}${'☆'.repeat(5-x.stars)}</span>
+        </div>`).join('')}
+      </div>`:''}
+    </div>`;
+}
+
+/* ═══ VISITED + REVIEWS ═══ */
+function toggleVisited(pid){
+  const v=JSON.parse(localStorage.getItem(visitedKey())||'{}');
+  if(v[pid]){delete v[pid];showToast('Removed from visited');}else{v[pid]=Date.now();showToast('✓ Marked as visited!');}
+  localStorage.setItem(visitedKey(),JSON.stringify(v));
+  restaurants=restaurants.map(r=>{if(r.id===pid)r.tried=!!v[pid];return r;});
+  applyFilters();const r=filteredRestaurants.find(x=>x.id===pid)||restaurants.find(x=>x.id===pid);
+  if(r&&selectedId===pid){r.tried=!!v[pid];renderDetailContent(r);}
+}
+function setMyStar(pid,n){
+  const reviews=JSON.parse(localStorage.getItem(reviewsKey())||'{}');
+  reviews[pid]=reviews[pid]||{};reviews[pid].stars=n;
+  localStorage.setItem(reviewsKey(),JSON.stringify(reviews));
+  const row=document.getElementById('star-row-'+pid);
+  if(row)row.innerHTML=[1,2,3,4,5].map(i=>`<span class="star${n>=i?' filled':''}" onclick="setMyStar('${pid}',${i})">★</span>`).join('');
+}
+function saveMyReview(pid){
+  const reviews=JSON.parse(localStorage.getItem(reviewsKey())||'{}');
+  reviews[pid]=reviews[pid]||{};reviews[pid].text=document.getElementById('review-text-'+pid)?.value||'';
+  localStorage.setItem(reviewsKey(),JSON.stringify(reviews));showToast('Note saved!');
+}
+
+/* ═══ SHARED CART ═══ */
+function getCart(){return JSON.parse(localStorage.getItem(cartKey())||'[]');}
+function saveCart(c){localStorage.setItem(cartKey(),JSON.stringify(c));updateCartBadge();}
+let _cartPid='',_cartPname='',_cartQty=1;
+function addToCart(pid,pname){
+  if(currentUser?.role==='guest'){showToast('Guests cannot add to cart');return;}
+  _cartPid=pid;_cartPname=pname;_cartQty=1;
+  document.getElementById('aim-place-name').textContent='From: '+pname;
+  document.getElementById('aim-dish').value='';
+  document.getElementById('aim-note').value='';
+  document.getElementById('aim-qty').textContent='1';
+  // Menu links
+  const enc=encodeURIComponent(pname);
+  document.getElementById('aim-menu-links').innerHTML=
+    `<a href="https://www.doordash.com/search/store/${enc}/" target="_blank" style="color:var(--accent);font-weight:600;text-decoration:none;">DoorDash ↗</a>` +
+    ` · <a href="https://www.ubereats.com/search?q=${enc}" target="_blank" style="color:var(--accent);font-weight:600;text-decoration:none;">Uber Eats ↗</a>` +
+    ` · <a href="https://www.grubhub.com/search?queryText=${enc}" target="_blank" style="color:var(--accent);font-weight:600;text-decoration:none;">Grubhub ↗</a>`;
+  document.getElementById('modal-add-item').classList.add('open');
+  setTimeout(()=>document.getElementById('aim-dish').focus(),100);
+}
+function changeQty(d){_cartQty=Math.max(1,_cartQty+d);document.getElementById('aim-qty').textContent=_cartQty;}
+function closeItemModal(){document.getElementById('modal-add-item').classList.remove('open');}
+function submitCartItem(){
+  const dish=document.getElementById('aim-dish').value.trim();
+  if(!dish){document.getElementById('aim-dish').style.borderColor='var(--accent)';document.getElementById('aim-dish').focus();return;}
+  const note=document.getElementById('aim-note').value.trim();
+  const cart=getCart();let g=cart.find(c=>c.placeId===_cartPid);
+  if(!g){g={placeId:_cartPid,placeName:_cartPname,items:[]};cart.push(g);}
+  g.items.push({by:currentUser.name,email:currentUser.email,dish,qty:_cartQty,note,ts:Date.now()});
+  saveCart(cart);closeItemModal();showToast('🛒 '+dish+' added to cart!');
+}
+function removeCartItem(pid,ts){
+  const cart=getCart();const g=cart.find(c=>c.placeId===pid);
+  if(!g)return;g.items=g.items.filter(i=>i.ts!==ts);
+  if(!g.items.length)cart.splice(cart.indexOf(g),1);
+  saveCart(cart);renderCartBody();
+}
+function openCart(){document.getElementById('cart-team-label').textContent=(currentUser?.teamName||'Team')+' · '+TODAY();renderCartBody();document.getElementById('modal-cart').classList.add('open');}
+function closeCart(){document.getElementById('modal-cart').classList.remove('open');}
+function renderCartBody(){
+  const cart=getCart();const body=document.getElementById('cart-body');
+  const isManager=currentUser?.role==='manager';
+  if(!cart.length){body.innerHTML='<div class="cart-empty"><div class="ce-icon">🛒</div>Cart is empty for today.<br><small style="color:var(--muted)">Browse restaurants and tap Add to Cart.</small></div>';return;}
+  body.innerHTML=cart.map(grp=>{
+    const enc=encodeURIComponent(grp.placeName);
+    const orderSection=isManager?`<div class="cart-section-title">Place Order via — click records it in Team Stats:</div><div class="order-links"><a class="order-link" href="https://www.doordash.com/search/store/${enc}/" target="_blank" onclick="recordTeamOrder('${grp.placeId}','${grp.placeName.replace(/'/g,"\'")}')">🔴 DoorDash</a><a class="order-link" href="https://www.ubereats.com/search?q=${enc}" target="_blank" onclick="recordTeamOrder('${grp.placeId}','${grp.placeName.replace(/'/g,"\'")}')">⚫ Uber Eats</a><a class="order-link" href="https://www.grubhub.com/search?queryText=${enc}" target="_blank" onclick="recordTeamOrder('${grp.placeId}','${grp.placeName.replace(/'/g,"\'")}')">🟠 Grubhub</a></div>`:`<div class="manager-only-note">⏳ Waiting for Manager to place the order…</div>`;
+    return`<div class="cart-group"><div class="cart-group-name">🍽️ ${grp.placeName} <span style="background:#FFF3F0;color:var(--accent);padding:2px 8px;border-radius:10px;font-size:11px;">${grp.items.length} items</span></div>${grp.items.map(item=>`<div class="cart-item"><div class="ci-info"><div class="ci-dish">${item.qty>1?'×'+item.qty+' ':''}${item.dish||item.note}</div><div class="ci-by">Added by ${item.by}</div></div>${(item.email===currentUser?.email||isManager)?`<button class="ci-remove" onclick="removeCartItem('${grp.placeId}',${item.ts})" title="Remove">✕</button>`:''}</div>`).join('')}${orderSection}</div>`;
+  }).join('');
+}
+
+/* ═══ VOTING ═══ */
+function getVotes(){return JSON.parse(localStorage.getItem(votesKey())||'[]');}
+function saveVotes(v){localStorage.setItem(votesKey(),JSON.stringify(v));}
+function voteFor(pid,pname){
+  if(isVotingClosed()){showToast('Voting closed at 11 AM today');return;}
+  const votes=getVotes();
+  if(votes.find(v=>v.votes.includes(currentUser?.email))){showToast('You already voted today!');return;}
+  let e=votes.find(v=>v.placeId===pid);
+  if(!e){const r=restaurants.find(x=>x.id===pid);e={placeId:pid,placeName:pname,photo:r?.photo||null,votes:[]};votes.push(e);}
+  e.votes.push(currentUser.email);saveVotes(votes);
+  showToast('🗳️ Voted for '+pname+'!');updateVoteBtn();
+  const r=filteredRestaurants.find(x=>x.id===pid)||restaurants.find(x=>x.id===pid);
+  if(r&&selectedId===pid)renderDetailContent(r);
+}
+function openVote(){renderVoteModal();document.getElementById('modal-vote').classList.add('open');}
+function closeVote(){document.getElementById('modal-vote').classList.remove('open');}
+function renderVoteModal(){
+  const votes=getVotes();const closed=isVotingClosed();
+  const myVote=votes.find(v=>v.votes.includes(currentUser?.email));
+  const total=votes.reduce((s,v)=>s+v.votes.length,0);
+  document.getElementById('vote-status-row').innerHTML=closed
+    ?`<div class="badge-closed">✓ Voting Closed</div><span style="font-size:12px;color:var(--muted)">${total} votes cast today</span>`
+    :`<div class="badge-open">🟡 Open until 11 AM</div><span style="font-size:12px;color:var(--muted)">${total} votes so far</span>`;
+  const winner=votes.length?votes.reduce((a,b)=>a.votes.length>=b.votes.length?a:b):null;
+  const wCard=document.getElementById('vote-winner-card');
+  if(closed&&winner&&winner.votes.length>0){
+    wCard.style.display='flex';
+    wCard.innerHTML=`<div class="vwc-trophy">🏆</div><div><div class="vwc-label">Today's Winner</div><div class="vwc-name">${winner.placeName}</div><div style="font-size:12px;color:var(--muted);margin-top:3px">${winner.votes.length} votes</div></div>`;
+  }else wCard.style.display='none';
+  const all=[...votes];
+  restaurants.forEach(r=>{if(!all.find(v=>v.placeId===r.id))all.push({placeId:r.id,placeName:r.name,photo:r.photo,votes:[]});});
+  all.sort((a,b)=>b.votes.length-a.votes.length);
+  const maxV=all.length&&all[0].votes.length>0?all[0].votes.length:1;
+  document.getElementById('vote-body').innerHTML=all.slice(0,20).map(entry=>{
+    const pct=Math.round(entry.votes.length/maxV*100);
+    const isWin=closed&&entry.votes.length>0&&entry.votes.length===winner?.votes.length;
+    const iVotedThis=myVote?.placeId===entry.placeId;
+    const r=restaurants.find(x=>x.id===entry.placeId);
+    const walkStr=r?(r.inRadius?`🚶 ${r.walkMins}m`:`🛵 ${r.walkMins}m`):'';
+    const rStr=r?.rating?`⭐ ${r.rating.toFixed(1)}`:'';
+    const btn=closed?`<button class="vote-btn" disabled>${iVotedThis?'✓ Yours':'—'}</button>`
+      :(iVotedThis?`<button class="vote-btn voted" disabled>✓ Yours</button>`
+        :(myVote?'':`<button class="vote-btn" onclick="voteFor('${entry.placeId}','${entry.placeName.replace(/'/g,"\\'")}');renderVoteModal()">Vote</button>`));
+    return`<div class="vote-item${isWin?' winner':''}">
+      <div class="vi-thumb">${entry.photo?`<img src="${entry.photo}" alt=""/>`:`<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:22px;">${r?getEmoji(r.types):'🍽️'}</div>`}</div>
+      <div class="vi-info"><div class="vi-name">${entry.placeName}</div><div class="vi-meta">${[rStr,walkStr].filter(Boolean).join(' · ')}</div></div>
+      <div class="vi-bar-wrap"><div class="vi-bar-bg"><div class="vi-bar-fill" style="width:${pct}%"></div></div><div class="vi-count">${entry.votes.length} vote${entry.votes.length!==1?'s':''}</div></div>
+      ${btn}
+    </div>`;
+  }).join('');
+}
+
+/* ═══ TOAST ═══ */
+let toastTimer=null;
+function showToast(msg,dur=2800){
+  const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');
+  if(toastTimer)clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove('show'),dur);
+}
+
+/* ═══ INIT ═══ */
+window.addEventListener('load',()=>{
+  const sess=loadSession();if(sess){currentUser=sess;goToLocation();}
+});
+</script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCuKosHUQSijkJkcn-rnjhUeENiahhru4A&libraries=places,geometry&callback=initMapsCallback" async defer></script>
+</body>
+</html>
