@@ -609,7 +609,7 @@ gmp-place-autocomplete::part(input):focus{border-color:var(--accent);}
 </div>
 
 <!-- ═══════════════════════ LOCATION ═══════════════════════ -->
-<div id="screen-location" class="screen">
+<div id="screen-no-team" class="screen"><div class="auth-wrap"><div class="auth-side"><div class="brand"><h1>Radius</h1><p>Your team's office lunch OS</p></div></div><div class="auth-main"><div style="max-width:420px;margin:0 auto;padding:40px 20px;text-align:center;"><div style="font-size:48px;margin-bottom:16px;">🏢</div><h2 style="font-size:22px;font-weight:800;margin-bottom:8px;">No team linked</h2><p style="font-size:14px;color:var(--muted);margin-bottom:28px;">Your account isn't linked to a team yet. Create one or join with a code.</p><div id="nt-error" class="auth-error" style="display:none;margin-bottom:12px;"></div><div style="background:var(--surface);border-radius:12px;padding:20px;margin-bottom:16px;text-align:left;"><h3 style="font-size:14px;font-weight:700;margin-bottom:10px;">✨ Create a new team</h3><div class="form-group"><label>Team name</label><input id="nt-team-name" type="text" class="form-control" placeholder="e.g. Marketing Crew"/></div><button class="btn-primary" style="width:100%;" onclick="ntCreateTeam()">Create team</button></div><div style="background:var(--surface);border-radius:12px;padding:20px;margin-bottom:16px;text-align:left;"><h3 style="font-size:14px;font-weight:700;margin-bottom:10px;">🔗 Join an existing team</h3><div class="form-group"><label>Team code</label><input id="nt-join-code" type="text" class="form-control" placeholder="6-character code" maxlength="6"/></div><button class="btn-primary" style="width:100%;" onclick="ntJoinTeam()">Join team</button></div><button class="btn-secondary" style="width:100%;margin-top:4px;" onclick="doLogout()">Sign out</button></div></div></div></div><div id="screen-location" class="screen">
   <div class="loc-card">
     <h2>📍 Where are you today?</h2>
     <p class="sub">Set your office location to find food places around you</p>
@@ -664,7 +664,7 @@ gmp-place-autocomplete::part(input):focus{border-color:var(--accent);}
           </div>
           <div id="dd-team-members" style="padding:8px 0;border-top:1px solid var(--border);border-bottom:1px solid var(--border);margin:4px 0;display:none;"></div>
           <button onclick="goLocation()">📍 Change Location</button>
-          <button onclick="doLogout()" class="danger">🚪 Sign Out</button>
+          <button <button onclick="doChangePassword()" style="width:100%;text-align:left;padding:8px 12px;background:none;border:none;cursor:pointer;font-size:13px;color:var(--text);">🔑 Change Password</button><button onclick="doDeleteAccount()" class="danger" style="width:100%;text-align:left;padding:8px 12px;background:none;border:none;cursor:pointer;font-size:13px;border-top:1px solid var(--border);">🗑 Delete Account</button><button onclick="doLogout()" class="danger">🚪 Sign Out</button>
         </div>
       </div>
     </div>
@@ -813,7 +813,7 @@ gmp-place-autocomplete::part(input):focus{border-color:var(--accent);}
     <p>Share this invite code with your teammates so they can join your team when signing up.</p>
     <div style="font-size:36px;font-weight:800;letter-spacing:8px;color:var(--accent);background:#FFF3F0;border:2px dashed #FFCCC7;border-radius:14px;padding:20px;margin:16px 0;" id="team-code-display">——</div>
     <div style="font-size:12px;color:var(--muted);margin-bottom:20px;">They enter this code in the "Join a team" step during sign-up.</div>
-    <button class="btn-next" onclick="document.getElementById('modal-team-code').classList.remove('open');goToLocation();">Continue to App →</button>
+    <button class="btn-next" onclick="document.getElementById('modal-team-code').classList.remove('open');goToLocation();"><button class="btn-secondary" style="width:100%;margin-bottom:8px;" onclick="generateInviteLink()">🔗 Copy Invite Link</button>Continue to App →</button>
   </div>
 </div>
 
@@ -882,7 +882,7 @@ function stepNext(from){
   }
   if(from===2){
     const p=document.getElementById('su-pass').value;const p2=document.getElementById('su-pass2').value;
-    if(p.length<6){errEl.textContent='Password must be at least 6 characters.';errEl.style.display='block';return;}
+    const pwOk=/^(?=.*[A-Z])(?=.*\d).{8,}$/;if(!pwOk.test(p)){errEl.textContent='Password must be at least 8 characters with one uppercase letter and one number.';errEl.style.display='block';return;}
     if(p!==p2){errEl.textContent='Passwords do not match.';errEl.style.display='block';return;}
   }
   currentStep=from+1;updateStepIndicator();
@@ -907,7 +907,7 @@ function setMode(mode){
 }
 
 /* ═══ FIREBASE ═══ */
-let db=null;
+let db=null,auth=null;
 function initFirebase(){
   try{
     const cfg={
@@ -919,10 +919,10 @@ function initFirebase(){
       appId:"__FIREBASE_APP_ID__"
     };
     firebase.initializeApp(cfg);
-    db=firebase.firestore();
+    db=firebase.firestore();auth=firebase.auth();auth.onAuthStateChanged(onAuthStateChange);
   }catch(e){console.warn('Firebase init failed',e);}
 }
-async function fsLoad(){
+async function onAuthStateChange(fbUser){  if(!fbUser){return;}  try{    const doc=await db.collection('users').doc(fbUser.uid).get();    if(doc.exists){      currentUser={...doc.data(),uid:fbUser.uid};      currentUser.initials=(currentUser.name||'?')[0].toUpperCase();      if(currentUser.teamId){        const td=await db.collection('teams').doc(currentUser.teamId).get();        if(td.exists){currentUser.teamName=td.data().name;currentUser.teamCode=td.data().code;}      }      if(!currentUser.role){showScreen('location');setTimeout(()=>document.getElementById('modal-role-setup')?.classList.add('open'),400);}      else goToLocation();    }else{      currentUser={email:fbUser.email,name:fbUser.email.split('@')[0],initials:fbUser.email[0].toUpperCase(),uid:fbUser.uid,role:null,teamId:null,teamName:'-'};      showScreen('no-team');    }  }catch(e){console.warn('onAuthStateChange error',e);}}async function fsLoad(){
   if(!db)return;
   try{
     const[uDoc,tDoc]=await Promise.all([
@@ -961,7 +961,7 @@ function setupRealTime(){
     localStorage.setItem(cartKey(),JSON.stringify(snap.data().list||[]));
     updateCartBadge();
     if(document.getElementById('modal-cart')?.classList.contains('open'))renderCartBody();
-  },e=>console.warn('cart snap',e));
+  },e=>console.warn('cart snap',e));if(tid!=='demo_team'){db.collection('teams').doc(tid).onSnapshot(snap=>{if(!snap.exists)return;const d=snap.data();if(currentUser){currentUser.teamName=d.name||currentUser.teamName;currentUser.teamCode=d.code||currentUser.teamCode;}const nm=document.getElementById('nav-team-name');if(nm)nm.textContent=d.name||'';if(document.getElementById('dd-team-members'))fsLoadTeamData&&fsLoadTeamData();},e=>console.warn('team snap',e));}
 }
 async function fsLoadPlaceData(pid){
   if(!db||!currentUser?.teamId||currentUser.demo)return;
@@ -1063,7 +1063,9 @@ function finishSignUp(){
   } else goToLocation();
 }
 function doDemo(){currentUser={name:'Demo User',email:'demo@radius.app',initials:'DU',demo:true,role:'manager',teamId:'demo_team',teamName:'Demo Team',teamCode:'DEMO01'};saveSession(currentUser,false);goToLocation();}
-function doLogout(){clearSession();currentUser=null;userLocation=null;restaurants=[];filteredRestaurants=[];markers=[];circles=[];map=null;showScreen('auth');closeDropdown();}
+function doLogout(){if(auth)auth.signOut();currentUser=null;userLocation=null;restaurants=[];filteredRestaurants=[];markers=[];circles=[];map=null;showScreen('auth');closeDropdown();}function ntCreateTeam(){const name=document.getElementById('nt-team-name').value.trim();const errEl=document.getElementById('nt-error');if(!name){errEl.textContent='Please enter a team name.';errEl.style.display='block';return;}errEl.style.display='none';const code=genCode();const teamId='t_'+Date.now();if(db){db.collection('teams').doc(teamId).set({name,code,members:[{email:currentUser.email,name:currentUser.name,role:'manager'}]}).then(()=>db.collection('users').doc(currentUser.uid).update({teamId,teamName:name,teamCode:code,role:'manager'})).then(()=>{currentUser.teamId=teamId;currentUser.teamName=name;currentUser.teamCode=code;currentUser.role='manager';goToLocation();}).catch(e=>{errEl.textContent=e.message;errEl.style.display='block';});}}function ntJoinTeam(){const code=document.getElementById('nt-join-code').value.trim().toUpperCase();const errEl=document.getElementById('nt-error');if(!code){errEl.textContent='Please enter a team code.';errEl.style.display='block';return;}errEl.style.display='none';if(db){db.collection('teams').where('code','==',code).get().then(snap=>{if(snap.empty){errEl.textContent='Team not found. Check the code and try again.';errEl.style.display='block';return;}const teamDoc=snap.docs[0];const teamId=teamDoc.id;const teamData=teamDoc.data();const members=teamData.members||[];members.push({email:currentUser.email,name:currentUser.name,role:'editor'});return teamDoc.ref.update({members}).then(()=>db.collection('users').doc(currentUser.uid).update({teamId,teamName:teamData.name,teamCode:code,role:'editor'})).then(()=>{currentUser.teamId=teamId;currentUser.teamName=teamData.name;currentUser.teamCode=code;currentUser.role='editor';goToLocation();});}).catch(e=>{errEl.textContent=e.message;errEl.style.display='block';});}}function doChangePassword(){if(!auth||!currentUser?.email)return;auth.sendPasswordResetEmail(currentUser.email).then(()=>alert('Password reset email sent to '+currentUser.email)).catch(e=>alert(e.message));}function doDeleteAccount(){if(!confirm('Delete your account permanently? This cannot be undone.'))return;const user=auth?.currentUser;if(!user)return;(db?db.collection('users').doc(user.uid).delete():Promise.resolve()).then(()=>user.delete()).then(()=>{currentUser=null;showScreen('auth');}).catch(e=>alert('To delete your account, please sign out and sign back in first.
+'+e.message));}function generateInviteLink(){if(!currentUser?.teamCode)return;const link=window.location.origin+'/?invite='+currentUser.teamCode;navigator.clipboard.writeText(link).then(()=>alert('✓ Invite link copied!
+'+link)).catch(()=>prompt('Copy this invite link:',link));}function removeMember(email){if(!currentUser?.teamId||currentUser.role!=='manager')return;if(!confirm('Remove '+email+' from the team?'))return;db.collection('teams').doc(currentUser.teamId).get().then(doc=>{if(!doc.exists)return;const members=(doc.data().members||[]).filter(m=>m.email!==email);return doc.ref.update({members}).then(()=>db.collection('users').where('email','==',email).get()).then(snap=>{snap.forEach(u=>u.ref.update({teamId:null,teamName:'-',teamCode:'',role:null}));});}).then(()=>{alert(email+' removed.');renderTeamPanel&&renderTeamPanel();}).catch(e=>alert(e.message));}
 function openForgot(){document.getElementById('modal-forgot').classList.add('open');document.getElementById('reset-result').style.display='none';document.getElementById('forgot-email').value=document.getElementById('si-email').value||'';}
 function closeForgot(){document.getElementById('modal-forgot').classList.remove('open');}
 function doForgot(){
@@ -1763,11 +1765,11 @@ window.addEventListener('load',async()=>{
   initMobileNav();
   window.addEventListener('resize',initMobileNav);
   await fsLoad();
-  const sess=loadSession();if(sess){currentUser=sess;goToLocation();}
+  const inv=new URLSearchParams(window.location.search).get('invite');if(inv){localStorage.setItem('pendingInvite',inv.toUpperCase());setTimeout(()=>{const el=document.getElementById('su-teamcode');if(el){el.value=inv.toUpperCase();}const tcMode=document.getElementById('tc-join');if(tcMode)tcMode.click();},800);}const sess=loadSession();if(sess){currentUser=sess;goToLocation();}
 });
 </script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script><script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
 <script src="https://maps.googleapis.com/maps/api/js?key=__GOOGLE_MAPS_API_KEY__&libraries=places,geometry&callback=initMapsCallback" async defer></script>
 </body>
   </html>
