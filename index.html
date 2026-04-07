@@ -436,7 +436,7 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
         <button class="btn-next" onclick="doSignIn()">Sign In →</button>
         <div class="divider">or</div>
         <button class="btn-demo" onclick="doDemo()">🎭 &nbsp;Try Demo — no account needed</button>
-        <p class="auth-note">🔒 All data stored locally in your browser.</p>
+        <p class="auth-note">☁️ Team data synced in real time · Accounts secured locally.</p>
         <div class="signin-link" style="margin-top:12px;">New to Radius? <a onclick="showView('signup')">Create an account</a></div>
       </div>
 
@@ -559,7 +559,7 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
   <div class="modal-box">
     <h3>Reset Password</h3>
     <p>Enter your email. Your password will be reset to <strong>radius123</strong> — sign in with that, then update it in your profile.</p>
-    <p style="font-size:11px;color:var(--muted);margin-top:-10px;margin-bottom:14px;">⚠️ Passwords are stored locally (no server). This only works on the same browser/device.</p>
+    <p style="font-size:11px;color:var(--muted);margin-top:-10px;margin-bottom:14px;">⚠️ Account passwords are stored in your browser. This only works on the same browser/device.</p>
     <div class="form-group"><label>Email</label><input type="email" id="forgot-email" placeholder="you@company.com"/></div>
     <div id="reset-result" class="reset-result"></div>
     <div class="modal-actions">
@@ -583,7 +583,7 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
       <strong style="color:var(--text);">How the shared cart works:</strong><br>
       ✏️ <strong>Editors</strong> tap "Add to Cart" on any restaurant → enter dish + qty.<br>
       👑 <strong>Managers</strong> review the cart and click a delivery link to place the final order.<br>
-      🔒 <em>Demo note: cart is shared via your browser's localStorage — all team members must use the same device/browser for the demo. Real deployment needs a backend.</em>
+      ☁️ <em>Team cart, votes, and ratings sync in real time across all teammates via Firebase — no same-device required.</em>
     </div>
     <div id="cart-body"></div>
   </div>
