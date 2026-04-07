@@ -1081,7 +1081,7 @@ function showScreen(n){document.querySelectorAll('.screen').forEach(s=>s.classLi
 function goToLocation(){showScreen('location');}
 function goLocation(){showScreen('location');closeDropdown();}
 function goToApp(){
-  if(!userLocation){showToast('Please set a location first');return;}
+  if(!userLocation){const _a=window._pacEl?window._pacEl.value:(document.getElementById('loc-input')||{}).value;if(_a&&_a.trim()){showToast('⏳ Finding location...');new google.maps.Geocoder().geocode({address:_a},(r,s)=>{if(s==='OK'&&r[0]){userLocation={lat:r[0].geometry.location.lat(),lng:r[0].geometry.location.lng()};goToApp();}else{showToast('Please set a location first');}});return;}showToast('Please set a location first');return;}
   radiusMin=orderMode==='walk'?parseInt(document.getElementById('loc-radius').value):15;
   document.getElementById('radius-chip-val').textContent=orderMode==='order'?'Delivery':radiusMin+'m';
   showScreen('app');updateNav();initMap();
