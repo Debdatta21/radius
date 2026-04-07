@@ -1178,7 +1178,7 @@ window.initMapsCallback=function(){
     window._pacEl=pac;
     pac.addEventListener('gmp-placeselect',async({place})=>{
       await place.fetchFields({fields:['location','displayName','formattedAddress']});
-      if(place.location){userLocation={lat:place.location.lat(),lng:place.location.lng()};showToast('✅ Location set!');}
+      const _lat=typeof place.location.lat==='function'?place.location.lat():place.location.lat;const _lng=typeof place.location.lng==='function'?place.location.lng():place.location.lng;if(_lat!=null){userLocation={lat:_lat,lng:_lng};showToast('✅ Location set!');}else{showToast('❌ No location found. Try again.');}
     });
   } else {
     const li=document.createElement('input');
