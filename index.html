@@ -817,7 +817,7 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
 
 <script>
 /* ═══ CONSTANTS ═══ */
-const API_KEY='AIzaSyCuKosHUQSijkJkcn-rnjhUeENiahhru4A';
+const API_KEY='__GOOGLE_MAPS_API_KEY__';
 const WALK_SPEED=83;
 const RING_DEFS=[
   {mins:5, color:'#1E8A4C',opacity:0.15,strokeOpacity:0.9,label:'5 min'},
@@ -902,11 +902,87 @@ function setMode(mode){
   document.getElementById('walk-radius-section').style.display=mode==='walk'?'':'none';
 }
 
+/* ═══ FIREBASE ═══ */
+let db=null;
+function initFirebase(){
+  try{
+    const cfg={
+      apiKey:"__FIREBASE_API_KEY__",
+      authDomain:"__FIREBASE_PROJECT_ID__.firebaseapp.com",
+      projectId:"__FIREBASE_PROJECT_ID__",
+      storageBucket:"__FIREBASE_PROJECT_ID__.firebasestorage.app",
+      messagingSenderId:"__FIREBASE_SENDER_ID__",
+      appId:"__FIREBASE_APP_ID__"
+    };
+    firebase.initializeApp(cfg);
+    db=firebase.firestore();
+  }catch(e){console.warn('Firebase init failed',e);}
+}
+async function fsLoad(){
+  if(!db)return;
+  try{
+    const[uDoc,tDoc]=await Promise.all([
+      db.collection('data').doc('users').get(),
+      db.collection('data').doc('teams').get()
+    ]);
+    if(uDoc.exists)localStorage.setItem('radius_users',JSON.stringify(uDoc.data().list||[]));
+    if(tDoc.exists)localStorage.setItem('radius_teams',JSON.stringify(tDoc.data().list||[]));
+  }catch(e){console.warn('fsLoad failed',e);}
+}
+async function fsLoadTeamData(){
+  if(!db||!currentUser?.teamId||currentUser.demo)return;
+  const tid=currentUser.teamId,today=TODAY();
+  try{
+    const[vDoc,cDoc]=await Promise.all([
+      db.collection('votes').doc(today+'_'+tid).get(),
+      db.collection('carts').doc(tid+'_'+today).get()
+    ]);
+    if(vDoc.exists)localStorage.setItem(votesKey(),JSON.stringify(vDoc.data().list||[]));
+    if(cDoc.exists)localStorage.setItem(cartKey(),JSON.stringify(cDoc.data().list||[]));
+  }catch(e){console.warn('fsLoadTeamData failed',e);}
+}
+let _unsubVotes=null,_unsubCart=null;
+function setupRealTime(){
+  if(!db||!currentUser?.teamId||currentUser.demo)return;
+  const tid=currentUser.teamId,today=TODAY();
+  if(_unsubVotes)_unsubVotes();if(_unsubCart)_unsubCart();
+  _unsubVotes=db.collection('votes').doc(today+'_'+tid).onSnapshot(snap=>{
+    if(!snap.exists)return;
+    localStorage.setItem(votesKey(),JSON.stringify(snap.data().list||[]));
+    updateVoteBtn();
+    if(document.getElementById('modal-vote')?.classList.contains('open'))renderVoteModal();
+  },e=>console.warn('votes snap',e));
+  _unsubCart=db.collection('carts').doc(tid+'_'+today).onSnapshot(snap=>{
+    if(!snap.exists)return;
+    localStorage.setItem(cartKey(),JSON.stringify(snap.data().list||[]));
+    updateCartBadge();
+    if(document.getElementById('modal-cart')?.classList.contains('open'))renderCartBody();
+  },e=>console.warn('cart snap',e));
+}
+async function fsLoadPlaceData(pid){
+  if(!db||!currentUser?.teamId||currentUser.demo)return;
+  const tid=currentUser.teamId;
+  try{
+    const[rDoc,oDoc]=await Promise.all([
+      db.collection('ratings').doc(tid+'_'+pid).get(),
+      db.collection('orders').doc(tid+'_'+pid).get()
+    ]);
+    if(rDoc.exists)localStorage.setItem(teamRatingKey(pid),JSON.stringify(rDoc.data().list||[]));
+    if(oDoc.exists)localStorage.setItem(teamOrderKey(pid),JSON.stringify(oDoc.data().list||[]));
+  }catch(e){console.warn('fsLoadPlaceData failed',e);}
+}
+
 /* ═══ AUTH HELPERS ═══ */
 function getUsers(){return JSON.parse(localStorage.getItem('radius_users')||'[]');}
-function saveUsers(u){localStorage.setItem('radius_users',JSON.stringify(u));}
+function saveUsers(u){
+  localStorage.setItem('radius_users',JSON.stringify(u));
+  if(db)db.collection('data').doc('users').set({list:u}).catch(e=>console.warn('save users',e));
+}
 function getTeams(){return JSON.parse(localStorage.getItem('radius_teams')||'[]');}
-function saveTeams(t){localStorage.setItem('radius_teams',JSON.stringify(t));}
+function saveTeams(t){
+  localStorage.setItem('radius_teams',JSON.stringify(t));
+  if(db)db.collection('data').doc('teams').set({list:t}).catch(e=>console.warn('save teams',e));
+}
 function hashPass(p){let h=0;for(let i=0;i<p.length;i++)h=Math.imul(31,h)+p.charCodeAt(i)|0;return h.toString(36);}
 function saveSession(u,persist){const s=JSON.stringify(u);if(persist)localStorage.setItem('radius_session',s);sessionStorage.setItem('radius_session',s);}
 function loadSession(){const s=sessionStorage.getItem('radius_session')||localStorage.getItem('radius_session');return s?JSON.parse(s):null;}
@@ -1005,6 +1081,8 @@ function goToApp(){
   radiusMin=orderMode==='walk'?parseInt(document.getElementById('loc-radius').value):15;
   document.getElementById('radius-chip-val').textContent=orderMode==='order'?'Delivery':radiusMin+'m';
   showScreen('app');updateNav();initMap();
+  fsLoadTeamData().then(()=>{updateCartBadge();updateVoteBtn();});
+  setupRealTime();
 }
 function useGPS(){
   const btn=document.querySelector('.gps-btn');btn.textContent='⏳';
@@ -1454,11 +1532,15 @@ function saveTeamRating(pid,stars){
   const entry={email:currentUser.email,name:currentUser.name,initials:currentUser.initials||currentUser.name[0],stars,date:TODAY()};
   if(idx>=0)ratings[idx]=entry;else ratings.push(entry);
   localStorage.setItem(teamRatingKey(pid),JSON.stringify(ratings));
+  if(db&&currentUser?.teamId&&!currentUser.demo)
+    db.collection('ratings').doc(currentUser.teamId+'_'+pid).set({list:ratings}).catch(e=>console.warn('save rating',e));
 }
 function recordTeamOrder(pid,pname){
   const orders=getTeamOrders(pid);
   orders.push({by:currentUser.name,email:currentUser.email,date:TODAY(),place:pname});
   localStorage.setItem(teamOrderKey(pid),JSON.stringify(orders));
+  if(db&&currentUser?.teamId&&!currentUser.demo)
+    db.collection('orders').doc(currentUser.teamId+'_'+pid).set({list:orders}).catch(e=>console.warn('save order',e));
   showToast('Order recorded for team stats 📊');
 }
 function renderTeamStats(r){
@@ -1521,7 +1603,11 @@ function saveMyReview(pid){
 
 /* ═══ SHARED CART ═══ */
 function getCart(){return JSON.parse(localStorage.getItem(cartKey())||'[]');}
-function saveCart(c){localStorage.setItem(cartKey(),JSON.stringify(c));updateCartBadge();}
+function saveCart(c){
+  localStorage.setItem(cartKey(),JSON.stringify(c));updateCartBadge();
+  if(db&&currentUser?.teamId&&!currentUser.demo)
+    db.collection('carts').doc(currentUser.teamId+'_'+TODAY()).set({list:c}).catch(e=>console.warn('save cart',e));
+}
 let _cartPid='',_cartPname='',_cartQty=1;
 function addToCart(pid,pname){
   if(currentUser?.role==='guest'){showToast('Guests cannot add to cart');return;}
@@ -1571,7 +1657,11 @@ function renderCartBody(){
 
 /* ═══ VOTING ═══ */
 function getVotes(){return JSON.parse(localStorage.getItem(votesKey())||'[]');}
-function saveVotes(v){localStorage.setItem(votesKey(),JSON.stringify(v));}
+function saveVotes(v){
+  localStorage.setItem(votesKey(),JSON.stringify(v));
+  if(db&&currentUser?.teamId&&!currentUser.demo)
+    db.collection('votes').doc(TODAY()+'_'+currentUser.teamId).set({list:v}).catch(e=>console.warn('save votes',e));
+}
 function voteFor(pid,pname){
   if(isVotingClosed()){showToast('Voting closed at 11 AM today');return;}
   const votes=getVotes();
@@ -1646,12 +1736,16 @@ function initMobileNav(){
 }
 
 /* ═══ INIT ═══ */
-window.addEventListener('load',()=>{
+window.addEventListener('load',async()=>{
+  initFirebase();
   initMobileNav();
   window.addEventListener('resize',initMobileNav);
+  await fsLoad();
   const sess=loadSession();if(sess){currentUser=sess;goToLocation();}
 });
 </script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
 <script src="https://maps.googleapis.com/maps/api/js?key=__GOOGLE_MAPS_API_KEY__&libraries=places,geometry&callback=initMapsCallback" async defer></script>
 </body>
-</html>
+  </html>
