@@ -114,8 +114,12 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
 .loc-card h2{font-size:22px;font-weight:800;margin-bottom:4px;}
 .loc-card .sub{color:var(--muted);font-size:14px;margin-bottom:28px;}
 .loc-input-row{display:flex;gap:10px;margin-bottom:20px;}
-.loc-input-row input{flex:1;padding:12px 14px;background:#FAFAFA;border:1.5px solid var(--border);border-radius:12px;color:var(--text);font-size:14px;outline:none;font-family:inherit;}
+.loc-input-row input,.loc-input-wrapper{flex:1;padding:12px 14px;background:#FAFAFA;border:1.5px solid var(--border);border-radius:12px;color:var(--text);font-size:14px;outline:none;font-family:inherit;}
 .loc-input-row input:focus{border-color:var(--accent);}
+.loc-input-wrapper{padding:0;border:none;background:none;}
+gmp-place-autocomplete{display:block;width:100%;}
+gmp-place-autocomplete::part(input){width:100%;padding:12px 14px;background:#FAFAFA;border:1.5px solid var(--border);border-radius:12px;color:var(--text);font-size:14px;outline:none;font-family:'Inter',system-ui,sans-serif;box-sizing:border-box;}
+gmp-place-autocomplete::part(input):focus{border-color:var(--accent);}
 .gps-btn{padding:12px 14px;background:#FFF3F0;border:1.5px solid var(--border);border-radius:12px;cursor:pointer;font-size:18px;transition:border .2s;}
 .gps-btn:hover{border-color:var(--accent);}
 
@@ -610,7 +614,7 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
     <h2>📍 Where are you today?</h2>
     <p class="sub">Set your office location to find food places around you</p>
     <div class="loc-input-row">
-      <input type="text" id="loc-input" placeholder="Search office address…"/>
+      <div id="loc-input-wrapper" class="loc-input-wrapper"></div>
       <button class="gps-btn" onclick="useGPS()" title="Use GPS">📡</button>
     </div>
     <div class="mode-toggle-label">How do you want to get food?</div>
@@ -1087,7 +1091,14 @@ function goToApp(){
 function useGPS(){
   const btn=document.querySelector('.gps-btn');btn.textContent='⏳';
   navigator.geolocation.getCurrentPosition(
-    pos=>{userLocation={lat:pos.coords.latitude,lng:pos.coords.longitude};btn.textContent='✅';document.getElementById('loc-input').value='📡 Current location';showToast('Location set!');},
+    pos=>{
+      userLocation={lat:pos.coords.latitude,lng:pos.coords.longitude};
+      btn.textContent='✅';
+      const li=document.getElementById('loc-input');
+      if(li)li.value='📡 Current location';
+      else if(window._pacEl){const inp=window._pacEl.shadowRoot?.querySelector('input');if(inp)inp.value='📡 Current location';}
+      showToast('Location set!');
+    },
     ()=>{btn.textContent='📡';showToast('Could not get GPS location');}
   );
 }
@@ -1158,13 +1169,24 @@ document.addEventListener('click',e=>{if(!e.target.closest('.user-area'))closeDr
 
 /* ═══ MAPS ═══ */
 window.initMapsCallback=function(){
-  const li=document.getElementById('loc-input');
-  if(li){
-    autocomplete=new google.maps.places.Autocomplete(li,{types:['establishment','geocode']});
-    autocomplete.addListener('place_changed',()=>{
-      const p=autocomplete.getPlace();
-      if(p.geometry)userLocation={lat:p.geometry.location.lat(),lng:p.geometry.location.lng()};
+  const wrapper=document.getElementById('loc-input-wrapper');
+  if(!wrapper)return;
+  if(google.maps.places.PlaceAutocompleteElement){
+    const pac=new google.maps.places.PlaceAutocompleteElement({types:['establishment','geocode']});
+    pac.style.cssText='width:100%;display:block;';
+    wrapper.appendChild(pac);
+    window._pacEl=pac;
+    pac.addEventListener('gmp-placeselect',async({place})=>{
+      await place.fetchFields({fields:['location','displayName','formattedAddress']});
+      if(place.location){userLocation={lat:place.location.lat(),lng:place.location.lng()};showToast('✅ Location set!');}
     });
+  } else {
+    const li=document.createElement('input');
+    li.type='text';li.id='loc-input';li.placeholder='Search office address…';
+    li.style.cssText='flex:1;padding:12px 14px;background:#FAFAFA;border:1.5px solid var(--border);border-radius:12px;color:var(--text);font-size:14px;outline:none;font-family:inherit;width:100%;box-sizing:border-box;';
+    wrapper.appendChild(li);
+    autocomplete=new google.maps.places.Autocomplete(li,{types:['establishment','geocode']});
+    autocomplete.addListener('place_changed',()=>{const p=autocomplete.getPlace();if(p.geometry)userLocation={lat:p.geometry.location.lat(),lng:p.geometry.location.lng()};});
   }
 };
 function initMap(){
