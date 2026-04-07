@@ -1177,11 +1177,11 @@ window.initMapsCallback=function(){
     wrapper.appendChild(pac);
     window._pacEl=pac;
     pac.addEventListener('gmp-placeselect',async({place})=>{
-      await place.fetchFields({fields:['location','displayName','formattedAddress']});
+      try{await place.fetchFields({fields:['location','displayName','formattedAddress']});}catch(e){}
       const _lat=typeof place.location.lat==='function'?place.location.lat():place.location.lat;const _lng=typeof place.location.lng==='function'?place.location.lng():place.location.lng;if(_lat!=null){userLocation={lat:_lat,lng:_lng};showToast('✅ Location set!');}else{showToast('❌ No location found. Try again.');}
     });
   } else {
-    const li=document.createElement('input');
+    const li=document.createElement('input');h
     li.type='text';li.id='loc-input';li.placeholder='Search office address…';
     li.style.cssText='flex:1;padding:12px 14px;background:#FAFAFA;border:1.5px solid var(--border);border-radius:12px;color:var(--text);font-size:14px;outline:none;font-family:inherit;width:100%;box-sizing:border-box;';
     wrapper.appendChild(li);
