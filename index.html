@@ -117,9 +117,6 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
 .loc-input-row input,.loc-input-wrapper{flex:1;padding:12px 14px;background:#FAFAFA;border:1.5px solid var(--border);border-radius:12px;color:var(--text);font-size:14px;outline:none;font-family:inherit;}
 .loc-input-row input:focus{border-color:var(--accent);}
 .loc-input-wrapper{padding:0;border:none;background:none;}
-gmp-place-autocomplete{display:block;width:100%;}
-gmp-place-autocomplete::part(input){width:100%;padding:12px 14px;background:#FAFAFA;border:1.5px solid var(--border);border-radius:12px;color:var(--text);font-size:14px;outline:none;font-family:'Inter',system-ui,sans-serif;box-sizing:border-box;}
-gmp-place-autocomplete::part(input):focus{border-color:var(--accent);}
 .gps-btn{padding:12px 14px;background:#FFF3F0;border:1.5px solid var(--border);border-radius:12px;cursor:pointer;font-size:18px;transition:border .2s;}
 .gps-btn:hover{border-color:var(--accent);}
 
@@ -399,6 +396,8 @@ gmp-place-autocomplete::part(input):focus{border-color:var(--accent);}
   /* STEP NAV — ensure buttons don't overflow */
   .step-nav{flex-wrap:wrap;}
 }
+.leaflet-container{width:100%;height:100%;background:#e8e0d8;font-family:inherit;}
+.leaflet-control-zoom a{border-radius:8px!important;}
 </style>
 </head>
 <body>
@@ -614,7 +613,7 @@ gmp-place-autocomplete::part(input):focus{border-color:var(--accent);}
     <h2>📍 Where are you today?</h2>
     <p class="sub">Set your office location to find food places around you</p>
     <div class="loc-input-row">
-      <div id="loc-input-wrapper" class="loc-input-wrapper"></div>
+      <div id="loc-input-wrapper" class="loc-input-wrapper" style="position:relative;flex:1;min-width:0;"><input id="loc-search" type="text" placeholder="Search location..." autocomplete="off" style="width:100%;background:transparent;border:none;outline:none;font-size:14px;font-family:inherit;color:var(--text);"><ul id="loc-suggestions" style="display:none;position:absolute;top:calc(100% + 8px);left:-14px;right:-14px;background:#fff;border:1.5px solid var(--border);border-radius:10px;list-style:none;margin:0;padding:4px 0;z-index:9999;max-height:220px;overflow-y:auto;box-shadow:0 4px 16px rgba(0,0,0,.15);"></ul></div>
       <button class="gps-btn" onclick="useGPS()" title="Use GPS">📡</button>
     </div>
     <div class="mode-toggle-label">How do you want to get food?</div>
@@ -822,8 +821,15 @@ gmp-place-autocomplete::part(input):focus{border-color:var(--accent);}
 
 <script>
 /* ═══ CONSTANTS ═══ */
-const API_KEY='__GOOGLE_MAPS_API_KEY__';
+
 const WALK_SPEED=83;
+function haversineMeters(lat1,lng1,lat2,lng2){
+  const R=6371000;
+  const dLat=(lat2-lat1)*Math.PI/180;
+  const dLng=(lng2-lng1)*Math.PI/180;
+  const a=Math.sin(dLat/2)*Math.sin(dLat/2)+Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLng/2)*Math.sin(dLng/2);
+  return R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
+}
 const RING_DEFS=[
   {mins:5, color:'#1E8A4C',opacity:0.15,strokeOpacity:0.9,label:'5 min'},
   {mins:10,color:'#D97706',opacity:0.09,strokeOpacity:0.75,label:'10 min'},
@@ -846,7 +852,7 @@ const TODAY=()=>new Date().toISOString().slice(0,10);
 /* ═══ STATE ═══ */
 let currentUser=null,userLocation=null,radiusMin=10,activeCuisine='All',orderMode='walk';
 let restaurants=[],filteredRestaurants=[],selectedId=null,sortByRating=false;
-let map=null,markers=[],circles=[],hoverWindow=null,placesService=null,autocomplete=null;
+let leafletMap=null,leafletMarkers=[],leafletCircles=[],leafletHoverPopup=null;
 let activeQF=new Set();
 let currentStep=1,selectedRole='editor',teamMode='create';
 const visitedKey=()=>'rv_'+(currentUser?.email||'demo');
@@ -1084,13 +1090,28 @@ function showScreen(n){document.querySelectorAll('.screen').forEach(s=>s.classLi
 function goToLocation(){showScreen('location');}
 function goLocation(){showScreen('location');closeDropdown();}
 function goToApp(){
-  if(!userLocation){const _a=window._pacEl?window._pacEl.value:(document.getElementById('loc-input')||{}).value;if(_a&&_a.trim()){showToast('⏳ Finding location...');new google.maps.Geocoder().geocode({address:_a},(r,s)=>{if(s==='OK'&&r[0]){userLocation={lat:r[0].geometry.location.lat(),lng:r[0].geometry.location.lng()};goToApp();}else{showToast('Please set a location first');}});return;}showToast('Please set a location first');return;}
-  radiusMin=orderMode==='walk'?parseInt(document.getElementById('loc-radius').value):15;
-  document.getElementById('radius-chip-val').textContent=orderMode==='order'?'Delivery':radiusMin+'m';
-  sessionStorage.setItem('radius_loc',JSON.stringify({loc:userLocation,mode:orderMode}));
-  showScreen('app');updateNav();initMap();
-  fsLoadTeamData().then(()=>{updateCartBadge();updateVoteBtn();});
-  setupRealTime();
+  if(!userLocation){
+    const _a=(document.getElementById('loc-search')||{}).value;
+    if(_a&&_a.trim()){
+      showToast('⏳ Finding location...');
+      fetch('https://nominatim.openstreetmap.org/search?format=json&limit=1&q='+encodeURIComponent(_a),
+        {headers:{'Accept-Language':'en','User-Agent':'RadiusApp/1.0'}})
+        .then(r=>r.json())
+        .then(data=>{
+          if(data&&data[0]){
+            userLocation={lat:parseFloat(data[0].lat),lng:parseFloat(data[0].lon)};
+            initMap(userLocation.lat,userLocation.lng);
+            drawCircles(userLocation.lat,userLocation.lng);
+            searchRestaurants();showScreen('map');
+          }else{showToast('Location not found. Try again.');}
+        })
+        .catch(()=>showToast('Could not reach location service.'));
+      return;
+    }else{showToast('Please enter a location first.');return;}
+  }
+  initMap(userLocation.lat,userLocation.lng);
+  drawCircles(userLocation.lat,userLocation.lng);
+  searchRestaurants();showScreen('map');
 }
 function useGPS(){
   const btn=document.querySelector('.gps-btn');btn.textContent='⏳';
@@ -1178,164 +1199,109 @@ function closeDropdown(){document.getElementById('user-dropdown').classList.remo
 document.addEventListener('click',e=>{if(!e.target.closest('.user-area'))closeDropdown();});
 
 /* ═══ MAPS ═══ */
-window.initMapsCallback=function(){
-  const wrapper=document.getElementById('loc-input-wrapper');
-  if(!wrapper)return;
-  if(google.maps.places.PlaceAutocompleteElement){
-    const pac=new google.maps.places.PlaceAutocompleteElement({types:['establishment','geocode']});
-    pac.style.cssText='width:100%;display:block;';
-    wrapper.appendChild(pac);
-    window._pacEl=pac;
-    pac.addEventListener('gmp-placeselect',async({place})=>{
-      try{await place.fetchFields({fields:['location','displayName','formattedAddress']});}catch(e){}
-      const _lat=typeof place.location.lat==='function'?place.location.lat():place.location.lat;const _lng=typeof place.location.lng==='function'?place.location.lng():place.location.lng;if(_lat!=null){userLocation={lat:_lat,lng:_lng};showToast('✅ Location set!');}else{showToast('❌ No location found. Try again.');}
-    });
-  } else {
-    const li=document.createElement('input');
-    li.type='text';li.id='loc-input';li.placeholder='Search office address…';
-    li.style.cssText='flex:1;padding:12px 14px;background:#FAFAFA;border:1.5px solid var(--border);border-radius:12px;color:var(--text);font-size:14px;outline:none;font-family:inherit;width:100%;box-sizing:border-box;';
-    wrapper.appendChild(li);
-    autocomplete=new google.maps.places.Autocomplete(li,{types:['establishment','geocode']});
-    autocomplete.addListener('place_changed',()=>{const p=autocomplete.getPlace();if(p.geometry)userLocation={lat:p.geometry.location.lat(),lng:p.geometry.location.lng()};});
-  }
-};
-function initMap(){
-  if(map){drawCircles();searchRestaurants();return;}
-  if(!window.google){setTimeout(initMap,800);return;}
-  document.getElementById('map-placeholder').style.display='none';
-  document.getElementById('map').style.display='block';
-  map=new google.maps.Map(document.getElementById('map'),{center:userLocation,zoom:15,styles:MAP_STYLE,disableDefaultUI:false,zoomControl:true,mapTypeControl:false,streetViewControl:false,fullscreenControl:false});
-  new google.maps.Marker({position:userLocation,map,icon:{path:google.maps.SymbolPath.CIRCLE,scale:10,fillColor:'#E8503A',fillOpacity:1,strokeColor:'#fff',strokeWeight:2.5},zIndex:100,title:'You are here'});
-  hoverWindow=new google.maps.InfoWindow({disableAutoPan:true});
-  placesService=new google.maps.places.PlacesService(map);
-  drawCircles();searchRestaurants();
-}
-function drawCircles(){
-  circles.forEach(c=>c.setMap(null));circles=[];
-  if(orderMode==='order')return;
-  RING_DEFS.forEach(def=>{
-    const rm=def.mins*WALK_SPEED,isActive=def.mins<=radiusMin;
-    const circle=new google.maps.Circle({
-      map,center:userLocation,radius:rm,
-      strokeColor:def.color,
-      strokeOpacity:isActive?def.strokeOpacity:0.3,
-      strokeWeight:isActive?3:1.5,
-      fillColor:def.color,
-      fillOpacity:isActive?def.opacity:0.02,
-      clickable:false,zIndex:1
-    });
-    circles.push(circle);
-    // Add time label marker at top of each circle
-    if(isActive){
-      const labelPos=google.maps.geometry.spherical.computeOffset(
-        new google.maps.LatLng(userLocation.lat,userLocation.lng), rm, 0
-      );
-      const lbl=new google.maps.Marker({
-        position:labelPos,map,clickable:false,zIndex:2,
-        icon:{
-          url:'data:image/svg+xml;charset=UTF-8,'+encodeURIComponent(
-            '<svg xmlns="http://www.w3.org/2000/svg" width="52" height="22"><rect x="0" y="0" width="52" height="22" rx="11" fill="'+def.color+'" opacity="0.9"/><text x="26" y="15" font-family="Inter,system-ui,sans-serif" font-size="11" font-weight="700" fill="white" text-anchor="middle">'+def.label+'</text></svg>'
-          ),
-          scaledSize:new google.maps.Size(52,22),anchor:new google.maps.Point(26,22)
-        }
+function initNominatimSearch(){
+  const input=document.getElementById('loc-search');
+  const list=document.getElementById('loc-suggestions');
+  if(!input||!list)return;
+  let debounceTimer=null,currentSuggestions=[];
+  function hideSuggestions(){list.style.display='none';list.innerHTML='';}
+  function showSuggestions(items){
+    list.innerHTML='';
+    if(!items.length){hideSuggestions();return;}
+    items.forEach(item=>{
+      const li=document.createElement('li');
+      li.textContent=item.display_name;
+      li.style.cssText='padding:10px 14px;cursor:pointer;font-size:13px;border-bottom:1px solid #f0f0f0;line-height:1.3;';
+      li.addEventListener('mousedown',e=>{
+        e.preventDefault();
+        input.value=item.display_name;
+        hideSuggestions();
+        userLocation={lat:parseFloat(item.lat),lng:parseFloat(item.lon)};
+        initMap(userLocation.lat,userLocation.lng);
+        drawCircles(userLocation.lat,userLocation.lng);
+        searchRestaurants();
       });
-      circles.push(lbl);
-    }
-  });
-}
-
-/* ═══ SEARCH ═══ */
-function searchRestaurants(){
-  if(!placesService||!userLocation)return;
-  document.getElementById('rest-list').innerHTML='<div style="padding:24px;text-align:center;color:var(--muted);font-size:13px"><div class="spinner" style="margin:0 auto 10px"></div>Finding food places near you…</div>';
-  restaurants=[];
-  const seen=new Set();
-  let passesComplete=0;
-  // 2 distance-ranked passes + 1 per food type
-  const DIST_KEYWORDS=['food restaurant','taco korean mexican sandwich burger deli local'];
-  const TEXT_QUERIES_LEN=10; // matches TEXT_QUERIES array below
-  const TOTAL_PASSES=FOOD_TYPES.length+DIST_KEYWORDS.length+TEXT_QUERIES_LEN;
-
-  function onPassDone(){
-    passesComplete++;
-    if(passesComplete===TOTAL_PASSES&&!restaurants.length){
-      document.getElementById('rest-list').innerHTML='<div style="padding:24px;text-align:center;color:var(--muted)">No food places found nearby.</div>';
-    }
+      li.addEventListener('mouseover',()=>{li.style.background='#f5f5f5';});
+      li.addEventListener('mouseout',()=>{li.style.background='';});
+      list.appendChild(li);
+    });
+    list.style.display='block';
   }
-
-  // Distance-ranked passes (no radius cap) — first: general, second: targets local ethnic spots
-  DIST_KEYWORDS.forEach(kw=>{
-    placesService.nearbySearch(
-      {location:userLocation,rankBy:google.maps.places.RankBy.DISTANCE,keyword:kw},
-      function handleDistPage(results,status,pagination){
-        if(status===google.maps.places.PlacesServiceStatus.OK){
-          results.forEach(r=>{if(!seen.has(r.place_id)){seen.add(r.place_id);restaurants.push(processPlace(r));}});
-          applyFilters();
-          if(pagination&&pagination.hasNextPage&&restaurants.length<80){setTimeout(()=>pagination.nextPage(),1000);}
-          else onPassDone();
-        } else onPassDone();
-      }
-    );
+  input.addEventListener('input',()=>{
+    clearTimeout(debounceTimer);
+    const q=input.value.trim();
+    if(q.length<3){hideSuggestions();return;}
+    debounceTimer=setTimeout(()=>{
+      fetch('https://nominatim.openstreetmap.org/search?format=json&limit=6&q='+encodeURIComponent(q),
+        {headers:{'Accept-Language':'en','User-Agent':'RadiusApp/1.0'}})
+        .then(r=>r.json()).then(data=>{currentSuggestions=data;showSuggestions(data);}).catch(()=>{});
+    },300);
   });
-
-  // Type-based searches up to 5km for broader discovery
-  FOOD_TYPES.forEach(type=>{
-    function handlePage(results,status,pagination){
-      if(status===google.maps.places.PlacesServiceStatus.OK){
-        results.forEach(r=>{if(!seen.has(r.place_id)){seen.add(r.place_id);restaurants.push(processPlace(r));}});
-        applyFilters();
-        if(pagination&&pagination.hasNextPage&&restaurants.length<120){setTimeout(()=>pagination.nextPage(),1200);}
-        else onPassDone();
-      } else onPassDone();
+  input.addEventListener('keydown',e=>{
+    if(e.key==='Escape')hideSuggestions();
+    if(e.key==='Enter'&&currentSuggestions.length){
+      const item=currentSuggestions[0];
+      input.value=item.display_name;hideSuggestions();
+      userLocation={lat:parseFloat(item.lat),lng:parseFloat(item.lon)};
+      initMap(userLocation.lat,userLocation.lng);drawCircles(userLocation.lat,userLocation.lng);searchRestaurants();
     }
-    placesService.nearbySearch({location:userLocation,radius:5000,type},handlePage);
   });
+  document.addEventListener('click',e=>{if(!e.target.closest('#loc-input-wrapper'))hideSuggestions();});
+}
+document.addEventListener('DOMContentLoaded',initNominatimSearch);
+if(document.readyState!=='loading')initNominatimSearch();
 
-  // textSearch passes — these find LOCAL named places that nearbySearch misses
-  // (e.g. "Tacos for Life", "Shortwave Coffee", "Seoul Taco")
-  const TEXT_QUERIES=['taco tacos','coffee cafe espresso','korean bbq','sandwich sub deli','burger smash','pizza','indian curry','chinese noodle','thai vietnamese','local restaurant lunch'];
-  // Adjust TOTAL_PASSES now that we know TEXT_QUERIES length
-  // (already set above — we patch via a runtime counter approach)
-  TEXT_QUERIES.forEach(q=>{
-    placesService.textSearch(
-      {query:q,location:new google.maps.LatLng(userLocation.lat,userLocation.lng),radius:3000},
-      function(results,status){
-        if(status===google.maps.places.PlacesServiceStatus.OK){
-          results.forEach(r=>{if(!seen.has(r.place_id)){seen.add(r.place_id);restaurants.push(processPlace(r));}});
-          applyFilters();
-        }
-        onPassDone();
-      }
-    );
+function initMap(lat,lng){
+  if(leafletMap){leafletMap.setView([lat,lng],15);return;}
+  leafletMap=L.map('map',{zoomControl:true,attributionControl:true});
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'© OpenStreetMap'}).addTo(leafletMap);
+  leafletMap.setView([lat,lng],15);
+}
+function drawCircles(lat,lng){
+  leafletCircles.forEach(c=>leafletMap.removeLayer(c));
+  leafletCircles=[];
+  RING_DEFS.forEach(r=>{
+    const meters=r.mins*WALK_SPEED;
+    const c=L.circle([lat,lng],{radius:meters,color:r.color,fillColor:r.color,fillOpacity:r.opacity,opacity:r.strokeOpacity,weight:1.5}).addTo(leafletMap);
+    leafletCircles.push(c);
   });
+  leafletMap.setView([lat,lng],15);
 }
-function processPlace(place){
-  const visited=JSON.parse(localStorage.getItem(visitedKey())||'{}');
-  const distM=google.maps.geometry.spherical.computeDistanceBetween(new google.maps.LatLng(userLocation.lat,userLocation.lng),place.geometry.location);
-  const walkMins=Math.round(distM/WALK_SPEED);
-  return{id:place.place_id,name:place.name,rating:place.rating||0,userRatingsTotal:place.user_ratings_total||0,types:place.types||[],vicinity:place.vicinity||'',location:{lat:place.geometry.location.lat(),lng:place.geometry.location.lng()},photo:place.photos?place.photos[0].getUrl({maxWidth:600}):null,openNow:place.opening_hours?place.opening_hours.open_now:null,distM:Math.round(distM),walkMins,inRadius:walkMins<=radiusMin,tried:!!visited[place.place_id],details:null};
+function searchRestaurants(){
+  if(!userLocation)return;
+  const {lat,lng}=userLocation;
+  const radius=radiusMin*WALK_SPEED;
+  const types=['restaurant','cafe','bar','fast_food','food_court','pub','ice_cream','bakery'];
+  const q='[out:json][timeout:25];('+types.map(t=>'node["amenity"="'+t+'"](around:'+radius+','+lat+','+lng+');way["amenity"="'+t+'"](around:'+radius+','+lat+','+lng+');').join('')+');out center;';
+  showSpinner();
+  fetch('https://overpass-api.de/api/interpreter',{method:'POST',body:'data='+encodeURIComponent(q)})
+    .then(r=>r.json())
+    .then(data=>{
+      restaurants=data.elements.map(el=>{
+        const tags=el.tags||{};
+        const eLat=el.lat||el.center&&el.center.lat;
+        const eLng=el.lon||el.center&&el.center.lon;
+        if(!eLat||!eLng||!tags.name)return null;
+        const dist=haversineMeters(userLocation.lat,userLocation.lng,eLat,eLng);
+        return{id:String(el.id),name:tags.name,lat:eLat,lng:eLng,
+          address:[tags['addr:housenumber'],tags['addr:street']].filter(Boolean).join(' ')||'',
+          cuisine:tags.cuisine||tags.amenity||'',types:[tags.amenity].filter(Boolean),
+          phone:tags.phone||'',website:tags.website||'',opening_hours:tags.opening_hours||'',
+          delivery:tags.delivery==='yes',takeaway:tags.takeaway!=='no',dine_in:tags.dine_in!=='no',
+          distance:dist,walkMins:Math.round(dist/WALK_SPEED),score:0,details:null,photos:[],rating:null,priceLevel:null,reviews:[]};
+      }).filter(Boolean);
+      applyFilters();renderMarkers();hideSpinner();showScreen('list');
+    })
+    .catch(e=>{hideSpinner();alert('Search failed: '+e.message);});
 }
-
-/* ═══ FILTERS ═══ */
-// Extended cuisine map — matches BOTH Google types AND restaurant name keywords
-const CUISINE_MAP={
-  Indian:    'indian|tikka|curry|biryani|masala|tandoor|dal|naan|chai|punjabi|mughal',
-  Japanese:  'japanese|sushi|ramen|udon|teriyaki|bento|sake|miso|yakitori|tonkatsu|izakaya',
-  Italian:   'italian|pizza|pasta|risotto|lasagna|trattoria|osteria|gelato|calzone|penne',
-  Chinese:   'chinese|dim.sum|wonton|dumpling|panda|szechuan|cantonese|mongolian|fried.rice|noodle',
-  Mexican:   'mexican|taco|burrito|quesadilla|enchilada|salsa|guacamole|nacho|tamale|fajita|carnitas|chipotle',
-  American:  'american|burger|bbq|grill|diner|wings|steak|ribeye|smash|shake.shack|wendy|mcdonald|five.guys|whataburger',
-  Thai:      'thai|pad.thai|satay|green.curry|tom.yum|massaman',
-  Cafe:      'cafe|coffee|espresso|latte|starbucks|brew|roast|biscuit|brunch',
-  Bakery:    'bakery|pastry|bread|croissant|muffin|donut|bagel|pretzel|boulangerie',
-  Bar:       'bar|pub|tavern|brewery|taproom|ale|craft.beer|gastropub',
-  Salad:     'salad|healthy|greens|bowl|fresh|poke|acai|smoothie',
-  Pizza:     'pizza|pizzeria|pie|flatbread|calzone',
-  Burger:    'burger|hamburger|smash|slider|patty',
-  Sushi:     'sushi|roll|sashimi|nigiri|maki|temaki|omakase',
-  Sandwich:  'sandwich|sub|deli|hoagie|wrap|panini|jersey.mike|subway|grinder',
-  Korean:    'korean|seoul|kimchi|bibimbap|bulgogi|galbi|kbbq|k-bbq|tofu',
-};
+function processPlace(r){
+  if(!r)return;
+  const dist=haversineMeters(userLocation.lat,userLocation.lng,r.lat,r.lng);
+  r.distance=dist; r.walkMins=Math.round(dist/WALK_SPEED);
+  const existing=restaurants.find(x=>x.id===r.id);
+  if(existing){Object.assign(existing,r);}else{restaurants.push(r);}
+  applyFilters();renderMarkers();
+}
 function matchesCuisine(r,cuisine){
   if(cuisine==='All')return true;
   const hay=(r.name+' '+r.types.join(' ')+' '+(r.vicinity||'')).toLowerCase().replace(/[^a-z0-9 ]/g,' ');
@@ -1380,39 +1346,40 @@ function filterByName(q){
     if(visible)anyVisible=true;
   });
   // Step 2: if nothing visible and user typed 3+ chars, do a live Google textSearch
-  if(!anyVisible&&query.length>=3&&placesService&&userLocation){
+  if(!anyVisible&&query.length>=3&&userLocation){
     if(_searchTimer)clearTimeout(_searchTimer);
     _searchTimer=setTimeout(()=>liveTextSearch(query),600);
   }
 }
 function liveTextSearch(q){
-  document.getElementById('list-count').textContent='Searching Google for "'+q+'"…';
-  const seen=new Set(restaurants.map(r=>r.id));
-  placesService.textSearch(
-    {query:q,location:new google.maps.LatLng(userLocation.lat,userLocation.lng),radius:5000},
-    function(results,status){
-      if(status===google.maps.places.PlacesServiceStatus.OK&&results.length){
-        let added=0;
-        results.forEach(r=>{
-          if(!seen.has(r.place_id)){
-            seen.add(r.place_id);
-            restaurants.push(processPlace(r));
-            added++;
-          }
-        });
-        if(added>0){applyFilters();}
-        // Re-run the name filter now that list is updated
-        document.querySelectorAll('.rest-card').forEach((row,i)=>{
-          const name=(filteredRestaurants[i]?.name||'').toLowerCase();
-          const addr=(filteredRestaurants[i]?.vicinity||'').toLowerCase();
-          row.style.display=(name.includes(q)||addr.includes(q))?'':'none';
-        });
-        document.getElementById('list-count').textContent=filteredRestaurants.length+' places found';
-      }else{
-        document.getElementById('list-count').textContent='No results for "'+q+'"';
-      }
-    }
-  );
+  if(!userLocation)return;
+  document.getElementById('list-count').textContent='Searching for "'+q+'"...';
+  const {lat,lng}=userLocation;
+  const radius=radiusMin*WALK_SPEED;
+  const esc=q.replace(/"/g,'\\"');
+  const query='[out:json][timeout:15];(node["name"~"'+esc+'",i](around:'+radius+','+lat+','+lng+');way["name"~"'+esc+'",i](around:'+radius+','+lat+','+lng+'););out center;';
+  fetch('https://overpass-api.de/api/interpreter',{method:'POST',body:'data='+encodeURIComponent(query)})
+    .then(r=>r.json())
+    .then(data=>{
+      const seen=new Set(restaurants.map(r=>r.id));
+      (data.elements||[]).forEach(el=>{
+        const tags=el.tags||{};
+        if(!tags.name)return;
+        const eLat=el.lat||el.center&&el.center.lat;
+        const eLng=el.lon||el.center&&el.center.lon;
+        if(!eLat||!eLng||seen.has(String(el.id)))return;
+        const dist=haversineMeters(userLocation.lat,userLocation.lng,eLat,eLng);
+        restaurants.push({id:String(el.id),name:tags.name,lat:eLat,lng:eLng,
+          address:[tags['addr:housenumber'],tags['addr:street']].filter(Boolean).join(' ')||'',
+          cuisine:tags.cuisine||tags.amenity||'',types:[tags.amenity].filter(Boolean),
+          phone:tags.phone||'',website:tags.website||'',opening_hours:tags.opening_hours||'',
+          delivery:tags.delivery==='yes',takeaway:tags.takeaway!=='no',dine_in:tags.dine_in!=='no',
+          distance:dist,walkMins:Math.round(dist/WALK_SPEED),score:0,details:null,photos:[],rating:null,priceLevel:null,reviews:[]});
+        seen.add(String(el.id));
+      });
+      applyFilters();renderMarkers();
+    })
+    .catch(()=>{});
 }
 function toggleSort(){
   sortByRating=!sortByRating;
@@ -1465,43 +1432,34 @@ function renderList(){
 }
 
 /* ═══ MAP MARKERS ═══ */
-function makePinIcon(color){
-  const svg=`<svg xmlns="http://www.w3.org/2000/svg" width="28" height="36" viewBox="0 0 28 36"><filter id="s"><feDropShadow dx="0" dy="2" stdDeviation="1.5" flood-opacity="0.3"/></filter><path d="M14 0C8.5 0 4 4.5 4 10c0 7.5 10 26 10 26S24 17.5 24 10C24 4.5 19.5 0 14 0z" fill="${color}" filter="url(#s)"/><circle cx="14" cy="10" r="4.5" fill="white" opacity="0.9"/></svg>`;
-  return{url:'data:image/svg+xml;charset=UTF-8,'+encodeURIComponent(svg),scaledSize:new google.maps.Size(28,36),anchor:new google.maps.Point(14,36)};
+function makePinIcon(color,emoji){
+  return L.divIcon({className:'',
+    html:'<div style="width:32px;height:32px;border-radius:50% 50% 50% 0;background:'+color+';transform:rotate(-45deg);display:flex;align-items:center;justify-content:center;border:2px solid rgba(0,0,0,0.3);box-shadow:0 2px 4px rgba(0,0,0,0.3);"><span style="transform:rotate(45deg);font-size:14px;">'+emoji+'</span></div>',
+    iconSize:[32,32],iconAnchor:[16,32],popupAnchor:[0,-32]});
 }
 function renderMarkers(){
-  markers.forEach(m=>m.setMap(null));markers=[];
-  filteredRestaurants.forEach((r,i)=>{
-    const color=r.tried?'#D97706':r.inRadius?'#1E8A4C':'#2B6CB0';
-    const mk=new google.maps.Marker({position:r.location,map,icon:makePinIcon(color),title:r.name,zIndex:r.inRadius?10:5});
-    mk.addListener('click',()=>selectRestaurant(i));
-    mk.addListener('mouseover',()=>{
-      const photoHtml=r.photo?`<img src="${r.photo}" style="width:100%;height:68px;object-fit:cover;border-radius:8px;margin-bottom:8px;" alt=""/>`:'';
-      const walkStr=r.inRadius?`<span style="color:#1E8A4C;font-weight:700">🚶 ${r.walkMins} min</span>`:`<span style="color:#2B6CB0;font-weight:700">🛵 ${r.walkMins} min</span>`;
-      const stars=r.rating?`<span style="color:#F5A623;font-weight:700">⭐ ${r.rating.toFixed(1)}</span>`:'';
-      hoverWindow.setContent(`<div style="background:#fff;border-radius:12px;padding:10px;min-width:160px;max-width:195px;font-family:Inter,system-ui,sans-serif;box-shadow:none;">${photoHtml}<div style="font-size:13px;font-weight:700;color:#1A1208;margin-bottom:3px;">${r.name}</div><div style="font-size:11px;color:#8A7A6A;margin-bottom:5px;">${formatTypes(r.types)}</div><div style="display:flex;gap:8px;font-size:11px;">${stars}${walkStr}</div></div>`);
-      hoverWindow.open(map,mk);
-    });
-    mk.addListener('mouseout',()=>hoverWindow.close());
-    markers.push(mk);
+  if(!leafletMap)return;
+  leafletMarkers.forEach(m=>leafletMap.removeLayer(m));
+  leafletMarkers=[];
+  filtered.forEach((r,i)=>{
+    const ring=RING_DEFS.find(rd=>r.walkMins<=rd.mins)||RING_DEFS[RING_DEFS.length-1];
+    const color=ring?ring.color:'#888';
+    const icon=makePinIcon(color,getEmoji(r));
+    const marker=L.marker([r.lat,r.lng],{icon}).addTo(leafletMap);
+    marker.on('click',()=>selectRestaurant(i));
+    if(r.name){marker.bindTooltip(r.name,{permanent:false,direction:'top'});}
+    leafletMarkers.push(marker);
   });
 }
-
-/* ═══ SELECT + DETAIL ═══ */
 function selectRestaurant(idx){
   const r=filteredRestaurants[idx];selectedId=r.id;
-  renderList();map.panTo(r.location);
+  renderList();leafletMap.panTo(r.location);
   document.getElementById('detail-top-name').textContent=r.name;
   document.getElementById('detail-modal').classList.add('open');
   renderDetailContent(r);fetchDetails(r);
   fsLoadPlaceData(r.id).then(()=>{if(selectedId===r.id)renderDetailContent(r);});
 }
-function fetchDetails(r){
-  if(!placesService)return;
-  placesService.getDetails({placeId:r.id,fields:['opening_hours','reviews','photos','website','delivery','dine_in','takeout']},(place,status)=>{
-    if(status===google.maps.places.PlacesServiceStatus.OK){r.details=place;if(selectedId===r.id)renderDetailContent(r);}
-  });
-}
+function fetchDetails(r,cb){if(cb)cb(r);}
 function closeDetail(){document.getElementById('detail-modal').classList.remove('open');selectedId=null;renderList();}
 
 function renderDetailContent(r){
@@ -1812,6 +1770,7 @@ window.addEventListener('load',async()=>{
 </script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script><script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
-<script src="https://maps.googleapis.com/maps/api/js?key=__GOOGLE_MAPS_API_KEY__&libraries=places,geometry&callback=initMapsCallback" async defer></script>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 </body>
   </html>
