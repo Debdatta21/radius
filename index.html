@@ -663,6 +663,7 @@ gmp-place-autocomplete::part(input):focus{border-color:var(--accent);}
             <div class="dd-email" id="dd-email">—</div>
           </div>
           <div id="dd-team-members" style="padding:8px 0;border-top:1px solid var(--border);border-bottom:1px solid var(--border);margin:4px 0;display:none;"></div>
+          <div id="dd-team-code-row" style="display:none;padding:6px 12px 2px;"></div>
           <button onclick="goLocation()">📍 Change Location</button>
           <button onclick="doChangePassword()" style="width:100%;text-align:left;padding:8px 12px;background:none;border:none;cursor:pointer;font-size:13px;color:var(--text);">🔑 Change Password</button><button onclick="doDeleteAccount()" class="danger" style="width:100%;text-align:left;padding:8px 12px;background:none;border:none;cursor:pointer;font-size:13px;border-top:1px solid var(--border);">🗑 Delete Account</button><button onclick="doLogout()" class="danger">🚪 Sign Out</button>
         </div>
@@ -1063,7 +1064,7 @@ function finishSignUp(){
   } else goToLocation();
 }
 function doDemo(){currentUser={name:'Demo User',email:'demo@radius.app',initials:'DU',demo:true,role:'manager',teamId:'demo_team',teamName:'Demo Team',teamCode:'DEMO01'};saveSession(currentUser,false);goToLocation();}
-function doLogout(){if(auth)auth.signOut();currentUser=null;userLocation=null;restaurants=[];filteredRestaurants=[];markers=[];circles=[];map=null;showScreen('auth');closeDropdown();}function ntCreateTeam(){const name=document.getElementById('nt-team-name').value.trim();const errEl=document.getElementById('nt-error');if(!name){errEl.textContent='Please enter a team name.';errEl.style.display='block';return;}errEl.style.display='none';const code=genCode();const teamId='t_'+Date.now();if(db){db.collection('teams').doc(teamId).set({name,code,members:[{email:currentUser.email,name:currentUser.name,role:'manager'}]}).then(()=>db.collection('users').doc(currentUser.uid).update({teamId,teamName:name,teamCode:code,role:'manager'})).then(()=>{currentUser.teamId=teamId;currentUser.teamName=name;currentUser.teamCode=code;currentUser.role='manager';goToLocation();}).catch(e=>{errEl.textContent=e.message;errEl.style.display='block';});}}function ntJoinTeam(){const code=document.getElementById('nt-join-code').value.trim().toUpperCase();const errEl=document.getElementById('nt-error');if(!code){errEl.textContent='Please enter a team code.';errEl.style.display='block';return;}errEl.style.display='none';if(db){db.collection('teams').where('code','==',code).get().then(snap=>{if(snap.empty){errEl.textContent='Team not found. Check the code and try again.';errEl.style.display='block';return;}const teamDoc=snap.docs[0];const teamId=teamDoc.id;const teamData=teamDoc.data();const members=teamData.members||[];members.push({email:currentUser.email,name:currentUser.name,role:'editor'});return teamDoc.ref.update({members}).then(()=>db.collection('users').doc(currentUser.uid).update({teamId,teamName:teamData.name,teamCode:code,role:'editor'})).then(()=>{currentUser.teamId=teamId;currentUser.teamName=teamData.name;currentUser.teamCode=code;currentUser.role='editor';goToLocation();});}).catch(e=>{errEl.textContent=e.message;errEl.style.display='block';});}}function doChangePassword(){if(!auth||!currentUser?.email)return;auth.sendPasswordResetEmail(currentUser.email).then(()=>alert('Password reset email sent to '+currentUser.email)).catch(e=>alert(e.message));}function doDeleteAccount(){if(!confirm('Delete your account permanently? This cannot be undone.'))return;const user=auth?.currentUser;if(!user)return;(db?db.collection('users').doc(user.uid).delete():Promise.resolve()).then(()=>user.delete()).then(()=>{currentUser=null;showScreen('auth');}).catch(e=>alert('To delete your account, please sign out and sign back in first. ' + e.message));}
+function doLogout(){if(auth)auth.signOut();sessionStorage.removeItem('radius_loc');currentUser=null;userLocation=null;restaurants=[];filteredRestaurants=[];markers=[];circles=[];map=null;showScreen('auth');closeDropdown();}function ntCreateTeam(){const name=document.getElementById('nt-team-name').value.trim();const errEl=document.getElementById('nt-error');if(!name){errEl.textContent='Please enter a team name.';errEl.style.display='block';return;}errEl.style.display='none';const code=genCode();const teamId='t_'+Date.now();if(db){db.collection('teams').doc(teamId).set({name,code,members:[{email:currentUser.email,name:currentUser.name,role:'manager'}]}).then(()=>db.collection('users').doc(currentUser.uid).update({teamId,teamName:name,teamCode:code,role:'manager'})).then(()=>{currentUser.teamId=teamId;currentUser.teamName=name;currentUser.teamCode=code;currentUser.role='manager';goToLocation();}).catch(e=>{errEl.textContent=e.message;errEl.style.display='block';});}}function ntJoinTeam(){const code=document.getElementById('nt-join-code').value.trim().toUpperCase();const errEl=document.getElementById('nt-error');if(!code){errEl.textContent='Please enter a team code.';errEl.style.display='block';return;}errEl.style.display='none';if(db){db.collection('teams').where('code','==',code).get().then(snap=>{if(snap.empty){errEl.textContent='Team not found. Check the code and try again.';errEl.style.display='block';return;}const teamDoc=snap.docs[0];const teamId=teamDoc.id;const teamData=teamDoc.data();const members=teamData.members||[];members.push({email:currentUser.email,name:currentUser.name,role:'editor'});return teamDoc.ref.update({members}).then(()=>db.collection('users').doc(currentUser.uid).update({teamId,teamName:teamData.name,teamCode:code,role:'editor'})).then(()=>{currentUser.teamId=teamId;currentUser.teamName=teamData.name;currentUser.teamCode=code;currentUser.role='editor';goToLocation();});}).catch(e=>{errEl.textContent=e.message;errEl.style.display='block';});}}function doChangePassword(){if(!auth||!currentUser?.email)return;auth.sendPasswordResetEmail(currentUser.email).then(()=>alert('Password reset email sent to '+currentUser.email)).catch(e=>alert(e.message));}function doDeleteAccount(){if(!confirm('Delete your account permanently? This cannot be undone.'))return;const user=auth?.currentUser;if(!user)return;(db?db.collection('users').doc(user.uid).delete():Promise.resolve()).then(()=>user.delete()).then(()=>{currentUser=null;showScreen('auth');}).catch(e=>alert('To delete your account, please sign out and sign back in first. ' + e.message));}
 function generateInviteLink(){if(!currentUser?.teamCode)return;const link=window.location.origin+'/?invite='+currentUser.teamCode;navigator.clipboard.writeText(link).then(()=>alert('✓ Invite link copied!\n' + link))
 .catch(()=>prompt('Copy this invite link:',link));}function removeMember(email){if(!currentUser?.teamId||currentUser.role!=='manager')return;if(!confirm('Remove '+email+' from the team?'))return;db.collection('teams').doc(currentUser.teamId).get().then(doc=>{if(!doc.exists)return;const members=(doc.data().members||[]).filter(m=>m.email!==email);return doc.ref.update({members}).then(()=>db.collection('users').where('email','==',email).get()).then(snap=>{snap.forEach(u=>u.ref.update({teamId:null,teamName:'-',teamCode:'',role:null}));});}).then(()=>{alert(email+' removed.');renderTeamPanel&&renderTeamPanel();}).catch(e=>alert(e.message));}
 function openForgot(){document.getElementById('modal-forgot').classList.add('open');document.getElementById('reset-result').style.display='none';document.getElementById('forgot-email').value=document.getElementById('si-email').value||'';}
@@ -1086,6 +1087,7 @@ function goToApp(){
   if(!userLocation){const _a=window._pacEl?window._pacEl.value:(document.getElementById('loc-input')||{}).value;if(_a&&_a.trim()){showToast('⏳ Finding location...');new google.maps.Geocoder().geocode({address:_a},(r,s)=>{if(s==='OK'&&r[0]){userLocation={lat:r[0].geometry.location.lat(),lng:r[0].geometry.location.lng()};goToApp();}else{showToast('Please set a location first');}});return;}showToast('Please set a location first');return;}
   radiusMin=orderMode==='walk'?parseInt(document.getElementById('loc-radius').value):15;
   document.getElementById('radius-chip-val').textContent=orderMode==='order'?'Delivery':radiusMin+'m';
+  sessionStorage.setItem('radius_loc',JSON.stringify({loc:userLocation,mode:orderMode}));
   showScreen('app');updateNav();initMap();
   fsLoadTeamData().then(()=>{updateCartBadge();updateVoteBtn();});
   setupRealTime();
@@ -1133,6 +1135,12 @@ function updateNav(){
           </div>`;
         }).join('');
     }else{ddm.style.display='none';}
+    // Show team code copy button for managers
+    const codeRow=document.getElementById('dd-team-code-row');
+    if(currentUser.role==='manager'&&currentUser.teamCode&&codeRow){
+      codeRow.style.display='';
+      codeRow.innerHTML=`<div style="font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;">Invite Code</div><div style="display:flex;align-items:center;gap:6px;"><span style="font-size:15px;font-weight:800;letter-spacing:4px;color:var(--accent);background:#FFF3F0;border:1.5px dashed #FFCCC7;border-radius:8px;padding:4px 10px;">${currentUser.teamCode}</span><button onclick="navigator.clipboard.writeText('${currentUser.teamCode}').then(()=>showToast('Team code copied!'));event.stopPropagation();" style="padding:4px 10px;background:var(--accent);color:#fff;border:none;border-radius:8px;font-size:11px;font-weight:600;cursor:pointer;width:auto;">Copy</button></div>`;
+    } else if(codeRow){codeRow.style.display='none';}
   }
   const rb=document.getElementById('nav-role-badge');
   if(currentUser.role){
@@ -1486,6 +1494,7 @@ function selectRestaurant(idx){
   document.getElementById('detail-top-name').textContent=r.name;
   document.getElementById('detail-modal').classList.add('open');
   renderDetailContent(r);fetchDetails(r);
+  fsLoadPlaceData(r.id).then(()=>{if(selectedId===r.id)renderDetailContent(r);});
 }
 function fetchDetails(r){
   if(!placesService)return;
@@ -1507,6 +1516,7 @@ function renderDetailContent(r){
   const walkCard=r.inRadius?`<div class="info-card walk"><div class="ic-icon">🚶</div><div class="ic-val">${r.walkMins} min</div><div class="ic-label">Walk time</div></div>`:'';
   const orderCard=`<div class="info-card delivery"><div class="ic-icon">🛵</div><div class="ic-val">${r.inRadius?'Also':''+r.walkMins+' min'}</div><div class="ic-label">${r.inRadius?'Order too':'Delivery only'}</div></div>`;
   const enc=encodeURIComponent(r.name);
+  const encAddr=encodeURIComponent((r.name+(r.address?', '+r.address:'')).slice(0,80));
   const starHtml=[1,2,3,4,5].map(n=>`<span class="star${myReview.stars>=n?' filled':''}" onclick="setMyStar('${r.id}',${n})">★</span>`).join('');
   let revHtml='';
   if(r.details?.reviews?.length)revHtml='<div class="dsec" style="margin-top:16px">Google Reviews</div><div class="g-reviews">'+r.details.reviews.slice(0,3).map(rv=>`<div class="g-review"><div class="gr-author">${rv.author_name}</div><div class="gr-stars">${'★'.repeat(rv.rating)}${'☆'.repeat(5-rv.rating)}</div><div class="gr-text">${(rv.text||'').slice(0,160)}</div></div>`).join('')+'</div>';
@@ -1532,9 +1542,9 @@ function renderDetailContent(r){
       <div class="info-cards">${walkCard}${orderCard}</div>
       <div class="dsec">Order Delivery</div>
       <div class="delivery-links">
-        <a class="delivery-link" href="https://www.doordash.com/search/store/${enc}/" target="_blank"><span class="dl-logo">🔴</span>DoorDash</a>
-        <a class="delivery-link" href="https://www.ubereats.com/search?q=${enc}" target="_blank"><span class="dl-logo">⚫</span>Uber Eats</a>
-        <a class="delivery-link" href="https://www.grubhub.com/search?queryText=${enc}" target="_blank"><span class="dl-logo">🟠</span>Grubhub</a>
+        <a class="delivery-link" href="https://www.doordash.com/search?q=${encAddr}" target="_blank"><span class="dl-logo">🔴</span>DoorDash</a>
+        <a class="delivery-link" href="https://www.ubereats.com/search?q=${encAddr}" target="_blank"><span class="dl-logo">⚫</span>Uber Eats</a>
+        <a class="delivery-link" href="https://www.grubhub.com/search?queryText=${encAddr}" target="_blank"><span class="dl-logo">🟠</span>Grubhub</a>
       </div>
       <div class="dsec">My Rating</div>
       <div class="star-row" id="star-row-${r.id}">${starHtml}</div>
@@ -1765,7 +1775,13 @@ window.addEventListener('load',async()=>{
   initMobileNav();
   window.addEventListener('resize',initMobileNav);
   await fsLoad();
-  const inv=new URLSearchParams(window.location.search).get('invite');if(inv){localStorage.setItem('pendingInvite',inv.toUpperCase());setTimeout(()=>{const el=document.getElementById('su-teamcode');if(el){el.value=inv.toUpperCase();}const tcMode=document.getElementById('tc-join');if(tcMode)tcMode.click();},800);}const sess=loadSession();if(sess){currentUser=sess;goToLocation();}
+  const inv=new URLSearchParams(window.location.search).get('invite');if(inv){localStorage.setItem('pendingInvite',inv.toUpperCase());setTimeout(()=>{const el=document.getElementById('su-teamcode');if(el){el.value=inv.toUpperCase();}const tcMode=document.getElementById('tc-join');if(tcMode)tcMode.click();},800);}const sess=loadSession();
+  if(sess){
+    currentUser=sess;
+    const savedLoc=JSON.parse(sessionStorage.getItem('radius_loc')||'null');
+    if(savedLoc?.loc){userLocation=savedLoc.loc;orderMode=savedLoc.mode||'walk';goToApp();}
+    else goToLocation();
+  }
 });
 </script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
