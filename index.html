@@ -1475,7 +1475,7 @@ function renderDetailContent(r){
   const orderCard=`<div class="info-card delivery"><div class="ic-icon">🛵</div><div class="ic-val">${r.inRadius?'Also':''+r.walkMins+' min'}</div><div class="ic-label">${r.inRadius?'Order too':'Delivery only'}</div></div>`;
   const enc=encodeURIComponent(r.name);
   const encAddr=encodeURIComponent((r.name+(r.address?', '+r.address:'')).slice(0,80));
-  cons  const DELIVERY_FOOD_TYPES=['restaurant','cafe','bakery','bar','meal_takeaway','meal_delivery','food'];
+  const DELIVERY_FOOD_TYPES=['restaurant','cafe','bakery','bar','meal_takeaway','meal_delivery','food'];
   const hasDeliveryType=r.types?.some(t=>DELIVERY_FOOD_TYPES.includes(t));
   const deliveryVal=r.details?.delivery;
   const showDelivery=hasDeliveryType&&deliveryVal!==false;
