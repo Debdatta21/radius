@@ -1277,7 +1277,7 @@ function searchRestaurants(){
   fetch('https://overpass-api.de/api/interpreter',{method:'POST',body:'data='+encodeURIComponent(q)})
     .then(r=>r.json())
     .then(data=>{
-      restaurants=data.elements.map(el=>{
+      restaurants=data.elements.slice(0,60).map(el=>{
         const tags=el.tags||{};
         const eLat=el.lat||el.center&&el.center.lat;
         const eLng=el.lon||el.center&&el.center.lon;
