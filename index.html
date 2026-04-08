@@ -1269,30 +1269,28 @@ function drawCircles(lat,lng){
 }
 function searchRestaurants(){
   if(!userLocation)return;
-  const {lat,lng}=userLocation;
-  const radius=radiusMin*WALK_SPEED;
-  const types=['restaurant','cafe','bar','fast_food','food_court','pub','ice_cream','bakery'];
-  const q='[out:json][timeout:25];('+types.map(t=>'node["amenity"="'+t+'"](around:'+radius+','+lat+','+lng+');way["amenity"="'+t+'"](around:'+radius+','+lat+','+lng+');').join('')+');out center;';
-  
-  fetch('https://overpass-api.de/api/interpreter',{method:'POST',body:'data='+encodeURIComponent(q)})
-    .then(r=>r.json())
-    .then(data=>{
-      restaurants=data.elements.slice(0,60).map(el=>{
-        const tags=el.tags||{};
-        const eLat=el.lat||el.center&&el.center.lat;
-        const eLng=el.lon||el.center&&el.center.lon;
-        if(!eLat||!eLng||!tags.name)return null;
-        const dist=haversineMeters(userLocation.lat,userLocation.lng,eLat,eLng);
-        return{id:String(el.id),name:tags.name,lat:eLat,lng:eLng,
-          address:[tags['addr:housenumber'],tags['addr:street']].filter(Boolean).join(' ')||'',
-          cuisine:tags.cuisine||tags.amenity||'',types:[tags.amenity].filter(Boolean),
-          phone:tags.phone||'',website:tags.website||'',opening_hours:tags.opening_hours||'',
-          delivery:tags.delivery==='yes',takeaway:tags.takeaway!=='no',dine_in:tags.dine_in!=='no',
-          distance:dist,walkMins:Math.round(dist/WALK_SPEED),score:0,details:null,photos:[],rating:null,priceLevel:null,reviews:[]};
-      }).filter(Boolean);
-      applyFilters();renderMarkers();showScreen('app');
-    })
-    .catch(e=>{alert('Search failed: '+e.message);});
+  const lat=userLocation.lat,lng=userLocation.lng;
+  const radius=8000;
+  const q=`[out:json][timeout:25];(node["amenity"~"restaurant|cafe|fast_food|bar|pub|food_court|ice_cream"](around:${radius},${lat},${lng});way["amenity"~"restaurant|cafe|fast_food|bar|pub|food_court|ice_cream"](around:${radius},${lat},${lng}););out center;`;
+  const endpoints=['https://overpass-api.de/api/interpreter','https://overpass.kumi.systems/api/interpreter'];
+  const tryEndpoint=i=>{
+    if(i>=endpoints.length){showToast('\u26a0 Could not load places. Check connection.');renderMarkers();return;}
+    fetch(endpoints[i],{method:'POST',body:'data='+encodeURIComponent(q)})
+      .then(r=>{if(!r.ok)throw new Error('HTTP '+r.status);return r.json();})
+      .then(data=>{
+        restaurants=data.elements.slice(0,60).map(el=>{
+          const tags=el.tags||{};
+          const eLat=el.lat||el.center&&el.center.lat;
+          const eLng=el.lon||el.center&&el.center.lon;
+          if(!eLat||!eLng)return null;
+          const dist=haversineMeters(lat,lng,eLat,eLng);
+          return {id:el.id,name:tags.name||'Unnamed',cuisine:tags.cuisine||'',amenity:tags.amenity||'restaurant',lat:eLat,lng:eLng,dist,tags};
+        }).filter(Boolean);
+        renderList();renderMarkers();showScreen('app');
+      })
+      .catch(()=>tryEndpoint(i+1));
+  };
+  tryEndpoint(0);
 }
 function processPlace(r){
   if(!r)return;
