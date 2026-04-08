@@ -854,6 +854,7 @@ let currentUser=null,userLocation=null,radiusMin=10,activeCuisine='All',orderMod
 let restaurants=[],filteredRestaurants=[],selectedId=null,sortByRating=false;
 let leafletMap=null,leafletMarkers=[],leafletCircles=[],leafletHoverPopup=null;
 let activeQF=new Set();
+let filteredRestaurants=[];
 let currentStep=1,selectedRole='editor',teamMode='create';
 const visitedKey=()=>'rv_'+(currentUser?.email||'demo');
 const reviewsKey=()=>'rr_'+(currentUser?.email||'demo');
@@ -1439,7 +1440,7 @@ function renderMarkers(){
   if(!leafletMap)return;
   leafletMarkers.forEach(m=>leafletMap.removeLayer(m));
   leafletMarkers=[];
-  filtered.forEach((r,i)=>{
+  filteredRestaurants.forEach((r,i)=>{
     const ring=RING_DEFS.find(rd=>r.walkMins<=rd.mins)||RING_DEFS[RING_DEFS.length-1];
     const color=ring?ring.color:'#888';
     const icon=makePinIcon(color,getEmoji(r));
