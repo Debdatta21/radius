@@ -854,7 +854,6 @@ let currentUser=null,userLocation=null,radiusMin=10,activeCuisine='All',orderMod
 let restaurants=[],filteredRestaurants=[],selectedId=null,sortByRating=false;
 let leafletMap=null,leafletMarkers=[],leafletCircles=[],leafletHoverPopup=null;
 let activeQF=new Set();
-let filteredRestaurants=[];
 let currentStep=1,selectedRole='editor',teamMode='create';
 const visitedKey=()=>'rv_'+(currentUser?.email||'demo');
 const reviewsKey=()=>'rr_'+(currentUser?.email||'demo');
