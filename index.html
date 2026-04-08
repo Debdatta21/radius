@@ -1102,7 +1102,7 @@ function goToApp(){
             userLocation={lat:parseFloat(data[0].lat),lng:parseFloat(data[0].lon)};
             initMap(userLocation.lat,userLocation.lng);
             drawCircles(userLocation.lat,userLocation.lng);
-            searchRestaurants();showScreen('map');
+            searchRestaurants();showScreen('app');
           }else{showToast('Location not found. Try again.');}
         })
         .catch(()=>showToast('Could not reach location service.'));
@@ -1111,7 +1111,7 @@ function goToApp(){
   }
   initMap(userLocation.lat,userLocation.lng);
   drawCircles(userLocation.lat,userLocation.lng);
-  searchRestaurants();showScreen('map');
+  searchRestaurants();showScreen('app');
 }
 function useGPS(){
   const btn=document.querySelector('.gps-btn');btn.textContent='⏳';
@@ -1290,7 +1290,7 @@ function searchRestaurants(){
           delivery:tags.delivery==='yes',takeaway:tags.takeaway!=='no',dine_in:tags.dine_in!=='no',
           distance:dist,walkMins:Math.round(dist/WALK_SPEED),score:0,details:null,photos:[],rating:null,priceLevel:null,reviews:[]};
       }).filter(Boolean);
-      applyFilters();renderMarkers();showScreen('list');
+      applyFilters();renderMarkers();showScreen('app');
     })
     .catch(e=>{alert('Search failed: '+e.message);});
 }
