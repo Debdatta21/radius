@@ -1603,11 +1603,14 @@ function renderTeamStats(r){
         <div>${starBar(myTeamRating?.stars||0)}</div>
         <div style="font-size:11px;color:var(--muted)">${myTeamRating?'Your rating: '+myTeamRating.stars+'★':'Tap to rate'}</div>
       </div>
-      ${ratings.length>0?`<div style="margin-top:12px;display:flex;flex-direction:column;gap:6px;">
-        ${ratings.slice(0,5).map(x=>`<div style="display:flex;align-items:center;gap:8px;font-size:12px;">
-          <div style="width:26px;height:26px;border-radius:50%;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0;">${x.initials||x.name[0]}</div>
-          <span style="flex:1;font-weight:500;">${x.name}</span>
-          <span style="color:#F5A623;font-weight:700">${'★'.repeat(x.stars)}${'☆'.repeat(5-x.stars)}</span>
+      ${ratings.length>0?`<div style="margin-top:12px;display:flex;flex-direction:column;gap:8px;">
+        ${ratings.slice(0,5).map(x=>`<div style="font-size:12px;background:#fff;border:1px solid var(--border);border-radius:10px;padding:8px 10px;">
+          <div style="display:flex;align-items:center;gap:8px;">
+            <div style="width:26px;height:26px;border-radius:50%;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0;">${x.initials||x.name[0]}</div>
+            <span style="flex:1;font-weight:500;">${x.name}</span>
+            <span style="color:#F5A623;font-weight:700">${'★'.repeat(x.stars)}${'☆'.repeat(5-x.stars)}</span>
+          </div>
+          ${x.note?`<div style="margin-top:5px;padding-left:34px;color:var(--muted);font-size:11px;font-style:italic;">"${x.note}"</div>`:''}
         </div>`).join('')}
       </div>`:''}
     </div>`;
@@ -1631,8 +1634,23 @@ function setMyStar(pid,n){
 }
 function saveMyReview(pid){
   const reviews=JSON.parse(localStorage.getItem(reviewsKey())||'{}');
-  reviews[pid]=reviews[pid]||{};reviews[pid].text=document.getElementById('review-text-'+pid)?.value||'';
-  localStorage.setItem(reviewsKey(),JSON.stringify(reviews));showToast('Note saved!');
+  reviews[pid]=reviews[pid]||{};
+  reviews[pid].text=document.getElementById('review-text-'+pid)?.value||'';
+  localStorage.setItem(reviewsKey(),JSON.stringify(reviews));
+  const stars=reviews[pid].stars||0;
+  const note=reviews[pid].text;
+  if(currentUser&&!currentUser.demo){
+    const ratings=getTeamRatings(pid);
+    const idx=ratings.findIndex(r=>r.email===currentUser.email);
+    const entry={email:currentUser.email,name:currentUser.name,initials:currentUser.initials||currentUser.name[0],stars,note,date:TODAY()};
+    if(idx>=0)ratings[idx]=entry;else ratings.push(entry);
+    localStorage.setItem(teamRatingKey(pid),JSON.stringify(ratings));
+    if(db&&currentUser?.teamId)
+      db.collection('ratings').doc(currentUser.teamId+'_'+pid).set({list:ratings}).catch(e=>console.warn('save rating',e));
+  }
+  showToast('Note saved!');
+  const r=filteredRestaurants?.find(x=>x.id===pid)||restaurants?.find(x=>x.id===pid);
+  if(r&&selectedId===pid)renderDetailContent(r);
 }
 
 /* ═══ SHARED CART ═══ */
