@@ -1498,7 +1498,7 @@ function selectRestaurant(idx){
 }
 function fetchDetails(r){
   if(!placesService)return;
-  placesService.getDetails({placeId:r.id,fields:['opening_hours','reviews','photos','website']},(place,status)=>{
+  placesService.getDetails({placeId:r.id,fields:['opening_hours','reviews','photos','website','delivery','dine_in','takeout']},(place,status)=>{
     if(status===google.maps.places.PlacesServiceStatus.OK){r.details=place;if(selectedId===r.id)renderDetailContent(r);}
   });
 }
@@ -1517,6 +1517,10 @@ function renderDetailContent(r){
   const orderCard=`<div class="info-card delivery"><div class="ic-icon">🛵</div><div class="ic-val">${r.inRadius?'Also':''+r.walkMins+' min'}</div><div class="ic-label">${r.inRadius?'Order too':'Delivery only'}</div></div>`;
   const enc=encodeURIComponent(r.name);
   const encAddr=encodeURIComponent((r.name+(r.address?', '+r.address:'')).slice(0,80));
+  const hasDeliveryType=r.types?.some(t=>['meal_delivery','meal_takeaway'].includes(t));
+  const deliveryVal=r.details?.delivery;
+  const showDelivery=r.details===undefined||deliveryVal!==false||hasDeliveryType;
+  const deliveryBadge=deliveryVal===true||hasDeliveryType?'<span style="background:#F0FFF4;color:var(--green);font-size:11px;font-weight:600;padding:2px 8px;border-radius:20px;border:1px solid #C6F6D5;">✓ Delivers</span>':deliveryVal===undefined&&r.details!==undefined?'<span style="font-size:11px;color:var(--muted);">Search to confirm</span>':'';
   const starHtml=[1,2,3,4,5].map(n=>`<span class="star${myReview.stars>=n?' filled':''}" onclick="setMyStar('${r.id}',${n})">★</span>`).join('');
   let revHtml='';
   if(r.details?.reviews?.length)revHtml='<div class="dsec" style="margin-top:16px">Google Reviews</div><div class="g-reviews">'+r.details.reviews.slice(0,3).map(rv=>`<div class="g-review"><div class="gr-author">${rv.author_name}</div><div class="gr-stars">${'★'.repeat(rv.rating)}${'☆'.repeat(5-rv.rating)}</div><div class="gr-text">${(rv.text||'').slice(0,160)}</div></div>`).join('')+'</div>';
@@ -1540,12 +1544,13 @@ function renderDetailContent(r){
         <button class="action-btn${isVisited?' visited':''}" onclick="toggleVisited('${r.id}')">${isVisited?'✓ Visited':'+ Visited'}</button>
       </div>
       <div class="info-cards">${walkCard}${orderCard}</div>
-      <div class="dsec">Order Delivery</div>
+      ${showDelivery?`
+      <div class="dsec" style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">Order Delivery ${deliveryBadge}</div>
       <div class="delivery-links">
-        <a class="delivery-link" href="https://www.doordash.com/search?q=${encAddr}" target="_blank"><span class="dl-logo">🔴</span>DoorDash</a>
-        <a class="delivery-link" href="https://www.ubereats.com/search?q=${encAddr}" target="_blank"><span class="dl-logo">⚫</span>Uber Eats</a>
-        <a class="delivery-link" href="https://www.grubhub.com/search?queryText=${encAddr}" target="_blank"><span class="dl-logo">🟠</span>Grubhub</a>
-      </div>
+        <a class="delivery-link" href="https://www.doordash.com/find/?query=${enc}" target="_blank"><span class="dl-logo">🔴</span>DoorDash</a>
+        <a class="delivery-link" href="https://www.ubereats.com/search?q=${enc}" target="_blank"><span class="dl-logo">⚫</span>Uber Eats</a>
+        <a class="delivery-link" href="https://www.grubhub.com/search?queryText=${enc}" target="_blank"><span class="dl-logo">🟠</span>Grubhub</a>
+      </div>`:''}
       <div class="dsec">My Rating</div>
       <div class="star-row" id="star-row-${r.id}">${starHtml}</div>
       <textarea class="review-input" id="review-text-${r.id}" placeholder="Add a note about this place…">${myReview.text}</textarea>
