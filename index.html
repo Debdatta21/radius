@@ -1273,7 +1273,7 @@ function searchRestaurants(){
   const radius=radiusMin*WALK_SPEED;
   const types=['restaurant','cafe','bar','fast_food','food_court','pub','ice_cream','bakery'];
   const q='[out:json][timeout:25];('+types.map(t=>'node["amenity"="'+t+'"](around:'+radius+','+lat+','+lng+');way["amenity"="'+t+'"](around:'+radius+','+lat+','+lng+');').join('')+');out center;';
-  showSpinner();
+  
   fetch('https://overpass-api.de/api/interpreter',{method:'POST',body:'data='+encodeURIComponent(q)})
     .then(r=>r.json())
     .then(data=>{
@@ -1290,9 +1290,9 @@ function searchRestaurants(){
           delivery:tags.delivery==='yes',takeaway:tags.takeaway!=='no',dine_in:tags.dine_in!=='no',
           distance:dist,walkMins:Math.round(dist/WALK_SPEED),score:0,details:null,photos:[],rating:null,priceLevel:null,reviews:[]};
       }).filter(Boolean);
-      applyFilters();renderMarkers();hideSpinner();showScreen('list');
+      applyFilters();renderMarkers();showScreen('list');
     })
-    .catch(e=>{hideSpinner();alert('Search failed: '+e.message);});
+    .catch(e=>{alert('Search failed: '+e.message);});
 }
 function processPlace(r){
   if(!r)return;
