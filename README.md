@@ -1,6 +1,6 @@
 # 🍜 Radius — Office Lunch OS
 
-> **Live Demo:** [debdatta21.github.io/radius](https://debdatta21.github.io/radius)
+> **Live Demo:** [radius-blush.vercel.app](https://radius-blush.vercel.app)
 
 Radius is a team lunch coordination app that helps office teams discover nearby restaurants, vote on where to eat, build a shared cart, and track ordering history — all in one place, with no backend required.
 
@@ -9,27 +9,25 @@ Radius is a team lunch coordination app that helps office teams discover nearby 
 ## Features
 
 **Restaurant Discovery**
-- Automatically detects your location and surfaces nearby restaurants, cafes, and food spots using the Google Maps Places API
-- Finds local hidden gems (not just chains) through multi-pass keyword and cuisine searches
-- Live search fallback — type any restaurant name and it searches Google in real time if it's not already in the list
-- Filter by cuisine type, rating, price range, and distance
+- Automatically detects your location and surfaces nearby restaurants, cafes, and food spots using **OpenStreetMap + Overpass API** — 100% free, no API key needed
+- Finds local gems (not just chains) across 7 place types: restaurants, cafes, fast food, bars, pubs, food courts, and ice cream shops
+- Interactive **Leaflet.js map** with walk-time rings (5 / 10 / 15 min) and colour-coded markers
+- Address autocomplete powered by **Nominatim** (free geocoding)
 
-**Team Voting**
-- Create or join a team with a shared team code
-- Every team member votes thumbs up/down on restaurants each day
-- Running vote tally visible to the whole team in real time
+**Team Sync**
+- Real-time shared voting — everyone on the team sees live vote counts
+- One-click ordering coordination and shared cart
+- Firebase-backed — no server to run, works instantly in any browser
 
-**Shared Cart**
-- Add dishes to a shared daily team cart (Editors and Managers only)
-- Links out to DoorDash, Uber Eats, and Grubhub for easy ordering
-- Cart resets each day automatically
+**Filters & Sorting**
+- Filter by walkable vs. delivery, cuisine type, rating, open now, and "haven't tried yet"
+- Sort by distance or rating
+- Quick-filter chips update the map and list simultaneously
 
-**Team Management**
-- Role-based access: Manager, Editor, Guest
-- See all team members and their roles in the nav dropdown
-- Team stats track total orders placed
-
-**No backend required** — everything runs in the browser using the Google Maps Places API and localStorage.
+**History & Ratings**
+- Team ordering history with date stamps
+- Mark places as tried, leave ratings
+- Persisted per-team in Firebase
 
 ---
 
@@ -37,106 +35,45 @@ Radius is a team lunch coordination app that helps office teams discover nearby 
 
 | Layer | Technology |
 |---|---|
-| Frontend | Vanilla HTML, CSS, JavaScript |
-| Maps & Places | Google Maps JavaScript API + Places API |
-| Storage | Browser localStorage |
-| Hosting | GitHub Pages |
+| Map rendering | [Leaflet.js](https://leafletjs.com) v1.9.4 |
+| Map tiles | [OpenStreetMap](https://www.openstreetmap.org) |
+| Place search | [Overpass API](https://overpass-api.de) (with kumi.systems fallback) |
+| Geocoding | [Nominatim](https://nominatim.org) |
+| Real-time sync | [Firebase Realtime Database](https://firebase.google.com) |
+| Hosting | [Vercel](https://vercel.com) |
+| Frontend | Vanilla HTML/CSS/JS — zero build step |
+
+No Google Maps. No paid APIs. No Node.js. Just open-source data.
 
 ---
 
-## Getting Started
+## Setup
 
-### 1. Clone the repo
-
+### 1. Clone & open
 ```bash
 git clone https://github.com/Debdatta21/radius.git
 cd radius
 ```
 
-### 2. Get a Google Maps API key
-
-1. Go to [console.cloud.google.com](https://console.cloud.google.com)
-2. Create a project and enable **Maps JavaScript API** and **Places API**
-3. Create an API key under **APIs & Services → Credentials**
-4. Restrict the key to your domain under **Application restrictions → Websites**
-
-### 3. Add your API key
-
-Open `index.html` and find this line near the bottom:
-
-```html
-<script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&libraries=places"></script>
+### 2. Configure Firebase
+Copy `.env.example` to `.env` and fill in your Firebase project credentials:
+```
+FIREBASE_API_KEY=...
+FIREBASE_AUTH_DOMAIN=...
+FIREBASE_DATABASE_URL=...
+FIREBASE_PROJECT_ID=...
+FIREBASE_APP_ID=...
 ```
 
-Replace `YOUR_API_KEY` with your actual key.
-
-### 4. Open in browser
-
-Since this is a static app, you can open `index.html` directly in your browser or serve it with any static file server:
-
+Then run `build.sh` to inject the keys:
 ```bash
-npx serve .
+bash build.sh
 ```
 
----
+> **Note:** The map and restaurant discovery work with zero configuration — they use free public APIs (Overpass, Nominatim, OpenStreetMap tiles) that require no key.
 
-## How to Use
-
-### Sign Up / Log In
-- Open the app and create an account with your name and email
-- Create a new team or join an existing one with a team code
-
-### Discover Restaurants
-- The app asks for your location and loads nearby food spots
-- Use the filters to narrow by cuisine, rating, or distance
-- Search by name — if it's not loaded, the app queries Google live
-
-### Vote
-- Click the thumbs up/down on any restaurant card
-- Your whole team's votes are tallied and shown in real time
-
-### Add to Cart
-- Click any restaurant → open the detail panel → **Add to Cart**
-- Choose your dish, quantity, and notes
-- The Manager clicks the delivery link (DoorDash / Uber Eats / Grubhub) to place the order
-
-### Team Roles
-
-| Role | Can Vote | Can Edit Cart | Can Manage Team |
-|---|---|---|---|
-| Guest | ✅ | ❌ | ❌ |
-| Editor | ✅ | ✅ | ❌ |
-| Manager | ✅ | ✅ | ✅ |
-
----
-
-## Project Structure
-
-```
-radius/
-└── index.html      # The entire app — HTML, CSS, and JavaScript in one file
-```
-
-This is intentionally a single-file app for simplicity and easy deployment.
-
----
-
-## Deployment
-
-This app is deployed via **GitHub Pages**:
-
-1. Push `index.html` to the `main` branch (root of the repo)
-2. Go to **Settings → Pages**
-3. Set source to **Deploy from a branch → main → / (root)**
-4. Your app will be live at `https://<your-username>.github.io/<repo-name>/`
-
----
-
-## Security Note
-
-The Google Maps API key is visible in the HTML source (unavoidable for client-side apps). To prevent misuse:
-- Restrict the key to your domain in Google Cloud Console under **Application restrictions → Websites**
-- Also restrict which APIs the key can call under **API restrictions**
+### 3. Deploy
+Push to `main` — Vercel auto-deploys on every commit.
 
 ---
 
