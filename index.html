@@ -30,7 +30,6 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
 .auth-side .tagline{font-size:12px;color:rgba(255,255,255,.55);line-height:1.5;}
 .auth-main{flex:1;background:#fff;padding:36px 32px;overflow-y:auto;display:flex;flex-direction:column;}
 
-/* Steps */
 .step-indicator{display:flex;align-items:center;gap:8px;margin-bottom:24px;}
 .step-dot{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;transition:all .2s;flex-shrink:0;}
 .step-dot.done{background:var(--green);color:#fff;}
@@ -50,7 +49,6 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
 .form-group input:focus,.form-group select:focus{border-color:var(--accent);background:#fff;}
 .form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
 
-/* Role cards (Slack-style) */
 .role-cards{display:flex;flex-direction:column;gap:10px;margin-bottom:20px;}
 .role-card{padding:14px 16px;border:2px solid var(--border);border-radius:12px;cursor:pointer;transition:all .2s;display:flex;align-items:flex-start;gap:12px;background:#fff;}
 .role-card:hover{border-color:var(--accent);background:#FFF8F6;}
@@ -66,7 +64,6 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
 .role-card.selected .rc-check{border-color:var(--accent);background:var(--accent);}
 .role-card.selected .rc-check::after{content:'✓';font-size:10px;color:#fff;font-weight:700;}
 
-/* Team cards */
 .team-cards{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;}
 .team-card{padding:18px 16px;border:2px solid var(--border);border-radius:12px;cursor:pointer;transition:all .2s;text-align:center;background:#fff;}
 .team-card:hover{border-color:var(--accent);background:#FFF8F6;}
@@ -84,7 +81,6 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
 .auth-error{background:#FFF0EE;border:1.5px solid #FFCCC7;border-radius:10px;padding:10px 14px;font-size:13px;color:#C0392B;margin-bottom:14px;display:none;}
 .auth-note{font-size:11px;color:var(--muted);text-align:center;margin-top:12px;line-height:1.5;}
 
-/* Sign-in tab */
 .signin-link{text-align:center;font-size:13px;color:var(--muted);margin-top:14px;}
 .signin-link a{color:var(--accent);font-weight:600;cursor:pointer;text-decoration:none;}
 .signin-link a:hover{text-decoration:underline;}
@@ -98,7 +94,6 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
 .check-label input{accent-color:var(--accent);}
 .forgot-link{font-size:13px;color:var(--accent);cursor:pointer;background:none;border:none;font-weight:500;}
 
-/* MODAL */
 .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.35);backdrop-filter:blur(3px);z-index:1000;align-items:center;justify-content:center;}
 .modal-overlay.open{display:flex;}
 .modal-box{background:#fff;border-radius:20px;padding:28px;width:480px;max-width:95vw;max-height:88vh;overflow-y:auto;box-shadow:var(--shadow-lg);}
@@ -120,7 +115,6 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
 .gps-btn{padding:12px 14px;background:#FFF3F0;border:1.5px solid var(--border);border-radius:12px;cursor:pointer;font-size:18px;transition:border .2s;}
 .gps-btn:hover{border-color:var(--accent);}
 
-/* MODE TOGGLE */
 .mode-toggle-label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);margin-bottom:10px;}
 .mode-toggle{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:22px;}
 .mode-card{padding:14px;border:2px solid var(--border);border-radius:14px;cursor:pointer;transition:all .2s;text-align:center;background:#fff;}
@@ -142,7 +136,6 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
 /* ─── APP SCREEN ─── */
 #screen-app{flex-direction:column;}
 
-/* NAV */
 .nav{height:60px;background:#fff;border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 20px;gap:14px;flex-shrink:0;z-index:100;box-shadow:0 1px 8px rgba(0,0,0,.05);}
 .nav .logo{font-weight:800;font-size:20px;letter-spacing:-1px;color:var(--text);flex-shrink:0;}
 .nav .logo span{color:var(--accent);}
@@ -170,20 +163,16 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
 .user-dropdown button:hover{background:var(--surface2);}
 .user-dropdown button.danger{color:#C0392B;}
 
-/* APP BODY */
 .app-body{flex:1;display:flex;overflow:hidden;}
 
-/* MAP - left side now */
 .map-container{flex:1;position:relative;}
 #map{width:100%;height:100%;}
 .map-placeholder{width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:#F0EBE6;color:var(--muted);flex-direction:column;gap:12px;}
 .spinner{width:36px;height:36px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite;}
 @keyframes spin{to{transform:rotate(360deg);}}
 
-/* RIGHT PANEL - list + filters */
 .right-panel{width:380px;background:#fff;border-left:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0;box-shadow:-2px 0 12px rgba(0,0,0,.04);}
 
-/* Filter bar */
 .filter-bar{padding:14px 14px 0;border-bottom:1px solid var(--border);}
 .filter-search-row{display:flex;gap:8px;margin-bottom:12px;}
 .filter-search{flex:1;padding:9px 14px;background:#FAFAFA;border:1.5px solid var(--border);border-radius:10px;color:var(--text);font-size:13px;outline:none;font-family:inherit;}
@@ -198,13 +187,11 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
 .qf-btn{padding:5px 12px;border-radius:20px;border:1.5px solid var(--border);font-size:11px;cursor:pointer;background:#fff;color:var(--muted);white-space:nowrap;font-weight:500;transition:all .15s;}
 .qf-btn.active{background:#1E8A4C;color:#fff;border-color:#1E8A4C;}
 
-/* Restaurant list */
 .list-header{padding:12px 14px 6px;display:flex;align-items:center;justify-content:space-between;}
 .list-header .list-count{font-size:12px;color:var(--muted);font-weight:500;}
 .list-header .list-sort{font-size:12px;color:var(--accent);cursor:pointer;font-weight:600;}
 .rest-list{flex:1;overflow-y:auto;}
 
-/* Restaurant cards */
 .rest-card{display:flex;gap:12px;padding:14px;border-bottom:1px solid var(--border);cursor:pointer;transition:background .15s;}
 .rest-card:hover{background:#FFF8F5;}
 .rest-card.selected{background:#FFF3F0;border-left:3px solid var(--accent);}
@@ -222,7 +209,6 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
 .rest-tried{font-size:10px;background:#FFF3F0;color:var(--accent);padding:2px 7px;border-radius:6px;font-weight:600;}
 .rest-card-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-left:auto;margin-top:4px;}
 
-/* DETAIL PANEL as modal */
 .detail-modal{position:fixed;inset:0;background:rgba(0,0,0,.3);backdrop-filter:blur(2px);z-index:500;display:none;align-items:flex-start;justify-content:flex-end;}
 .detail-modal.open{display:flex;}
 .detail-drawer{width:400px;height:100%;background:#fff;overflow-y:auto;box-shadow:-4px 0 24px rgba(0,0,0,.12);animation:slideLeft .25s ease;}
@@ -278,7 +264,6 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
 .hour-row{display:flex;justify-content:space-between;font-size:12px;padding:4px 0;border-bottom:1px solid #F5F0EB;}
 .hour-row .day{color:var(--muted);font-weight:500;}
 
-/* CART MODAL */
 .cart-modal .modal-box{width:540px;}
 .cart-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;}
 .cart-empty{text-align:center;padding:32px;color:var(--muted);font-size:13px;}
@@ -297,7 +282,6 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
 .order-link:hover{border-color:var(--accent);}
 .manager-only-note{font-size:11px;color:var(--muted);background:#FFF8F5;border-radius:8px;padding:8px 12px;text-align:center;margin-top:8px;}
 
-/* VOTE MODAL */
 .vote-modal .modal-box{width:560px;}
 .vote-header{margin-bottom:16px;}
 .vote-status-row{display:flex;align-items:center;gap:10px;margin-top:6px;flex-wrap:wrap;}
@@ -324,24 +308,14 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
 .vote-btn.voted{background:#FFF3F0;border-color:var(--accent);color:var(--accent);}
 .vote-btn:disabled{opacity:.45;cursor:not-allowed;}
 
-/* TOAST */
 .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#1A1208;color:#fff;border-radius:12px;padding:12px 20px;font-size:13px;font-weight:500;z-index:9999;display:none;white-space:nowrap;box-shadow:0 8px 24px rgba(0,0,0,.2);}
 .toast.show{display:block;animation:slideUp .3s ease;}
 @keyframes slideUp{from{opacity:0;transform:translateX(-50%) translateY(8px);}to{opacity:1;transform:translateX(-50%) translateY(0);}}
-
-/* Autocomplete */
-.pac-container{background:#fff!important;border:1.5px solid var(--border)!important;border-radius:12px!important;box-shadow:var(--shadow)!important;}
-.pac-item{color:var(--text)!important;background:#fff!important;border-top:1px solid var(--border)!important;padding:8px 12px!important;font-size:13px!important;}
-.pac-item:hover,.pac-item-selected{background:#FFF8F5!important;}
-.pac-item-query{color:var(--text)!important;}
-.pac-matched{color:var(--accent)!important;font-weight:700!important;}
 
 /* ─── MOBILE RESPONSIVE ─── */
 @media (max-width:768px){
   body{overflow:auto;}
   .screen{height:100dvh;}
-
-  /* AUTH — stack vertically, hide orange side panel */
   #screen-auth{align-items:flex-start;overflow-y:auto;}
   .auth-wrap{flex-direction:column;width:100%;max-width:100%;height:auto;min-height:100dvh;border-radius:0;box-shadow:none;}
   .auth-side{width:100%;height:auto;padding:24px 20px 20px;flex-direction:row;align-items:center;justify-content:flex-start;gap:12px;}
@@ -350,50 +324,28 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
   .auth-side .features{display:none;}
   .auth-side .tagline{display:none;}
   .auth-main{padding:24px 20px;flex:1;}
-
-  /* LOCATION SCREEN */
   .loc-card{width:100%;max-width:100%;border-radius:0;box-shadow:none;min-height:100dvh;}
   .mode-toggle{grid-template-columns:1fr;}
-
-  /* NAV — compact */
   .nav{padding:0 12px;gap:8px;height:54px;}
   .nav .logo{font-size:18px;}
   .lunch-countdown{display:none;}
   .team-badge{display:none;}
   .role-badge{display:none;}
   .nav-btn{padding:6px 10px;font-size:11px;}
-
-  /* APP BODY — full-width panel, map hidden by default */
   .app-body{flex-direction:column;}
   .map-container{display:none;}
   .right-panel{width:100%;border-left:none;border-top:1px solid var(--border);height:calc(100dvh - 54px);box-shadow:none;}
-
-  /* DETAIL DRAWER — full screen on mobile */
   .detail-modal{justify-content:flex-start;}
   .detail-drawer{width:100%;animation:slideUp2 .25s ease;}
   @keyframes slideUp2{from{transform:translateY(60px);opacity:0;}to{transform:none;opacity:1;}}
-
-  /* MODALS — full width */
   .modal-box{width:100%!important;max-width:100%;border-radius:16px 16px 0 0;position:fixed;bottom:0;left:0;right:0;max-height:88vh;}
   .modal-overlay{align-items:flex-end;}
-
-  /* TEAM CARDS — stack vertically */
   .team-cards{grid-template-columns:1fr;}
-
-  /* FORM ROWS — stack */
   .form-row{grid-template-columns:1fr;}
-
-  /* VOTE + CART modals */
   .vote-modal .modal-box,.cart-modal .modal-box{width:100%!important;}
   .vote-list{max-height:55vh;}
-
-  /* INFO CARDS — 2-col stays fine, but shrink slightly */
   .info-cards{grid-template-columns:1fr 1fr;}
-
-  /* TOAST — keep centered but ensure fits */
   .toast{width:90%;text-align:center;white-space:normal;}
-
-  /* STEP NAV — ensure buttons don't overflow */
   .step-nav{flex-wrap:wrap;}
 }
 .leaflet-container{width:100%;height:100%;background:#e8e0d8;font-family:inherit;}
@@ -405,7 +357,6 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
 <!-- ═══════════════════════ AUTH / ONBOARDING ═══════════════════════ -->
 <div id="screen-auth" class="screen active">
   <div class="auth-wrap">
-    <!-- Brand side -->
     <div class="auth-side">
       <div class="brand">
         <h1>Radius</h1>
@@ -415,15 +366,12 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
         <div class="auth-feat"><div class="af-icon">🗳️</div>Daily team votes at 11 AM</div>
         <div class="auth-feat"><div class="af-icon">🛒</div>Shared team cart by role</div>
         <div class="auth-feat"><div class="af-icon">🚶</div>Walk times &amp; delivery rings</div>
-        <div class="auth-feat"><div class="af-icon">📍</div>Real Google Maps data</div>
+        <div class="auth-feat"><div class="af-icon">📍</div>Real OpenStreetMap data</div>
       </div>
       <div class="tagline">Tired of "where do you want to eat?" — let Radius decide.</div>
     </div>
 
-    <!-- Auth main -->
     <div class="auth-main" id="auth-main">
-
-      <!-- SIGN IN VIEW -->
       <div id="view-signin" style="display:flex;flex-direction:column;flex:1;">
         <div style="margin-bottom:24px;">
           <h2 style="font-size:20px;font-weight:800;margin-bottom:4px;">Welcome back 👋</h2>
@@ -443,9 +391,7 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
         <div class="signin-link" style="margin-top:12px;">New to Radius? <a onclick="showView('signup')">Create an account</a></div>
       </div>
 
-      <!-- SIGN UP WIZARD -->
       <div id="view-signup" style="display:none;flex-direction:column;flex:1;">
-        <!-- Step indicator -->
         <div class="step-indicator" id="step-indicator">
           <div class="step-dot active" id="sd-1">1</div>
           <div class="step-line" id="sl-1"></div>
@@ -455,10 +401,7 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
           <div class="step-line" id="sl-3"></div>
           <div class="step-dot pending" id="sd-4">4</div>
         </div>
-
         <div id="su-error" class="auth-error"></div>
-
-        <!-- Step 1: Your details -->
         <div class="auth-step active" id="step-1">
           <h2>Create your account</h2>
           <p class="sub">Tell us who you are — this takes 30 seconds.</p>
@@ -472,8 +415,6 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
           </div>
           <div class="signin-link" style="margin-top:10px;">Already have an account? <a onclick="showView('signin')">Sign in</a></div>
         </div>
-
-        <!-- Step 2: Password -->
         <div class="auth-step" id="step-2">
           <h2>Secure your account</h2>
           <p class="sub">Choose a strong password for your Radius account.</p>
@@ -484,34 +425,23 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
             <button class="btn-next" onclick="stepNext(2)">Continue →</button>
           </div>
         </div>
-
-        <!-- Step 3: Role -->
         <div class="auth-step" id="step-3">
           <h2>Pick your role</h2>
           <p class="sub">Your role controls what you can do in the team cart.</p>
           <div class="role-cards">
             <div class="role-card selected" id="rc-editor" onclick="selectRole('editor')">
               <div class="rc-icon editor">✏️</div>
-              <div class="rc-body">
-                <div class="rc-title">Editor</div>
-                <div class="rc-desc">Add your own items to the shared team cart. Vote on where to eat.</div>
-              </div>
+              <div class="rc-body"><div class="rc-title">Editor</div><div class="rc-desc">Add your own items to the shared team cart. Vote on where to eat.</div></div>
               <div class="rc-check"></div>
             </div>
             <div class="role-card" id="rc-manager" onclick="selectRole('manager')">
               <div class="rc-icon manager">👑</div>
-              <div class="rc-body">
-                <div class="rc-title">Manager</div>
-                <div class="rc-desc">Place the final order for the whole team. Manage cart items.</div>
-              </div>
+              <div class="rc-body"><div class="rc-title">Manager</div><div class="rc-desc">Place the final order for the whole team. Manage cart items.</div></div>
               <div class="rc-check"></div>
             </div>
             <div class="role-card" id="rc-guest" onclick="selectRole('guest')">
               <div class="rc-icon guest">👁</div>
-              <div class="rc-body">
-                <div class="rc-title">Guest</div>
-                <div class="rc-desc">Vote on restaurant choices. View-only access to the team cart.</div>
-              </div>
+              <div class="rc-body"><div class="rc-title">Guest</div><div class="rc-desc">Vote on restaurant choices. View-only access to the team cart.</div></div>
               <div class="rc-check"></div>
             </div>
           </div>
@@ -520,8 +450,6 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
             <button class="btn-next" onclick="stepNext(3)">Continue →</button>
           </div>
         </div>
-
-        <!-- Step 4: Team -->
         <div class="auth-step" id="step-4">
           <h2>Join your team</h2>
           <p class="sub">The shared cart and votes are tied to your team.</p>
@@ -551,13 +479,12 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
             <button class="btn-next" onclick="finishSignUp()">Create Account 🎉</button>
           </div>
         </div>
-
-      </div><!-- /view-signup -->
-    </div><!-- /auth-main -->
+      </div>
+    </div>
   </div>
 </div>
 
-<!-- ═══════════════════════ FORGOT PASSWORD ═══════════════════════ -->
+<!-- FORGOT PASSWORD -->
 <div id="modal-forgot" class="modal-overlay">
   <div class="modal-box">
     <h3>Reset Password</h3>
@@ -572,7 +499,7 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
   </div>
 </div>
 
-<!-- ═══════════════════════ CART MODAL ═══════════════════════ -->
+<!-- CART MODAL -->
 <div id="modal-cart" class="modal-overlay cart-modal">
   <div class="modal-box">
     <div class="cart-header">
@@ -585,14 +512,13 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
     <div id="cart-howto" style="background:#FFF8F5;border:1.5px solid #FFCCC7;border-radius:12px;padding:12px 14px;font-size:12px;color:var(--muted);margin-bottom:14px;line-height:1.6;">
       <strong style="color:var(--text);">How the shared cart works:</strong><br>
       ✏️ <strong>Editors</strong> tap "Add to Cart" on any restaurant → enter dish + qty.<br>
-      👑 <strong>Managers</strong> review the cart and click a delivery link to place the final order.<br>
-      ☁️ <em>Team cart, votes, and ratings sync in real time across all teammates via Firebase — no same-device required.</em>
+      👑 <strong>Managers</strong> review the cart and click a delivery link to place the final order.
     </div>
     <div id="cart-body"></div>
   </div>
 </div>
 
-<!-- ═══════════════════════ VOTE MODAL ═══════════════════════ -->
+<!-- VOTE MODAL -->
 <div id="modal-vote" class="modal-overlay vote-modal">
   <div class="modal-box">
     <div class="vote-header">
@@ -607,13 +533,41 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
   </div>
 </div>
 
-<!-- ═══════════════════════ LOCATION ═══════════════════════ -->
-<div id="screen-no-team" class="screen"><div class="auth-wrap"><div class="auth-side"><div class="brand"><h1>Radius</h1><p>Your team's office lunch OS</p></div></div><div class="auth-main"><div style="max-width:420px;margin:0 auto;padding:40px 20px;text-align:center;"><div style="font-size:48px;margin-bottom:16px;">🏢</div><h2 style="font-size:22px;font-weight:800;margin-bottom:8px;">No team linked</h2><p style="font-size:14px;color:var(--muted);margin-bottom:28px;">Your account isn't linked to a team yet. Create one or join with a code.</p><div id="nt-error" class="auth-error" style="display:none;margin-bottom:12px;"></div><div style="background:var(--surface);border-radius:12px;padding:20px;margin-bottom:16px;text-align:left;"><h3 style="font-size:14px;font-weight:700;margin-bottom:10px;">✨ Create a new team</h3><div class="form-group"><label>Team name</label><input id="nt-team-name" type="text" class="form-control" placeholder="e.g. Marketing Crew"/></div><button class="btn-primary" style="width:100%;" onclick="ntCreateTeam()">Create team</button></div><div style="background:var(--surface);border-radius:12px;padding:20px;margin-bottom:16px;text-align:left;"><h3 style="font-size:14px;font-weight:700;margin-bottom:10px;">🔗 Join an existing team</h3><div class="form-group"><label>Team code</label><input id="nt-join-code" type="text" class="form-control" placeholder="6-character code" maxlength="6"/></div><button class="btn-primary" style="width:100%;" onclick="ntJoinTeam()">Join team</button></div><button class="btn-secondary" style="width:100%;margin-top:4px;" onclick="doLogout()">Sign out</button></div></div></div></div><div id="screen-location" class="screen">
+<!-- LOCATION -->
+<div id="screen-no-team" class="screen">
+  <div class="auth-wrap">
+    <div class="auth-side"><div class="brand"><h1>Radius</h1><p>Your team's office lunch OS</p></div></div>
+    <div class="auth-main">
+      <div style="max-width:420px;margin:0 auto;padding:40px 20px;text-align:center;">
+        <div style="font-size:48px;margin-bottom:16px;">🏢</div>
+        <h2 style="font-size:22px;font-weight:800;margin-bottom:8px;">No team linked</h2>
+        <p style="font-size:14px;color:var(--muted);margin-bottom:28px;">Your account isn't linked to a team yet.</p>
+        <div id="nt-error" class="auth-error" style="display:none;margin-bottom:12px;"></div>
+        <div style="background:var(--surface);border-radius:12px;padding:20px;margin-bottom:16px;text-align:left;">
+          <h3 style="font-size:14px;font-weight:700;margin-bottom:10px;">✨ Create a new team</h3>
+          <div class="form-group"><label>Team name</label><input id="nt-team-name" type="text" placeholder="e.g. Marketing Crew"/></div>
+          <button class="btn-next" style="width:100%;" onclick="ntCreateTeam()">Create team</button>
+        </div>
+        <div style="background:var(--surface);border-radius:12px;padding:20px;margin-bottom:16px;text-align:left;">
+          <h3 style="font-size:14px;font-weight:700;margin-bottom:10px;">🔗 Join an existing team</h3>
+          <div class="form-group"><label>Team code</label><input id="nt-join-code" type="text" placeholder="6-character code" maxlength="6"/></div>
+          <button class="btn-next" style="width:100%;" onclick="ntJoinTeam()">Join team</button>
+        </div>
+        <button class="btn-secondary" style="width:100%;margin-top:4px;" onclick="doLogout()">Sign out</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="screen-location" class="screen">
   <div class="loc-card">
     <h2>📍 Where are you today?</h2>
     <p class="sub">Set your office location to find food places around you</p>
     <div class="loc-input-row">
-      <div id="loc-input-wrapper" class="loc-input-wrapper" style="position:relative;flex:1;min-width:0;"><input id="loc-search" type="text" placeholder="Search location..." autocomplete="off" style="width:100%;background:transparent;border:none;outline:none;font-size:14px;font-family:inherit;color:var(--text);"><ul id="loc-suggestions" style="display:none;position:absolute;top:calc(100% + 8px);left:-14px;right:-14px;background:#fff;border:1.5px solid var(--border);border-radius:10px;list-style:none;margin:0;padding:4px 0;z-index:9999;max-height:220px;overflow-y:auto;box-shadow:0 4px 16px rgba(0,0,0,.15);"></ul></div>
+      <div id="loc-input-wrapper" class="loc-input-wrapper" style="position:relative;flex:1;min-width:0;background:#FAFAFA;border:1.5px solid var(--border);border-radius:12px;padding:0 14px;display:flex;align-items:center;">
+        <input id="loc-search" type="text" placeholder="Search location..." autocomplete="off" style="width:100%;background:transparent;border:none;outline:none;font-size:14px;font-family:inherit;color:var(--text);padding:12px 0;">
+        <ul id="loc-suggestions" style="display:none;position:absolute;top:calc(100% + 8px);left:0;right:0;background:#fff;border:1.5px solid var(--border);border-radius:10px;list-style:none;margin:0;padding:4px 0;z-index:9999;max-height:220px;overflow-y:auto;box-shadow:0 4px 16px rgba(0,0,0,.15);"></ul>
+      </div>
       <button class="gps-btn" onclick="useGPS()" title="Use GPS">📡</button>
     </div>
     <div class="mode-toggle-label">How do you want to get food?</div>
@@ -643,13 +597,13 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
   </div>
 </div>
 
-<!-- ═══════════════════════ APP ═══════════════════════ -->
+<!-- APP -->
 <div id="screen-app" class="screen">
   <nav class="nav">
     <div class="logo">Ra<span>d</span>ius</div>
     <div class="lunch-countdown" id="lunch-timer">⏱ Loading…</div>
     <div class="nav-actions">
-      <div class="team-badge" id="nav-team-badge" style="display:none" id="nav-team-name-wrap">🏢 <span id="nav-team-name">—</span></div>
+      <div class="team-badge" id="nav-team-badge" style="display:none">🏢 <span id="nav-team-name">—</span></div>
       <div class="role-badge" id="nav-role-badge" style="display:none">—</div>
       <button class="nav-btn" id="map-toggle-btn" onclick="toggleMobileMap()" style="display:none;">🗺️ Map</button>
       <button class="nav-btn" id="vote-btn" onclick="openVote()">🗳️ Vote <span id="vote-count-label"></span></button>
@@ -664,31 +618,26 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
           <div id="dd-team-members" style="padding:8px 0;border-top:1px solid var(--border);border-bottom:1px solid var(--border);margin:4px 0;display:none;"></div>
           <div id="dd-team-code-row" style="display:none;padding:6px 12px 2px;"></div>
           <button onclick="goLocation()">📍 Change Location</button>
-          <button onclick="doChangePassword()" style="width:100%;text-align:left;padding:8px 12px;background:none;border:none;cursor:pointer;font-size:13px;color:var(--text);">🔑 Change Password</button><button onclick="doDeleteAccount()" class="danger" style="width:100%;text-align:left;padding:8px 12px;background:none;border:none;cursor:pointer;font-size:13px;border-top:1px solid var(--border);">🗑 Delete Account</button><button onclick="doLogout()" class="danger">🚪 Sign Out</button>
+          <button onclick="doLogout()" class="danger">🚪 Sign Out</button>
         </div>
       </div>
     </div>
   </nav>
 
   <div class="app-body">
-
-    <!-- MAP -->
     <div class="map-container">
       <div id="map-placeholder" class="map-placeholder">
         <div class="spinner"></div><span style="font-size:14px;font-weight:500;">Loading map…</span>
       </div>
-      <div id="map" style="display:none"></div>
+      <div id="map" style="display:none;width:100%;height:100%;"></div>
     </div>
 
-    <!-- RIGHT PANEL -->
     <div class="right-panel">
-      <!-- Filter bar -->
       <div class="filter-bar">
         <div class="filter-search-row">
           <input type="text" class="filter-search" id="rest-search" placeholder="🔍 Search restaurants…" oninput="filterByName(this.value)"/>
-          <div class="radius-chip" onclick="document.getElementById('screen-location').classList.toggle('active')">🚶 <span id="radius-chip-val">10m</span></div>
+          <div class="radius-chip" id="radius-chip">🚶 <span id="radius-chip-val">10m</span></div>
         </div>
-        <!-- Cuisine chips - horizontal scroll -->
         <div class="cuisine-scroll" id="cuisine-chips">
           <div class="chip active" onclick="toggleCuisine(this,'All')">All</div>
           <div class="chip" onclick="toggleCuisine(this,'Indian')">🍛 Indian</div>
@@ -708,7 +657,6 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
           <div class="chip" onclick="toggleCuisine(this,'Sandwich')">🥪 Sandwiches</div>
           <div class="chip" onclick="toggleCuisine(this,'Korean')">🍱 Korean</div>
         </div>
-        <!-- Quick filter pills -->
         <div class="quick-filter-row">
           <button class="qf-btn" id="qf-walk" onclick="toggleQF(this,'walk')">🚶 Walkable</button>
           <button class="qf-btn" id="qf-notried" onclick="toggleQF(this,'notried')">🆕 Not tried</button>
@@ -717,13 +665,10 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
           <button class="qf-btn" id="qf-order" onclick="toggleQF(this,'order')">🛵 Delivery</button>
         </div>
       </div>
-
-      <!-- List header -->
       <div class="list-header">
         <div class="list-count" id="list-count">Loading…</div>
         <div class="list-sort" onclick="toggleSort()">⬆ Distance</div>
       </div>
-
       <div class="rest-list" id="rest-list">
         <div style="padding:24px;text-align:center;color:var(--muted);font-size:13px;">
           <div class="spinner" style="margin:0 auto 12px;"></div>
@@ -744,7 +689,6 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
     <div id="detail-content"></div>
   </div>
 </div>
-
 
 <!-- CART ITEM MODAL -->
 <div id="modal-add-item" class="modal-overlay" style="z-index:600;">
@@ -775,7 +719,7 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
   </div>
 </div>
 
-<!-- ROLE SETUP MODAL (shown on first login if no role set) -->
+<!-- ROLE SETUP MODAL -->
 <div id="modal-role-setup" class="modal-overlay" style="z-index:700;">
   <div class="modal-box" style="width:480px;">
     <h3>👋 One quick thing</h3>
@@ -813,48 +757,59 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
     <p>Share this invite code with your teammates so they can join your team when signing up.</p>
     <div style="font-size:36px;font-weight:800;letter-spacing:8px;color:var(--accent);background:#FFF3F0;border:2px dashed #FFCCC7;border-radius:14px;padding:20px;margin:16px 0;" id="team-code-display">——</div>
     <div style="font-size:12px;color:var(--muted);margin-bottom:20px;">They enter this code in the "Join a team" step during sign-up.</div>
-    <button class="btn-next" onclick="document.getElementById('modal-team-code').classList.remove('open');goToLocation();"><button class="btn-secondary" style="width:100%;margin-bottom:8px;" onclick="generateInviteLink()">🔗 Copy Invite Link</button>Continue to App →</button>
+    <button class="btn-secondary" style="width:100%;margin-bottom:8px;" onclick="copyInviteLink()">🔗 Copy Invite Link</button>
+    <button class="btn-next" onclick="document.getElementById('modal-team-code').classList.remove('open');goToLocation();">Continue to App →</button>
   </div>
 </div>
 
 <div class="toast" id="toast"></div>
 
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
 <script>
 /* ═══ CONSTANTS ═══ */
+const WALK_SPEED = 83; // meters per minute
 
-const WALK_SPEED=83;
+/* ─── FIX 2: CUISINE_MAP — was missing entirely ─── */
+const CUISINE_MAP = {
+  'Indian':     'indian|curry|tandoor|biryani|masala',
+  'Japanese':   'japanese|sushi|ramen|udon|tempura|teriyaki',
+  'Italian':    'italian|pizza|pasta|trattoria|ristorante|gelato',
+  'Chinese':    'chinese|dim.sum|cantonese|szechuan|wonton|dumpling',
+  'Mexican':    'mexican|taco|burrito|quesadilla|enchilada|tex.mex',
+  'American':   'american|burger|bbq|barbecue|diner|steakhouse|wings',
+  'Thai':       'thai|pad.thai|satay',
+  'Cafe':       'cafe|coffee|espresso|latte|cappuccino',
+  'Bakery':     'bakery|bread|pastry|croissant|patisserie|boulangerie',
+  'Bar':        'bar|pub|grill|tavern|brewery|gastropub',
+  'Salad':      'salad|healthy|bowl|greens|vegan|vegetarian',
+  'Pizza':      'pizza|pizzeria',
+  'Burger':     'burger|hamburger|smash|shake shack|five guys',
+  'Sushi':      'sushi|sashimi|maki|nigiri|omakase|japanese',
+  'Sandwich':   'sandwich|sub|hoagie|deli|panini|wrap',
+  'Korean':     'korean|bibimbap|bulgogi|kimchi|kbbq|korean.bbq',
+};
+
 function haversineMeters(lat1,lng1,lat2,lng2){
-  const R=6371000;
-  const dLat=(lat2-lat1)*Math.PI/180;
-  const dLng=(lng2-lng1)*Math.PI/180;
-  const a=Math.sin(dLat/2)*Math.sin(dLat/2)+Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLng/2)*Math.sin(dLng/2);
+  const R=6371000,dLat=(lat2-lat1)*Math.PI/180,dLng=(lng2-lng1)*Math.PI/180;
+  const a=Math.sin(dLat/2)**2+Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLng/2)**2;
   return R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
 }
 const RING_DEFS=[
-  {mins:5, color:'#1E8A4C',opacity:0.15,strokeOpacity:0.9,label:'5 min'},
-  {mins:10,color:'#D97706',opacity:0.09,strokeOpacity:0.75,label:'10 min'},
-  {mins:15,color:'#2B6CB0',opacity:0.06,strokeOpacity:0.6,label:'15 min'},
+  {mins:5, color:'#1E8A4C',opacity:0.15,strokeOpacity:0.9},
+  {mins:10,color:'#D97706',opacity:0.09,strokeOpacity:0.75},
+  {mins:15,color:'#2B6CB0',opacity:0.06,strokeOpacity:0.6},
 ];
-const MAP_STYLE=[
-  {featureType:'all',elementType:'labels.text.fill',stylers:[{color:'#555'}]},
-  {featureType:'landscape',stylers:[{color:'#F5F0EB'}]},
-  {featureType:'road',elementType:'geometry',stylers:[{color:'#FFFFFF'}]},
-  {featureType:'road',elementType:'geometry.stroke',stylers:[{color:'#E5DDD4'}]},
-  {featureType:'road',elementType:'labels.text.fill',stylers:[{color:'#888'}]},
-  {featureType:'water',elementType:'geometry',stylers:[{color:'#C8DFF0'}]},
-  {featureType:'poi.park',elementType:'geometry',stylers:[{color:'#D1EAC8'}]},
-  {featureType:'poi',elementType:'labels',stylers:[{visibility:'off'}]},
-  {featureType:'transit',stylers:[{visibility:'off'}]},
-];
-const FOOD_TYPES=['restaurant','cafe','bakery','bar','meal_takeaway','meal_delivery'];
 const TODAY=()=>new Date().toISOString().slice(0,10);
 
 /* ═══ STATE ═══ */
 let currentUser=null,userLocation=null,radiusMin=10,activeCuisine='All',orderMode='walk';
 let restaurants=[],filteredRestaurants=[],selectedId=null,sortByRating=false;
-let leafletMap=null,leafletMarkers=[],leafletCircles=[],leafletHoverPopup=null;
+let leafletMap=null,leafletMarkers=[],leafletCircles=[];
 let activeQF=new Set();
 let currentStep=1,selectedRole='editor',teamMode='create';
+
 const visitedKey=()=>'rv_'+(currentUser?.email||'demo');
 const reviewsKey=()=>'rr_'+(currentUser?.email||'demo');
 const cartKey=()=>'rc_'+(currentUser?.teamId||'demo')+'_'+TODAY();
@@ -888,8 +843,9 @@ function stepNext(from){
     const users=getUsers();if(users.find(u=>u.email===email)){errEl.textContent='An account with this email already exists.';errEl.style.display='block';return;}
   }
   if(from===2){
-    const p=document.getElementById('su-pass').value;const p2=document.getElementById('su-pass2').value;
-    const pwOk=/^(?=.*[A-Z])(?=.*\d).{8,}$/;if(!pwOk.test(p)){errEl.textContent='Password must be at least 8 characters with one uppercase letter and one number.';errEl.style.display='block';return;}
+    const p=document.getElementById('su-pass').value;
+    const p2=document.getElementById('su-pass2').value;
+    if(p.length<6){errEl.textContent='Password must be at least 6 characters.';errEl.style.display='block';return;}
     if(p!==p2){errEl.textContent='Passwords do not match.';errEl.style.display='block';return;}
   }
   currentStep=from+1;updateStepIndicator();
@@ -913,93 +869,16 @@ function setMode(mode){
   document.getElementById('walk-radius-section').style.display=mode==='walk'?'':'none';
 }
 
-/* ═══ FIREBASE ═══ */
-let db=null,auth=null;
-function initFirebase(){
-  try{
-    const cfg={
-      apiKey:"__FIREBASE_API_KEY__",
-      authDomain:"__FIREBASE_PROJECT_ID__.firebaseapp.com",
-      projectId:"__FIREBASE_PROJECT_ID__",
-      storageBucket:"__FIREBASE_PROJECT_ID__.firebasestorage.app",
-      messagingSenderId:"__FIREBASE_SENDER_ID__",
-      appId:"__FIREBASE_APP_ID__"
-    };
-    firebase.initializeApp(cfg);
-    db=firebase.firestore();auth=firebase.auth();auth.onAuthStateChanged(onAuthStateChange);
-  }catch(e){console.warn('Firebase init failed',e);}
-}
-async function onAuthStateChange(fbUser){  if(!fbUser){return;}  try{    const doc=await db.collection('users').doc(fbUser.uid).get();    if(doc.exists){      currentUser={...doc.data(),uid:fbUser.uid};      currentUser.initials=(currentUser.name||'?')[0].toUpperCase();      if(currentUser.teamId){        const td=await db.collection('teams').doc(currentUser.teamId).get();        if(td.exists){currentUser.teamName=td.data().name;currentUser.teamCode=td.data().code;}      }      if(!currentUser.role){showScreen('location');setTimeout(()=>document.getElementById('modal-role-setup')?.classList.add('open'),400);}      else goToLocation();    }else{      currentUser={email:fbUser.email,name:fbUser.email.split('@')[0],initials:fbUser.email[0].toUpperCase(),uid:fbUser.uid,role:null,teamId:null,teamName:'-'};      showScreen('no-team');    }  }catch(e){console.warn('onAuthStateChange error',e);}}async function fsLoad(){
-  if(!db)return;
-  try{
-    const[uDoc,tDoc]=await Promise.all([
-      db.collection('data').doc('users').get(),
-      db.collection('data').doc('teams').get()
-    ]);
-    if(uDoc.exists)localStorage.setItem('radius_users',JSON.stringify(uDoc.data().list||[]));
-    if(tDoc.exists)localStorage.setItem('radius_teams',JSON.stringify(tDoc.data().list||[]));
-  }catch(e){console.warn('fsLoad failed',e);}
-}
-async function fsLoadTeamData(){
-  if(!db||!currentUser?.teamId||currentUser.demo)return;
-  const tid=currentUser.teamId,today=TODAY();
-  try{
-    const[vDoc,cDoc]=await Promise.all([
-      db.collection('votes').doc(today+'_'+tid).get(),
-      db.collection('carts').doc(tid+'_'+today).get()
-    ]);
-    if(vDoc.exists)localStorage.setItem(votesKey(),JSON.stringify(vDoc.data().list||[]));
-    if(cDoc.exists)localStorage.setItem(cartKey(),JSON.stringify(cDoc.data().list||[]));
-  }catch(e){console.warn('fsLoadTeamData failed',e);}
-}
-let _unsubVotes=null,_unsubCart=null;
-function setupRealTime(){
-  if(!db||!currentUser?.teamId||currentUser.demo)return;
-  const tid=currentUser.teamId,today=TODAY();
-  if(_unsubVotes)_unsubVotes();if(_unsubCart)_unsubCart();
-  _unsubVotes=db.collection('votes').doc(today+'_'+tid).onSnapshot(snap=>{
-    if(!snap.exists)return;
-    localStorage.setItem(votesKey(),JSON.stringify(snap.data().list||[]));
-    updateVoteBtn();
-    if(document.getElementById('modal-vote')?.classList.contains('open'))renderVoteModal();
-  },e=>console.warn('votes snap',e));
-  _unsubCart=db.collection('carts').doc(tid+'_'+today).onSnapshot(snap=>{
-    if(!snap.exists)return;
-    localStorage.setItem(cartKey(),JSON.stringify(snap.data().list||[]));
-    updateCartBadge();
-    if(document.getElementById('modal-cart')?.classList.contains('open'))renderCartBody();
-  },e=>console.warn('cart snap',e));if(tid!=='demo_team'){db.collection('teams').doc(tid).onSnapshot(snap=>{if(!snap.exists)return;const d=snap.data();if(currentUser){currentUser.teamName=d.name||currentUser.teamName;currentUser.teamCode=d.code||currentUser.teamCode;}const nm=document.getElementById('nav-team-name');if(nm)nm.textContent=d.name||'';if(document.getElementById('dd-team-members'))fsLoadTeamData&&fsLoadTeamData();},e=>console.warn('team snap',e));}
-}
-async function fsLoadPlaceData(pid){
-  if(!db||!currentUser?.teamId||currentUser.demo)return;
-  const tid=currentUser.teamId;
-  try{
-    const[rDoc,oDoc]=await Promise.all([
-      db.collection('ratings').doc(tid+'_'+pid).get(),
-      db.collection('orders').doc(tid+'_'+pid).get()
-    ]);
-    if(rDoc.exists)localStorage.setItem(teamRatingKey(pid),JSON.stringify(rDoc.data().list||[]));
-    if(oDoc.exists)localStorage.setItem(teamOrderKey(pid),JSON.stringify(oDoc.data().list||[]));
-  }catch(e){console.warn('fsLoadPlaceData failed',e);}
-}
-
 /* ═══ AUTH HELPERS ═══ */
 function getUsers(){return JSON.parse(localStorage.getItem('radius_users')||'[]');}
-function saveUsers(u){
-  localStorage.setItem('radius_users',JSON.stringify(u));
-  if(db)db.collection('data').doc('users').set({list:u}).catch(e=>console.warn('save users',e));
-}
+function saveUsers(u){localStorage.setItem('radius_users',JSON.stringify(u));}
 function getTeams(){return JSON.parse(localStorage.getItem('radius_teams')||'[]');}
-function saveTeams(t){
-  localStorage.setItem('radius_teams',JSON.stringify(t));
-  if(db)db.collection('data').doc('teams').set({list:t}).catch(e=>console.warn('save teams',e));
-}
+function saveTeams(t){localStorage.setItem('radius_teams',JSON.stringify(t));}
 function hashPass(p){let h=0;for(let i=0;i<p.length;i++)h=Math.imul(31,h)+p.charCodeAt(i)|0;return h.toString(36);}
 function saveSession(u,persist){const s=JSON.stringify(u);if(persist)localStorage.setItem('radius_session',s);sessionStorage.setItem('radius_session',s);}
 function loadSession(){const s=sessionStorage.getItem('radius_session')||localStorage.getItem('radius_session');return s?JSON.parse(s):null;}
 function clearSession(){sessionStorage.removeItem('radius_session');localStorage.removeItem('radius_session');}
 function genCode(){return Math.random().toString(36).slice(2,8).toUpperCase();}
-
 function showAuthError(id,msg){const el=document.getElementById(id);el.textContent=msg;el.style.display='block';}
 
 function doSignIn(){
@@ -1010,7 +889,6 @@ function doSignIn(){
   const user=getUsers().find(u=>u.email===email&&u.hash===hashPass(pass));
   if(!user)return showAuthError('si-error','Invalid email or password.');
   currentUser=user;saveSession(user,remember);
-  // If user has no role assigned (legacy account), show role setup
   if(!currentUser.role){showScreen('location');setTimeout(()=>document.getElementById('modal-role-setup').classList.add('open'),400);}
   else goToLocation();
 }
@@ -1026,15 +904,15 @@ function saveRoleSetup(){
   if(code&&code.length===6){
     const teams=getTeams();const team=teams.find(t=>t.code===code);
     if(team){team.members.push({email:currentUser.email,name:currentUser.name,role:_setupRole});saveTeams(teams);currentUser.teamId=team.id;currentUser.teamName=team.name;currentUser.teamCode=team.code;}
-    else{showToast('Team code not found — role saved without team');currentUser.teamId=null;}
+    else{showToast('Team code not found — role saved without team');}
   }
-  // Update stored user
   const users=getUsers();const idx=users.findIndex(u=>u.email===currentUser.email);
   if(idx>=0){users[idx]=Object.assign(users[idx],{role:currentUser.role,teamId:currentUser.teamId,teamName:currentUser.teamName,teamCode:currentUser.teamCode});saveUsers(users);}
   saveSession(currentUser,!!localStorage.getItem('radius_session'));
   document.getElementById('modal-role-setup').classList.remove('open');
   updateNav();showToast('Role set to '+_setupRole+'!');
 }
+
 function finishSignUp(){
   const errEl=document.getElementById('su-error');errEl.style.display='none';
   const fname=document.getElementById('su-fname').value.trim();
@@ -1043,36 +921,36 @@ function finishSignUp(){
   const pass=document.getElementById('su-pass').value;
   let teamId=null,teamName='—',teamCode='';
   const teams=getTeams();
-  if(selectedRole!=='guest'){
-    if(teamMode==='create'){
-      teamName=document.getElementById('su-teamname').value.trim();
-      if(!teamName){errEl.textContent='Please enter a team name.';errEl.style.display='block';return;}
-      teamCode=genCode();
-      const team={id:'t_'+Date.now(),name:teamName,code:teamCode,members:[{email,name:fname+' '+lname,role:selectedRole}]};
-      teams.push(team);saveTeams(teams);teamId=team.id;
-    } else {
-      const code=document.getElementById('su-teamcode').value.trim().toUpperCase();
-      const team=teams.find(t=>t.code===code);
-      if(!team){errEl.textContent='Team code not found. Ask your manager for the code.';errEl.style.display='block';return;}
-      team.members.push({email,name:fname+' '+lname,role:selectedRole});saveTeams(teams);
-      teamId=team.id;teamName=team.name;teamCode=team.code;
-    }
+  if(teamMode==='create'){
+    teamName=document.getElementById('su-teamname').value.trim();
+    if(!teamName){errEl.textContent='Please enter a team name.';errEl.style.display='block';return;}
+    teamCode=genCode();
+    const team={id:'t_'+Date.now(),name:teamName,code:teamCode,members:[{email,name:fname+' '+lname,role:selectedRole}]};
+    teams.push(team);saveTeams(teams);teamId=team.id;
+  } else {
+    const code=document.getElementById('su-teamcode').value.trim().toUpperCase();
+    const team=teams.find(t=>t.code===code);
+    if(!team){errEl.textContent='Team code not found.';errEl.style.display='block';return;}
+    team.members.push({email,name:fname+' '+lname,role:selectedRole});saveTeams(teams);
+    teamId=team.id;teamName=team.name;teamCode=team.code;
   }
   const user={name:fname+' '+lname,email,hash:hashPass(pass),initials:(fname[0]+(lname[0]||'')).toUpperCase(),role:selectedRole,teamId,teamName,teamCode};
   const users=getUsers();users.push(user);saveUsers(users);
   currentUser=user;saveSession(user,false);
   if(teamCode&&teamMode==='create'){
     showScreen('location');
-    setTimeout(()=>{
-      document.getElementById('team-code-display').textContent=teamCode;
-      document.getElementById('modal-team-code').classList.add('open');
-    },300);
+    setTimeout(()=>{document.getElementById('team-code-display').textContent=teamCode;document.getElementById('modal-team-code').classList.add('open');},300);
   } else goToLocation();
 }
-function doDemo(){currentUser={name:'Demo User',email:'demo@radius.app',initials:'DU',demo:true,role:'manager',teamId:'demo_team',teamName:'Demo Team',teamCode:'DEMO01'};saveSession(currentUser,false);goToLocation();}
-function doLogout(){if(auth)auth.signOut();sessionStorage.removeItem('radius_loc');currentUser=null;userLocation=null;restaurants=[];filteredRestaurants=[];markers=[];circles=[];map=null;showScreen('auth');closeDropdown();}function ntCreateTeam(){const name=document.getElementById('nt-team-name').value.trim();const errEl=document.getElementById('nt-error');if(!name){errEl.textContent='Please enter a team name.';errEl.style.display='block';return;}errEl.style.display='none';const code=genCode();const teamId='t_'+Date.now();if(db){db.collection('teams').doc(teamId).set({name,code,members:[{email:currentUser.email,name:currentUser.name,role:'manager'}]}).then(()=>db.collection('users').doc(currentUser.uid).update({teamId,teamName:name,teamCode:code,role:'manager'})).then(()=>{currentUser.teamId=teamId;currentUser.teamName=name;currentUser.teamCode=code;currentUser.role='manager';goToLocation();}).catch(e=>{errEl.textContent=e.message;errEl.style.display='block';});}}function ntJoinTeam(){const code=document.getElementById('nt-join-code').value.trim().toUpperCase();const errEl=document.getElementById('nt-error');if(!code){errEl.textContent='Please enter a team code.';errEl.style.display='block';return;}errEl.style.display='none';if(db){db.collection('teams').where('code','==',code).get().then(snap=>{if(snap.empty){errEl.textContent='Team not found. Check the code and try again.';errEl.style.display='block';return;}const teamDoc=snap.docs[0];const teamId=teamDoc.id;const teamData=teamDoc.data();const members=teamData.members||[];members.push({email:currentUser.email,name:currentUser.name,role:'editor'});return teamDoc.ref.update({members}).then(()=>db.collection('users').doc(currentUser.uid).update({teamId,teamName:teamData.name,teamCode:code,role:'editor'})).then(()=>{currentUser.teamId=teamId;currentUser.teamName=teamData.name;currentUser.teamCode=code;currentUser.role='editor';goToLocation();});}).catch(e=>{errEl.textContent=e.message;errEl.style.display='block';});}}function doChangePassword(){if(!auth||!currentUser?.email)return;auth.sendPasswordResetEmail(currentUser.email).then(()=>alert('Password reset email sent to '+currentUser.email)).catch(e=>alert(e.message));}function doDeleteAccount(){if(!confirm('Delete your account permanently? This cannot be undone.'))return;const user=auth?.currentUser;if(!user)return;(db?db.collection('users').doc(user.uid).delete():Promise.resolve()).then(()=>user.delete()).then(()=>{currentUser=null;showScreen('auth');}).catch(e=>alert('To delete your account, please sign out and sign back in first. ' + e.message));}
-function generateInviteLink(){if(!currentUser?.teamCode)return;const link=window.location.origin+'/?invite='+currentUser.teamCode;navigator.clipboard.writeText(link).then(()=>alert('✓ Invite link copied!\n' + link))
-.catch(()=>prompt('Copy this invite link:',link));}function removeMember(email){if(!currentUser?.teamId||currentUser.role!=='manager')return;if(!confirm('Remove '+email+' from the team?'))return;db.collection('teams').doc(currentUser.teamId).get().then(doc=>{if(!doc.exists)return;const members=(doc.data().members||[]).filter(m=>m.email!==email);return doc.ref.update({members}).then(()=>db.collection('users').where('email','==',email).get()).then(snap=>{snap.forEach(u=>u.ref.update({teamId:null,teamName:'-',teamCode:'',role:null}));});}).then(()=>{alert(email+' removed.');renderTeamPanel&&renderTeamPanel();}).catch(e=>alert(e.message));}
+
+function doDemo(){
+  currentUser={name:'Demo User',email:'demo@radius.app',initials:'DU',demo:true,role:'manager',teamId:'demo_team',teamName:'Demo Team',teamCode:'DEMO01'};
+  saveSession(currentUser,false);goToLocation();
+}
+function doLogout(){sessionStorage.removeItem('radius_loc');currentUser=null;userLocation=null;restaurants=[];filteredRestaurants=[];leafletMarkers=[];leafletCircles=[];leafletMap=null;clearSession();showScreen('auth');closeDropdown();}
+function ntCreateTeam(){showToast('Firebase required for this feature in a live deployment.');}
+function ntJoinTeam(){showToast('Firebase required for this feature in a live deployment.');}
+
 function openForgot(){document.getElementById('modal-forgot').classList.add('open');document.getElementById('reset-result').style.display='none';document.getElementById('forgot-email').value=document.getElementById('si-email').value||'';}
 function closeForgot(){document.getElementById('modal-forgot').classList.remove('open');}
 function doForgot(){
@@ -1084,46 +962,48 @@ function doForgot(){
   r.style.cssText='display:block;background:#F0FFF4;border:1.5px solid #9AE6B4;color:#1E8A4C;border-radius:10px;padding:10px 14px;font-size:13px;margin-top:10px';
   r.textContent='✓ Password reset to: radius123 — sign in and change it.';
 }
+function copyInviteLink(){if(!currentUser?.teamCode)return;const link=window.location.origin+'/?invite='+currentUser.teamCode;navigator.clipboard.writeText(link).then(()=>showToast('✓ Invite link copied!')).catch(()=>prompt('Copy this invite link:',link));}
 
 /* ═══ SCREENS ═══ */
 function showScreen(n){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById('screen-'+n).classList.add('active');}
 function goToLocation(){showScreen('location');}
 function goLocation(){showScreen('location');closeDropdown();}
+
 function goToApp(){
+  radiusMin=parseInt(document.getElementById('loc-radius').value)||10;
+  document.getElementById('radius-chip-val').textContent=radiusMin+'m';
   if(!userLocation){
-    const _a=(document.getElementById('loc-search')||{}).value;
-    if(_a&&_a.trim()){
+    const q=(document.getElementById('loc-search')||{}).value;
+    if(q&&q.trim()){
       showToast('⏳ Finding location...');
-      fetch('https://nominatim.openstreetmap.org/search?format=json&limit=1&q='+encodeURIComponent(_a),
-        {headers:{'Accept-Language':'en','User-Agent':'RadiusApp/1.0'}})
-        .then(r=>r.json())
-        .then(data=>{
+      fetch('https://nominatim.openstreetmap.org/search?format=json&limit=1&q='+encodeURIComponent(q),{headers:{'Accept-Language':'en','User-Agent':'RadiusApp/1.0'}})
+        .then(r=>r.json()).then(data=>{
           if(data&&data[0]){
             userLocation={lat:parseFloat(data[0].lat),lng:parseFloat(data[0].lon)};
-            initMap(userLocation.lat,userLocation.lng);
-            drawCircles(userLocation.lat,userLocation.lng);
-            searchRestaurants();showScreen('app');
-          }else{showToast('Location not found. Try again.');}
-        })
-        .catch(()=>showToast('Could not reach location service.'));
+            launchApp();
+          }else showToast('Location not found. Try again.');
+        }).catch(()=>showToast('Could not reach location service.'));
       return;
     }else{showToast('Please enter a location first.');return;}
   }
-  initMap(userLocation.lat,userLocation.lng);
-  drawCircles(userLocation.lat,userLocation.lng);
-  searchRestaurants();showScreen('app');
+  launchApp();
 }
+
+function launchApp(){
+  showScreen('app');
+  updateNav();
+  /* ─── FIX 1: show app screen FIRST, then init map (fixes infinite spinner) ─── */
+  setTimeout(()=>{
+    initMap(userLocation.lat,userLocation.lng);
+    drawCircles(userLocation.lat,userLocation.lng);
+    searchRestaurants();
+  },50);
+}
+
 function useGPS(){
   const btn=document.querySelector('.gps-btn');btn.textContent='⏳';
   navigator.geolocation.getCurrentPosition(
-    pos=>{
-      userLocation={lat:pos.coords.latitude,lng:pos.coords.longitude};
-      btn.textContent='✅';
-      const li=document.getElementById('loc-input');
-      if(li)li.value='📡 Current location';
-      else if(window._pacEl){const inp=window._pacEl.shadowRoot?.querySelector('input');if(inp)inp.value='📡 Current location';}
-      showToast('Location set!');
-    },
+    pos=>{userLocation={lat:pos.coords.latitude,lng:pos.coords.longitude};btn.textContent='✅';document.getElementById('loc-search').value='📡 Current location';showToast('Location set!');},
     ()=>{btn.textContent='📡';showToast('Could not get GPS location');}
   );
 }
@@ -1136,32 +1016,7 @@ function updateNav(){
   document.getElementById('dd-email').textContent=currentUser.email;
   if(currentUser.teamName){
     document.getElementById('nav-team-badge').style.display='';
-    const allTeams=getTeams();
-    const myTeam=allTeams.find(t=>t.id===currentUser.teamId);
-    const memberCount=myTeam?myTeam.members.length:1;
-    const codeStr=currentUser.teamCode&&currentUser.role==='manager'?' ('+currentUser.teamCode+')':'';
-    document.getElementById('nav-team-name').textContent=currentUser.teamName+codeStr+' · '+memberCount+(memberCount===1?' member':' members');
-    // Populate dropdown team member list
-    const ddm=document.getElementById('dd-team-members');
-    if(myTeam&&myTeam.members.length>0){
-      ddm.style.display='';
-      ddm.innerHTML='<div style="font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;padding:0 16px;margin-bottom:6px;">Team Members ('+myTeam.members.length+')</div>'+
-        myTeam.members.map(m=>{
-          const roleIco={manager:'👑',editor:'✏️',guest:'👁'}[m.role]||'👤';
-          const initials=(m.name||'?').split(' ').map(p=>p[0]).join('').slice(0,2).toUpperCase();
-          return`<div style="display:flex;align-items:center;gap:8px;padding:4px 16px;font-size:12px;">
-            <div style="width:22px;height:22px;border-radius:50%;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;flex-shrink:0;">${initials}</div>
-            <span style="flex:1;font-weight:500;">${m.name}</span>
-            <span style="font-size:11px;color:var(--muted);">${roleIco} ${m.role||''}</span>
-          </div>`;
-        }).join('');
-    }else{ddm.style.display='none';}
-    // Show team code copy button for managers
-    const codeRow=document.getElementById('dd-team-code-row');
-    if(currentUser.role==='manager'&&currentUser.teamCode&&codeRow){
-      codeRow.style.display='';
-      codeRow.innerHTML=`<div style="font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;">Invite Code</div><div style="display:flex;align-items:center;gap:6px;"><span style="font-size:15px;font-weight:800;letter-spacing:4px;color:var(--accent);background:#FFF3F0;border:1.5px dashed #FFCCC7;border-radius:8px;padding:4px 10px;">${currentUser.teamCode}</span><button onclick="navigator.clipboard.writeText('${currentUser.teamCode}').then(()=>showToast('Team code copied!'));event.stopPropagation();" style="padding:4px 10px;background:var(--accent);color:#fff;border:none;border-radius:8px;font-size:11px;font-weight:600;cursor:pointer;width:auto;">Copy</button></div>`;
-    } else if(codeRow){codeRow.style.display='none';}
+    document.getElementById('nav-team-name').textContent=currentUser.teamName;
   }
   const rb=document.getElementById('nav-role-badge');
   if(currentUser.role){
@@ -1171,8 +1026,10 @@ function updateNav(){
     rb.textContent=labels[currentUser.role]||currentUser.role;
     rb.className='role-badge '+(cls[currentUser.role]||'');
   }
-  updateLunchTimer();setInterval(updateLunchTimer,60000);
-  updateCartBadge();updateVoteBtn();
+  updateLunchTimer();
+  setInterval(updateLunchTimer,60000);
+  updateCartBadge();
+  updateVoteBtn();
 }
 function updateLunchTimer(){
   const now=new Date(),lunch=new Date(now);lunch.setHours(12,30,0,0);
@@ -1198,7 +1055,7 @@ function toggleDropdown(){document.getElementById('user-dropdown').classList.tog
 function closeDropdown(){document.getElementById('user-dropdown').classList.remove('open');}
 document.addEventListener('click',e=>{if(!e.target.closest('.user-area'))closeDropdown();});
 
-/* ═══ MAPS ═══ */
+/* ═══ LOCATION SEARCH ═══ */
 function initNominatimSearch(){
   const input=document.getElementById('loc-search');
   const list=document.getElementById('loc-suggestions');
@@ -1214,12 +1071,8 @@ function initNominatimSearch(){
       li.style.cssText='padding:10px 14px;cursor:pointer;font-size:13px;border-bottom:1px solid #f0f0f0;line-height:1.3;';
       li.addEventListener('mousedown',e=>{
         e.preventDefault();
-        input.value=item.display_name;
-        hideSuggestions();
+        input.value=item.display_name;hideSuggestions();
         userLocation={lat:parseFloat(item.lat),lng:parseFloat(item.lon)};
-        initMap(userLocation.lat,userLocation.lng);
-        drawCircles(userLocation.lat,userLocation.lng);
-        searchRestaurants();
       });
       li.addEventListener('mouseover',()=>{li.style.background='#f5f5f5';});
       li.addEventListener('mouseout',()=>{li.style.background='';});
@@ -1229,101 +1082,119 @@ function initNominatimSearch(){
   }
   input.addEventListener('input',()=>{
     clearTimeout(debounceTimer);
-    const q=input.value.trim();
-    if(q.length<3){hideSuggestions();return;}
+    const q=input.value.trim();if(q.length<3){hideSuggestions();return;}
     debounceTimer=setTimeout(()=>{
-      fetch('https://nominatim.openstreetmap.org/search?format=json&limit=6&q='+encodeURIComponent(q),
-        {headers:{'Accept-Language':'en','User-Agent':'RadiusApp/1.0'}})
+      fetch('https://nominatim.openstreetmap.org/search?format=json&limit=6&q='+encodeURIComponent(q),{headers:{'Accept-Language':'en','User-Agent':'RadiusApp/1.0'}})
         .then(r=>r.json()).then(data=>{currentSuggestions=data;showSuggestions(data);}).catch(()=>{});
     },300);
   });
   input.addEventListener('keydown',e=>{
     if(e.key==='Escape')hideSuggestions();
     if(e.key==='Enter'&&currentSuggestions.length){
-      const item=currentSuggestions[0];
-      input.value=item.display_name;hideSuggestions();
+      const item=currentSuggestions[0];input.value=item.display_name;hideSuggestions();
       userLocation={lat:parseFloat(item.lat),lng:parseFloat(item.lon)};
-      initMap(userLocation.lat,userLocation.lng);drawCircles(userLocation.lat,userLocation.lng);searchRestaurants();
     }
   });
   document.addEventListener('click',e=>{if(!e.target.closest('#loc-input-wrapper'))hideSuggestions();});
 }
-document.addEventListener('DOMContentLoaded',initNominatimSearch);
-if(document.readyState!=='loading')initNominatimSearch();
 
+/* ═══ MAP ═══ */
 function initMap(lat,lng){
-  if(leafletMap){leafletMap.setView([lat,lng],15);return;}
-  document.getElementById('map').style.display='block';
-  document.getElementById('map-placeholder').style.display='none';
+  const mapEl=document.getElementById('map');
+  const placeholderEl=document.getElementById('map-placeholder');
+  if(leafletMap){
+    mapEl.style.display='block';
+    placeholderEl.style.display='none';
+    leafletMap.setView([lat,lng],15);
+    setTimeout(()=>leafletMap.invalidateSize(),200);
+    return;
+  }
+  mapEl.style.display='block';
+  placeholderEl.style.display='none';
   leafletMap=L.map('map',{zoomControl:true,attributionControl:true});
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'\u00a9 OpenStreetMap contributors'}).addTo(leafletMap);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'© OpenStreetMap contributors'}).addTo(leafletMap);
   leafletMap.setView([lat,lng],15);
-  setTimeout(()=>leafletMap.invalidateSize(),150);
+  setTimeout(()=>leafletMap.invalidateSize(),200);
 }
+
 function drawCircles(lat,lng){
-  leafletCircles.forEach(c=>leafletMap.removeLayer(c));
-  leafletCircles=[];
+  if(!leafletMap)return;
+  leafletCircles.forEach(c=>leafletMap.removeLayer(c));leafletCircles=[];
   RING_DEFS.forEach(r=>{
     const meters=r.mins*WALK_SPEED;
     const c=L.circle([lat,lng],{radius:meters,color:r.color,fillColor:r.color,fillOpacity:r.opacity,opacity:r.strokeOpacity,weight:1.5}).addTo(leafletMap);
     leafletCircles.push(c);
   });
-  leafletMap.setView([lat,lng],15);
 }
+
 function searchRestaurants(){
   if(!userLocation)return;
-  const lat=userLocation.lat,lng=userLocation.lng;
-  const radius=8000;
-  const q=`[out:json][timeout:25];(node["amenity"~"restaurant|cafe|fast_food|bar|pub|food_court|ice_cream"](around:${radius},${lat},${lng});way["amenity"~"restaurant|cafe|fast_food|bar|pub|food_court|ice_cream"](around:${radius},${lat},${lng}););out center;`;
+  const {lat,lng}=userLocation;
+  const radiusMeters=radiusMin*WALK_SPEED*2;
+  /* Show loading state in list panel */
+  document.getElementById('rest-list').innerHTML='<div style="padding:24px;text-align:center;color:var(--muted);font-size:13px;"><div class="spinner" style="margin:0 auto 12px;"></div>Finding food places near you…</div>';
+  document.getElementById('list-count').textContent='Searching…';
+  const q=`[out:json][timeout:25];(node["amenity"~"restaurant|cafe|fast_food|bar|pub|food_court|ice_cream"](around:${radiusMeters},${lat},${lng});way["amenity"~"restaurant|cafe|fast_food|bar|pub|food_court|ice_cream"](around:${radiusMeters},${lat},${lng}););out center;`;
   const endpoints=['https://overpass-api.de/api/interpreter','https://overpass.kumi.systems/api/interpreter'];
   const tryEndpoint=i=>{
-    if(i>=endpoints.length){showToast('\u26a0 Could not load places. Check connection.');renderMarkers();return;}
+    if(i>=endpoints.length){showToast('⚠ Could not load places. Check connection.');document.getElementById('list-count').textContent='0 places found';document.getElementById('rest-list').innerHTML='<div style="padding:24px;text-align:center;color:var(--muted);font-size:13px;">Could not load places. Please check your connection.</div>';return;}
     fetch(endpoints[i],{method:'POST',body:'data='+encodeURIComponent(q)})
       .then(r=>{if(!r.ok)throw new Error('HTTP '+r.status);return r.json();})
       .then(data=>{
-        restaurants=data.elements.slice(0,60).map(el=>{
+        const visited=JSON.parse(localStorage.getItem(visitedKey())||'{}');
+        restaurants=data.elements.slice(0,80).map(el=>{
           const tags=el.tags||{};
-          const eLat=el.lat||el.center&&el.center.lat;
-          const eLng=el.lon||el.center&&el.center.lon;
+          const eLat=el.lat||(el.center&&el.center.lat);
+          const eLng=el.lon||(el.center&&el.center.lon);
           if(!eLat||!eLng)return null;
           const dist=haversineMeters(lat,lng,eLat,eLng);
-          return {id:el.id,name:tags.name||'Unnamed',cuisine:tags.cuisine||'',amenity:tags.amenity||'restaurant',lat:eLat,lng:eLng,dist,distM:dist,walkMins:Math.round(dist/WALK_SPEED),inRadius:dist<=WALK_SPEED*15,tags};
+          const walkMins=Math.round(dist/WALK_SPEED);
+          return{
+            id:String(el.id),
+            name:tags.name||'Unnamed',
+            cuisine:tags.cuisine||'',
+            amenity:tags.amenity||'restaurant',
+            lat:eLat,lng:eLng,
+            distM:dist,walkMins,
+            inRadius:walkMins<=radiusMin,
+            tried:!!visited[String(el.id)],
+            tags
+          };
         }).filter(Boolean);
-        applyFilters();showScreen('app');
+        applyFilters();
+        renderMarkers();
       })
       .catch(()=>tryEndpoint(i+1));
   };
   tryEndpoint(0);
 }
-function processPlace(r){
-  if(!r)return;
-  const dist=haversineMeters(userLocation.lat,userLocation.lng,r.lat,r.lng);
-  r.distance=dist; r.walkMins=Math.round(dist/WALK_SPEED);
-  const existing=restaurants.find(x=>x.id===r.id);
-  if(existing){Object.assign(existing,r);}else{restaurants.push(r);}
-  applyFilters();renderMarkers();
-}
+
+/* ─── FIX 2: CUISINE MATCHING uses CUISINE_MAP properly ─── */
 function matchesCuisine(r,cuisine){
   if(cuisine==='All')return true;
-  const hay=(r.name+' '+[r.cuisine,r.amenity].filter(Boolean).join(' ')+' '+(r.address||'')).toLowerCase().replace(/[^a-z0-9 ]/g,' ');
+  const hay=(r.name+' '+r.cuisine+' '+r.amenity).toLowerCase();
   const pat=CUISINE_MAP[cuisine]||cuisine.toLowerCase();
   return new RegExp(pat,'i').test(hay);
 }
+
 function applyFilters(){
+  const visited=JSON.parse(localStorage.getItem(visitedKey())||'{}');
   filteredRestaurants=restaurants.filter(r=>{
+    r.tried=!!visited[r.id];
     if(activeQF.has('notried')&&r.tried)return false;
-    if(activeQF.has('stars')&&r.rating<4)return false;
+    if(activeQF.has('stars')&&(r.rating||0)<4)return false;
     if(activeQF.has('open')&&r.openNow===false)return false;
     if(activeQF.has('walk')&&!r.inRadius)return false;
     if(activeQF.has('order')&&r.inRadius)return false;
     if(!matchesCuisine(r,activeCuisine))return false;
     return true;
   });
-  if(sortByRating)filteredRestaurants.sort((a,b)=>b.rating-a.rating);
+  if(sortByRating)filteredRestaurants.sort((a,b)=>(b.rating||0)-(a.rating||0));
   else filteredRestaurants.sort((a,b)=>a.distM-b.distM);
   document.getElementById('list-count').textContent=filteredRestaurants.length+' places found';
-  renderList();renderMarkers();
+  renderList();
 }
+
 function toggleQF(el,key){
   if(activeQF.has(key)){activeQF.delete(key);el.classList.remove('active');}
   else{activeQF.add(key);el.classList.add('active');}
@@ -1336,51 +1207,11 @@ function toggleCuisine(el,cuisine){
 let _searchTimer=null;
 function filterByName(q){
   const query=q.toLowerCase().trim();
-  // Step 1: show/hide cards from what's already loaded
-  let anyVisible=false;
   document.querySelectorAll('.rest-card').forEach((row,i)=>{
     const r=filteredRestaurants[i];
-    const name=(r?.name||'').toLowerCase();
-    const addr=(r?.vicinity||'').toLowerCase();
-    const visible=!query||name.includes(query)||addr.includes(query);
+    const visible=!query||(r?.name||'').toLowerCase().includes(query);
     row.style.display=visible?'':'none';
-    if(visible)anyVisible=true;
   });
-  // Step 2: if nothing visible and user typed 3+ chars, do a live Google textSearch
-  if(!anyVisible&&query.length>=3&&userLocation){
-    if(_searchTimer)clearTimeout(_searchTimer);
-    _searchTimer=setTimeout(()=>liveTextSearch(query),600);
-  }
-}
-function liveTextSearch(q){
-  if(!userLocation)return;
-  document.getElementById('list-count').textContent='Searching for "'+q+'"...';
-  const {lat,lng}=userLocation;
-  const radius=radiusMin*WALK_SPEED;
-  const esc=q.replace(/"/g,'\\"');
-  const query='[out:json][timeout:15];(node["name"~"'+esc+'",i](around:'+radius+','+lat+','+lng+');way["name"~"'+esc+'",i](around:'+radius+','+lat+','+lng+'););out center;';
-  fetch('https://overpass-api.de/api/interpreter',{method:'POST',body:'data='+encodeURIComponent(query)})
-    .then(r=>r.json())
-    .then(data=>{
-      const seen=new Set(restaurants.map(r=>r.id));
-      (data.elements||[]).forEach(el=>{
-        const tags=el.tags||{};
-        if(!tags.name)return;
-        const eLat=el.lat||el.center&&el.center.lat;
-        const eLng=el.lon||el.center&&el.center.lon;
-        if(!eLat||!eLng||seen.has(String(el.id)))return;
-        const dist=haversineMeters(userLocation.lat,userLocation.lng,eLat,eLng);
-        restaurants.push({id:String(el.id),name:tags.name,lat:eLat,lng:eLng,
-          address:[tags['addr:housenumber'],tags['addr:street']].filter(Boolean).join(' ')||'',
-          cuisine:tags.cuisine||tags.amenity||'',types:[tags.amenity].filter(Boolean),
-          phone:tags.phone||'',website:tags.website||'',opening_hours:tags.opening_hours||'',
-          delivery:tags.delivery==='yes',takeaway:tags.takeaway!=='no',dine_in:tags.dine_in!=='no',
-          distance:dist,walkMins:Math.round(dist/WALK_SPEED),score:0,details:null,photos:[],rating:null,priceLevel:null,reviews:[]});
-        seen.add(String(el.id));
-      });
-      applyFilters();renderMarkers();
-    })
-    .catch(()=>{});
 }
 function toggleSort(){
   sortByRating=!sortByRating;
@@ -1388,41 +1219,43 @@ function toggleSort(){
   applyFilters();
 }
 
-/* ═══ EMOJI / FORMAT ═══ */
-function getEmoji(types){
-  const arr=Array.isArray(types)?types:[types&&types.cuisine,types&&types.amenity].filter(Boolean);const t=arr.join(' ');
+/* ═══ EMOJI ═══ */
+function getEmoji(r){
+  const t=((r&&r.cuisine?r.cuisine:'')+' '+(r&&r.amenity?r.amenity:'')+' '+(r&&r.name?r.name:'')).toLowerCase();
   if(/sushi|japanese/i.test(t))return'🍣';if(/pizza|italian/i.test(t))return'🍕';
   if(/chinese/i.test(t))return'🥡';if(/indian/i.test(t))return'🍛';
   if(/mexican|taco/i.test(t))return'🌮';if(/thai/i.test(t))return'🍜';
   if(/burger|american/i.test(t))return'🍔';if(/salad/i.test(t))return'🥗';
   if(/coffee|cafe/i.test(t))return'☕';if(/bakery/i.test(t))return'🥐';
   if(/bar|pub/i.test(t))return'🍺';if(/sandwich/i.test(t))return'🥪';
+  if(/fast_food/i.test(t))return'🍟';
   return'🍽️';
 }
-function formatTypes(types){
-  const skip=['point_of_interest','establishment','food','store'];
-  const clean=(types||[]).filter(t=>!skip.includes(t)).map(t=>t.replace(/_/g,' '));
-  return clean.slice(0,2).map(t=>t.charAt(0).toUpperCase()+t.slice(1)).join(' · ')||'Food & Drink';
+function formatTypes(r){
+  const parts=[];
+  if(r.cuisine)parts.push(r.cuisine.replace(/_/g,' ').replace(/;.*$/,'').replace(/\b\w/g,c=>c.toUpperCase()));
+  if(r.amenity&&r.amenity!=='restaurant')parts.push(r.amenity.replace(/_/g,' ').replace(/\b\w/g,c=>c.toUpperCase()));
+  return parts.slice(0,2).join(' · ')||'Food & Drink';
 }
 
 /* ═══ RENDER LIST ═══ */
 function renderList(){
   const container=document.getElementById('rest-list');
-  if(!filteredRestaurants.length){container.innerHTML='<div style="padding:32px;text-align:center;color:var(--muted);font-size:13px">No places match your filters.</div>';return;}
+  if(!filteredRestaurants.length){
+    container.innerHTML='<div style="padding:32px;text-align:center;color:var(--muted);font-size:13px">No places match your filters.</div>';
+    return;
+  }
   container.innerHTML=filteredRestaurants.map((r,i)=>{
     const walkLabel=r.inRadius?`🚶 ${r.walkMins} min`:`🛵 ${r.walkMins} min`;
     const walkClass=r.inRadius?'walkable':'delivery';
-    const ratingHtml=r.rating?`<div class="rest-rating">⭐ ${r.rating.toFixed(1)}</div>`:'';
     const triedHtml=r.tried?'<div class="rest-tried">Tried</div>':'';
-    const photoHtml=r.photo?`<img src="${r.photo}" alt=""/>`:`<div class="rest-emoji">${getEmoji(r.types)}</div>`;
     const dotColor=r.tried?'#D97706':r.inRadius?'#1E8A4C':'#2B6CB0';
-    return `<div class="rest-card${selectedId===r.id?' selected':''}" onclick="selectRestaurant(${i})">
-      <div class="rest-thumb">${photoHtml}</div>
+    return`<div class="rest-card${selectedId===r.id?' selected':''}" onclick="selectRestaurant(${i})">
+      <div class="rest-thumb"><div class="rest-emoji">${getEmoji(r)}</div></div>
       <div class="rest-card-info">
         <div class="rest-card-name">${r.name}</div>
-        <div class="rest-card-type">${formatTypes(r.types)}</div>
+        <div class="rest-card-type">${formatTypes(r)}</div>
         <div class="rest-card-row">
-          ${ratingHtml}
           <div class="rest-walk ${walkClass}">${walkLabel}</div>
           ${triedHtml}
         </div>
@@ -1432,73 +1265,68 @@ function renderList(){
   }).join('');
 }
 
-/* ═══ MAP MARKERS ═══ */
+/* ─── FIX 3: MAP MARKERS use r.lat/r.lng not r.location ─── */
 function makePinIcon(color,emoji){
   return L.divIcon({className:'',
-    html:'<div style="width:32px;height:32px;border-radius:50% 50% 50% 0;background:'+color+';transform:rotate(-45deg);display:flex;align-items:center;justify-content:center;border:2px solid rgba(0,0,0,0.3);box-shadow:0 2px 4px rgba(0,0,0,0.3);"><span style="transform:rotate(45deg);font-size:14px;">'+emoji+'</span></div>',
+    html:`<div style="width:32px;height:32px;border-radius:50% 50% 50% 0;background:${color};transform:rotate(-45deg);display:flex;align-items:center;justify-content:center;border:2px solid rgba(0,0,0,0.25);box-shadow:0 2px 4px rgba(0,0,0,0.25);"><span style="transform:rotate(45deg);font-size:14px;">${emoji}</span></div>`,
     iconSize:[32,32],iconAnchor:[16,32],popupAnchor:[0,-32]});
 }
 function renderMarkers(){
   if(!leafletMap)return;
-  leafletMarkers.forEach(m=>leafletMap.removeLayer(m));
-  leafletMarkers=[];
+  leafletMarkers.forEach(m=>leafletMap.removeLayer(m));leafletMarkers=[];
   filteredRestaurants.forEach((r,i)=>{
     const ring=RING_DEFS.find(rd=>r.walkMins<=rd.mins)||RING_DEFS[RING_DEFS.length-1];
     const color=ring?ring.color:'#888';
     const icon=makePinIcon(color,getEmoji(r));
+    /* ─── FIX 3: use [r.lat, r.lng] not r.location ─── */
     const marker=L.marker([r.lat,r.lng],{icon}).addTo(leafletMap);
     marker.on('click',()=>selectRestaurant(i));
-    if(r.name){marker.bindTooltip(r.name,{permanent:false,direction:'top'});}
+    if(r.name)marker.bindTooltip(r.name,{permanent:false,direction:'top'});
     leafletMarkers.push(marker);
   });
 }
+
+/* ─── FIX 3: selectRestaurant uses r.lat/r.lng ─── */
 function selectRestaurant(idx){
-  const r=filteredRestaurants[idx];selectedId=r.id;
-  renderList();leafletMap.panTo(r.location);
+  const r=filteredRestaurants[idx];
+  if(!r)return;
+  selectedId=r.id;
+  renderList();
+  /* ─── FIX 3: pan to [lat,lng] not r.location ─── */
+  if(leafletMap)leafletMap.panTo([r.lat,r.lng]);
   document.getElementById('detail-top-name').textContent=r.name;
   document.getElementById('detail-modal').classList.add('open');
-  renderDetailContent(r);fetchDetails(r);
-  fsLoadPlaceData(r.id).then(()=>{if(selectedId===r.id)renderDetailContent(r);});
+  renderDetailContent(r);
 }
-function fetchDetails(r,cb){if(cb)cb(r);}
-function closeDetail(){document.getElementById('detail-modal').classList.remove('open');selectedId=null;renderList();}
+
+function closeDetail(){
+  document.getElementById('detail-modal').classList.remove('open');
+  selectedId=null;renderList();
+}
 
 function renderDetailContent(r){
   const visited=JSON.parse(localStorage.getItem(visitedKey())||'{}');
   const myReviews=JSON.parse(localStorage.getItem(reviewsKey())||'{}');
-  const isVisited=!!visited[r.id];const myReview=myReviews[r.id]||{stars:0,text:''};
-  const votes=getVotes();const myVotedThis=votes.find(v=>v.placeId===r.id&&v.votes.includes(currentUser?.email));
+  const isVisited=!!visited[r.id];
+  const myReview=myReviews[r.id]||{stars:0,text:''};
+  const votes=getVotes();
+  const myVotedThis=votes.find(v=>v.placeId===r.id&&v.votes.includes(currentUser?.email));
   const myVote=votes.find(v=>v.votes.includes(currentUser?.email));
   const vClosed=isVotingClosed();
-  const photoHtml=r.photo?`<img class="detail-photo" src="${r.photo}" alt="">`:`<div class="detail-photo-placeholder">${getEmoji(r.types)}</div>`;
-  const openStr=r.openNow===true?'<div class="d-open yes">🟢 Open</div>':r.openNow===false?'<div class="d-open no">🔴 Closed</div>':'';
-  const walkCard=r.inRadius?`<div class="info-card walk"><div class="ic-icon">🚶</div><div class="ic-val">${r.walkMins} min</div><div class="ic-label">Walk time</div></div>`:'';
-  const orderCard=`<div class="info-card delivery"><div class="ic-icon">🛵</div><div class="ic-val">${r.inRadius?'Also':''+r.walkMins+' min'}</div><div class="ic-label">${r.inRadius?'Order too':'Delivery only'}</div></div>`;
   const enc=encodeURIComponent(r.name);
-  const encAddr=encodeURIComponent((r.name+(r.address?', '+r.address:'')).slice(0,80));
-  const DELIVERY_FOOD_TYPES=['restaurant','cafe','bakery','bar','meal_takeaway','meal_delivery','food'];
-  const hasDeliveryType=r.types?.some(t=>DELIVERY_FOOD_TYPES.includes(t));
-  const deliveryVal=r.details?.delivery;
-  const showDelivery=hasDeliveryType&&deliveryVal!==false;
-  const deliveryBadge=deliveryVal===true
-    ?'<span style="background:#F0FFF4;color:var(--green);font-size:11px;font-weight:600;padding:2px 8px;border-radius:20px;border:1px solid #C6F6D5;">✓ Delivers</span>'
-    :'<span style="font-size:11px;color:var(--muted);">Search to confirm</span>';
-  const starHtml=[1,2,3,4,5].map(n=>`<span class="star${myReview.stars>=n?' filled':''}" onclick="setMyStar('${r.id}',${n})">★</span>`).join('');
-  let revHtml='';
-  if(r.details?.reviews?.length)revHtml='<div class="dsec" style="margin-top:16px">Google Reviews</div><div class="g-reviews">'+r.details.reviews.slice(0,3).map(rv=>`<div class="g-review"><div class="gr-author">${rv.author_name}</div><div class="gr-stars">${'★'.repeat(rv.rating)}${'☆'.repeat(5-rv.rating)}</div><div class="gr-text">${(rv.text||'').slice(0,160)}</div></div>`).join('')+'</div>';
-  let hoursHtml='';
-  if(r.details?.opening_hours?.weekday_text?.length)hoursHtml='<div class="dsec" style="margin-top:16px">Hours</div><div class="hours-list">'+r.details.opening_hours.weekday_text.map(line=>{const[d,...t]=line.split(': ');return`<div class="hour-row"><span class="day">${d}</span><span>${t.join(': ')}</span></div>`;}).join('')+'</div>';
+  const walkCard=r.inRadius?`<div class="info-card walk"><div class="ic-icon">🚶</div><div class="ic-val">${r.walkMins} min</div><div class="ic-label">Walk time</div></div>`:'';
+  const orderCard=`<div class="info-card delivery"><div class="ic-icon">🛵</div><div class="ic-val">${r.walkMins} min</div><div class="ic-label">${r.inRadius?'Or order delivery':'Delivery estimate'}</div></div>`;
   const cartBtn=(currentUser?.role==='editor'||currentUser?.role==='manager')?`<button class="action-btn" onclick="addToCart('${r.id}','${r.name.replace(/'/g,"\\'")}')">🛒 Add to Cart</button>`:'';
   const voteBtn=vClosed?'':(myVotedThis?`<button class="action-btn voted">🗳️ Voted!</button>`:(myVote?'':`<button class="action-btn" onclick="voteFor('${r.id}','${r.name.replace(/'/g,"\\'")}')">🗳️ Vote here</button>`));
+  const starHtml=[1,2,3,4,5].map(n=>`<span class="star${myReview.stars>=n?' filled':''}" onclick="setMyStar('${r.id}',${n})">★</span>`).join('');
 
   document.getElementById('detail-content').innerHTML=`
-    ${photoHtml}
+    <div class="detail-photo-placeholder">${getEmoji(r)}</div>
     <div class="detail-body">
       <div class="detail-name">${r.name}</div>
       <div class="detail-meta-row">
-        ${r.rating?`<div class="d-rating">⭐ ${r.rating.toFixed(1)} <span style="font-size:10px;font-weight:400;color:#1E8A4C">(${r.userRatingsTotal})</span></div>`:''}
-        <div class="d-type">${formatTypes(r.types)}</div>
-        ${openStr}
+        <div class="d-type">${formatTypes(r)}</div>
+        <div class="d-type">${r.inRadius?'🚶 Walkable':'🛵 Delivery zone'}</div>
       </div>
       <div class="action-btn-row">
         ${voteBtn}
@@ -1506,81 +1334,68 @@ function renderDetailContent(r){
         <button class="action-btn${isVisited?' visited':''}" onclick="toggleVisited('${r.id}')">${isVisited?'✓ Visited':'+ Visited'}</button>
       </div>
       <div class="info-cards">${walkCard}${orderCard}</div>
-      ${showDelivery?`
-      <div class="dsec" style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">Order Delivery ${deliveryBadge}</div>
+      <div class="dsec">Order Delivery</div>
       <div class="delivery-links">
         <a class="delivery-link" href="https://www.doordash.com/find/?query=${enc}" target="_blank"><span class="dl-logo">🔴</span>DoorDash</a>
         <a class="delivery-link" href="https://www.ubereats.com/search?q=${enc}" target="_blank"><span class="dl-logo">⚫</span>Uber Eats</a>
         <a class="delivery-link" href="https://www.grubhub.com/search?queryText=${enc}" target="_blank"><span class="dl-logo">🟠</span>Grubhub</a>
-      </div>`:''}
+      </div>
+      ${renderTeamStats(r)}
       <div class="dsec">My Rating</div>
       <div class="star-row" id="star-row-${r.id}">${starHtml}</div>
-      <textarea class="review-input" id="review-text-${r.id}" placeholder="Add a note about this place…">${myReview.text}</textarea>
+      <textarea class="review-input" id="review-text-${r.id}" placeholder="Add a note about this place…">${myReview.text||''}</textarea>
       <button class="btn-sm" onclick="saveMyReview('${r.id}')">Save Note</button>
-      ${renderTeamStats(r)}
-      ${revHtml}${hoursHtml}
+      ${r.tags&&r.tags['opening_hours']?`<div class="dsec" style="margin-top:16px">Hours</div><div style="font-size:13px;color:var(--muted);background:#FAFAFA;border-radius:10px;padding:10px 14px;">${r.tags['opening_hours']}</div>`:''}
+      ${r.tags&&r.tags['website']?`<div style="margin-top:12px;"><a href="${r.tags['website']}" target="_blank" style="color:var(--accent);font-size:13px;font-weight:600;">🌐 Website ↗</a></div>`:''}
+      ${r.tags&&r.tags['phone']?`<div style="margin-top:8px;font-size:13px;color:var(--muted);">📞 ${r.tags['phone']}</div>`:''}
     </div>`;
 }
 
-/* ═══ TEAM RATINGS + ORDER COUNT ═══ */
+/* ═══ TEAM RATINGS ═══ */
 function teamRatingKey(pid){return 'rtr_'+(currentUser?.teamId||'demo')+'_'+pid;}
 function teamOrderKey(pid){return 'rto_'+(currentUser?.teamId||'demo')+'_'+pid;}
 function getTeamRatings(pid){return JSON.parse(localStorage.getItem(teamRatingKey(pid))||'[]');}
 function getTeamOrders(pid){return JSON.parse(localStorage.getItem(teamOrderKey(pid))||'[]');}
+function renderTeamStats(r){
+  const ratings=getTeamRatings(r.id);const orders=getTeamOrders(r.id);
+  const myTeamRating=ratings.find(x=>x.email===currentUser?.email);
+  const avgStars=ratings.length?Math.round(ratings.reduce((s,x)=>s+x.stars,0)/ratings.length*10)/10:0;
+  const starBar=n=>[1,2,3,4,5].map(i=>`<span style="color:${n>=i?'#F5A623':'#E5DDD4'};font-size:16px;cursor:pointer;" onclick="saveTeamRating('${r.id}',${i})">★</span>`).join('');
+  return`<div style="background:#FAFAFA;border:1.5px solid var(--border);border-radius:14px;padding:16px;margin-bottom:20px;">
+    <div class="dsec" style="margin-bottom:12px;">📊 Team Stats</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;">
+      <div style="background:#fff;border-radius:10px;padding:12px;text-align:center;border:1px solid var(--border);">
+        <div style="font-size:22px;font-weight:800;color:#F5A623;">${avgStars||'—'}</div>
+        <div style="font-size:10px;color:var(--muted);margin-top:2px;">Team Avg Rating</div>
+        <div style="font-size:11px;color:var(--muted)">${ratings.length} rating${ratings.length!==1?'s':''}</div>
+      </div>
+      <div style="background:#fff;border-radius:10px;padding:12px;text-align:center;border:1px solid var(--border);">
+        <div style="font-size:22px;font-weight:800;color:var(--accent);">${orders.length}</div>
+        <div style="font-size:10px;color:var(--muted);margin-top:2px;">Team Orders</div>
+        <div style="font-size:11px;color:var(--muted)">${orders.length?'Last: '+orders[orders.length-1].date:'Never ordered'}</div>
+      </div>
+    </div>
+    <div style="font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;margin-bottom:8px;">Your Team Rating</div>
+    <div style="display:flex;align-items:center;gap:10px;">
+      <div>${starBar(myTeamRating?.stars||0)}</div>
+      <div style="font-size:11px;color:var(--muted)">${myTeamRating?'Your rating: '+myTeamRating.stars+'★':'Tap to rate'}</div>
+    </div>
+  </div>`;
+}
 function saveTeamRating(pid,stars){
   const ratings=getTeamRatings(pid);
-  const idx=ratings.findIndex(r=>r.email===currentUser.email);
+  const idx=ratings.findIndex(r=>r.email===currentUser?.email);
   const entry={email:currentUser.email,name:currentUser.name,initials:currentUser.initials||currentUser.name[0],stars,date:TODAY()};
   if(idx>=0)ratings[idx]=entry;else ratings.push(entry);
   localStorage.setItem(teamRatingKey(pid),JSON.stringify(ratings));
-  if(db&&currentUser?.teamId&&!currentUser.demo)
-    db.collection('ratings').doc(currentUser.teamId+'_'+pid).set({list:ratings}).catch(e=>console.warn('save rating',e));
+  const r=filteredRestaurants.find(x=>x.id===pid)||restaurants.find(x=>x.id===pid);
+  if(r&&selectedId===pid)renderDetailContent(r);
+  showToast('Team rating saved!');
 }
 function recordTeamOrder(pid,pname){
   const orders=getTeamOrders(pid);
   orders.push({by:currentUser.name,email:currentUser.email,date:TODAY(),place:pname});
-  localStorage.setItem(teamOrderKey(pid),JSON.stringify(orders));
-  if(db&&currentUser?.teamId&&!currentUser.demo)
-    db.collection('orders').doc(currentUser.teamId+'_'+pid).set({list:orders}).catch(e=>console.warn('save order',e));
-  showToast('Order recorded for team stats 📊');
-}
-function renderTeamStats(r){
-  const ratings=getTeamRatings(r.id);
-  const orders=getTeamOrders(r.id);
-  const myTeamRating=ratings.find(x=>x.email===currentUser.email);
-  const avgStars=ratings.length?Math.round(ratings.reduce((s,x)=>s+x.stars,0)/ratings.length*10)/10:0;
-  const starBar=n=>[1,2,3,4,5].map(i=>`<span style="color:${n>=i?'#F5A623':'#E5DDD4'};font-size:16px;cursor:pointer;" onclick="saveTeamRating('${r.id}',${i});renderDetailContent(restaurants.find(x=>x.id==='${r.id}')||filteredRestaurants.find(x=>x.id==='${r.id}'));">★</span>`).join('');
-  return `
-    <div style="background:#FAFAFA;border:1.5px solid var(--border);border-radius:14px;padding:16px;margin-bottom:20px;">
-      <div class="dsec" style="margin-bottom:12px;">📊 Team Stats${currentUser.teamName?' — '+currentUser.teamName:''}</div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;">
-        <div style="background:#fff;border-radius:10px;padding:12px;text-align:center;border:1px solid var(--border);">
-          <div style="font-size:22px;font-weight:800;color:#F5A623;">${avgStars||'—'}</div>
-          <div style="font-size:10px;color:var(--muted);margin-top:2px;">Team Avg Rating</div>
-          <div style="font-size:11px;color:var(--muted)">${ratings.length} rating${ratings.length!==1?'s':''}</div>
-        </div>
-        <div style="background:#fff;border-radius:10px;padding:12px;text-align:center;border:1px solid var(--border);">
-          <div style="font-size:22px;font-weight:800;color:var(--accent);">${orders.length}</div>
-          <div style="font-size:10px;color:var(--muted);margin-top:2px;">Team Orders</div>
-          <div style="font-size:11px;color:var(--muted)">${orders.length?'Last: '+orders[orders.length-1].date:'Never ordered'}</div>
-        </div>
-      </div>
-      <div style="font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;margin-bottom:8px;">Your Team Rating</div>
-      <div style="display:flex;align-items:center;gap:10px;">
-        <div>${starBar(myTeamRating?.stars||0)}</div>
-        <div style="font-size:11px;color:var(--muted)">${myTeamRating?'Your rating: '+myTeamRating.stars+'★':'Tap to rate'}</div>
-      </div>
-      ${ratings.length>0?`<div style="margin-top:12px;display:flex;flex-direction:column;gap:8px;">
-        ${ratings.slice(0,5).map(x=>`<div style="font-size:12px;background:#fff;border:1px solid var(--border);border-radius:10px;padding:8px 10px;">
-          <div style="display:flex;align-items:center;gap:8px;">
-            <div style="width:26px;height:26px;border-radius:50%;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0;">${x.initials||x.name[0]}</div>
-            <span style="flex:1;font-weight:500;">${x.name}</span>
-            <span style="color:#F5A623;font-weight:700">${'★'.repeat(x.stars)}${'☆'.repeat(5-x.stars)}</span>
-          </div>
-          ${x.note?`<div style="margin-top:5px;padding-left:34px;color:var(--muted);font-size:11px;font-style:italic;">"${x.note}"</div>`:''}
-        </div>`).join('')}
-      </div>`:''}
-    </div>`;
+  localStorage.setItem(teamOrderKey(pid),JSON.stringify(orders));showToast('Order recorded 📊');
 }
 
 /* ═══ VISITED + REVIEWS ═══ */
@@ -1589,7 +1404,8 @@ function toggleVisited(pid){
   if(v[pid]){delete v[pid];showToast('Removed from visited');}else{v[pid]=Date.now();showToast('✓ Marked as visited!');}
   localStorage.setItem(visitedKey(),JSON.stringify(v));
   restaurants=restaurants.map(r=>{if(r.id===pid)r.tried=!!v[pid];return r;});
-  applyFilters();const r=filteredRestaurants.find(x=>x.id===pid)||restaurants.find(x=>x.id===pid);
+  applyFilters();
+  const r=filteredRestaurants.find(x=>x.id===pid)||restaurants.find(x=>x.id===pid);
   if(r&&selectedId===pid){r.tried=!!v[pid];renderDetailContent(r);}
 }
 function setMyStar(pid,n){
@@ -1604,29 +1420,12 @@ function saveMyReview(pid){
   reviews[pid]=reviews[pid]||{};
   reviews[pid].text=document.getElementById('review-text-'+pid)?.value||'';
   localStorage.setItem(reviewsKey(),JSON.stringify(reviews));
-  const stars=reviews[pid].stars||0;
-  const note=reviews[pid].text;
-  if(currentUser&&!currentUser.demo){
-    const ratings=getTeamRatings(pid);
-    const idx=ratings.findIndex(r=>r.email===currentUser.email);
-    const entry={email:currentUser.email,name:currentUser.name,initials:currentUser.initials||currentUser.name[0],stars,note,date:TODAY()};
-    if(idx>=0)ratings[idx]=entry;else ratings.push(entry);
-    localStorage.setItem(teamRatingKey(pid),JSON.stringify(ratings));
-    if(db&&currentUser?.teamId)
-      db.collection('ratings').doc(currentUser.teamId+'_'+pid).set({list:ratings}).catch(e=>console.warn('save rating',e));
-  }
   showToast('Note saved!');
-  const r=filteredRestaurants?.find(x=>x.id===pid)||restaurants?.find(x=>x.id===pid);
-  if(r&&selectedId===pid)renderDetailContent(r);
 }
 
 /* ═══ SHARED CART ═══ */
 function getCart(){return JSON.parse(localStorage.getItem(cartKey())||'[]');}
-function saveCart(c){
-  localStorage.setItem(cartKey(),JSON.stringify(c));updateCartBadge();
-  if(db&&currentUser?.teamId&&!currentUser.demo)
-    db.collection('carts').doc(currentUser.teamId+'_'+TODAY()).set({list:c}).catch(e=>console.warn('save cart',e));
-}
+function saveCart(c){localStorage.setItem(cartKey(),JSON.stringify(c));updateCartBadge();}
 let _cartPid='',_cartPname='',_cartQty=1;
 function addToCart(pid,pname){
   if(currentUser?.role==='guest'){showToast('Guests cannot add to cart');return;}
@@ -1635,12 +1434,10 @@ function addToCart(pid,pname){
   document.getElementById('aim-dish').value='';
   document.getElementById('aim-note').value='';
   document.getElementById('aim-qty').textContent='1';
-  // Menu links
   const enc=encodeURIComponent(pname);
   document.getElementById('aim-menu-links').innerHTML=
-    `<a href="https://www.doordash.com/search/store/${enc}/" target="_blank" style="color:var(--accent);font-weight:600;text-decoration:none;">DoorDash ↗</a>` +
-    ` · <a href="https://www.ubereats.com/search?q=${enc}" target="_blank" style="color:var(--accent);font-weight:600;text-decoration:none;">Uber Eats ↗</a>` +
-    ` · <a href="https://www.grubhub.com/search?queryText=${enc}" target="_blank" style="color:var(--accent);font-weight:600;text-decoration:none;">Grubhub ↗</a>`;
+    `<a href="https://www.doordash.com/find/?query=${enc}" target="_blank" style="color:var(--accent);font-weight:600;text-decoration:none;">DoorDash ↗</a>` +
+    ` · <a href="https://www.ubereats.com/search?q=${enc}" target="_blank" style="color:var(--accent);font-weight:600;text-decoration:none;">Uber Eats ↗</a>`;
   document.getElementById('modal-add-item').classList.add('open');
   setTimeout(()=>document.getElementById('aim-dish').focus(),100);
 }
@@ -1669,24 +1466,22 @@ function renderCartBody(){
   if(!cart.length){body.innerHTML='<div class="cart-empty"><div class="ce-icon">🛒</div>Cart is empty for today.<br><small style="color:var(--muted)">Browse restaurants and tap Add to Cart.</small></div>';return;}
   body.innerHTML=cart.map(grp=>{
     const enc=encodeURIComponent(grp.placeName);
-    const orderSection=isManager?`<div class="cart-section-title">Place Order via — click records it in Team Stats:</div><div class="order-links"><a class="order-link" href="https://www.doordash.com/search/store/${enc}/" target="_blank" onclick="recordTeamOrder('${grp.placeId}','${grp.placeName.replace(/'/g,"\'")}')">🔴 DoorDash</a><a class="order-link" href="https://www.ubereats.com/search?q=${enc}" target="_blank" onclick="recordTeamOrder('${grp.placeId}','${grp.placeName.replace(/'/g,"\'")}')">⚫ Uber Eats</a><a class="order-link" href="https://www.grubhub.com/search?queryText=${enc}" target="_blank" onclick="recordTeamOrder('${grp.placeId}','${grp.placeName.replace(/'/g,"\'")}')">🟠 Grubhub</a></div>`:`<div class="manager-only-note">⏳ Waiting for Manager to place the order…</div>`;
-    return`<div class="cart-group"><div class="cart-group-name">🍽️ ${grp.placeName} <span style="background:#FFF3F0;color:var(--accent);padding:2px 8px;border-radius:10px;font-size:11px;">${grp.items.length} items</span></div>${grp.items.map(item=>`<div class="cart-item"><div class="ci-info"><div class="ci-dish">${item.qty>1?'×'+item.qty+' ':''}${item.dish||item.note}</div><div class="ci-by">Added by ${item.by}</div></div>${(item.email===currentUser?.email||isManager)?`<button class="ci-remove" onclick="removeCartItem('${grp.placeId}',${item.ts})" title="Remove">✕</button>`:''}</div>`).join('')}${orderSection}</div>`;
+    const orderSection=isManager
+      ?`<div class="cart-section-title">Place Order via:</div><div class="order-links"><a class="order-link" href="https://www.doordash.com/find/?query=${enc}" target="_blank" onclick="recordTeamOrder('${grp.placeId}','${grp.placeName.replace(/'/g,"\'")}')">🔴 DoorDash</a><a class="order-link" href="https://www.ubereats.com/search?q=${enc}" target="_blank" onclick="recordTeamOrder('${grp.placeId}','${grp.placeName.replace(/'/g,"\'")}')">⚫ Uber Eats</a><a class="order-link" href="https://www.grubhub.com/search?queryText=${enc}" target="_blank" onclick="recordTeamOrder('${grp.placeId}','${grp.placeName.replace(/'/g,"\'")}')">🟠 Grubhub</a></div>`
+      :`<div class="manager-only-note">⏳ Waiting for Manager to place the order…</div>`;
+    return`<div class="cart-group"><div class="cart-group-name">🍽️ ${grp.placeName} <span style="background:#FFF3F0;color:var(--accent);padding:2px 8px;border-radius:10px;font-size:11px;">${grp.items.length} items</span></div>${grp.items.map(item=>`<div class="cart-item"><div class="ci-info"><div class="ci-dish">${item.qty>1?'×'+item.qty+' ':''}${item.dish||item.note}</div><div class="ci-by">Added by ${item.by}</div></div>${(item.email===currentUser?.email||isManager)?`<button class="ci-remove" onclick="removeCartItem('${grp.placeId}',${item.ts})">✕</button>`:''}</div>`).join('')}${orderSection}</div>`;
   }).join('');
 }
 
 /* ═══ VOTING ═══ */
 function getVotes(){return JSON.parse(localStorage.getItem(votesKey())||'[]');}
-function saveVotes(v){
-  localStorage.setItem(votesKey(),JSON.stringify(v));
-  if(db&&currentUser?.teamId&&!currentUser.demo)
-    db.collection('votes').doc(TODAY()+'_'+currentUser.teamId).set({list:v}).catch(e=>console.warn('save votes',e));
-}
+function saveVotes(v){localStorage.setItem(votesKey(),JSON.stringify(v));}
 function voteFor(pid,pname){
   if(isVotingClosed()){showToast('Voting closed at 11 AM today');return;}
   const votes=getVotes();
   if(votes.find(v=>v.votes.includes(currentUser?.email))){showToast('You already voted today!');return;}
   let e=votes.find(v=>v.placeId===pid);
-  if(!e){const r=restaurants.find(x=>x.id===pid);e={placeId:pid,placeName:pname,photo:r?.photo||null,votes:[]};votes.push(e);}
+  if(!e){e={placeId:pid,placeName:pname,votes:[]};votes.push(e);}
   e.votes.push(currentUser.email);saveVotes(votes);
   showToast('🗳️ Voted for '+pname+'!');updateVoteBtn();
   const r=filteredRestaurants.find(x=>x.id===pid)||restaurants.find(x=>x.id===pid);
@@ -1708,22 +1503,21 @@ function renderVoteModal(){
     wCard.innerHTML=`<div class="vwc-trophy">🏆</div><div><div class="vwc-label">Today's Winner</div><div class="vwc-name">${winner.placeName}</div><div style="font-size:12px;color:var(--muted);margin-top:3px">${winner.votes.length} votes</div></div>`;
   }else wCard.style.display='none';
   const all=[...votes];
-  restaurants.forEach(r=>{if(!all.find(v=>v.placeId===r.id))all.push({placeId:r.id,placeName:r.name,photo:r.photo,votes:[]});});
+  restaurants.slice(0,10).forEach(r=>{if(!all.find(v=>v.placeId===r.id))all.push({placeId:r.id,placeName:r.name,votes:[]});});
   all.sort((a,b)=>b.votes.length-a.votes.length);
   const maxV=all.length&&all[0].votes.length>0?all[0].votes.length:1;
-  document.getElementById('vote-body').innerHTML=all.slice(0,20).map(entry=>{
+  document.getElementById('vote-body').innerHTML=all.slice(0,15).map(entry=>{
     const pct=Math.round(entry.votes.length/maxV*100);
     const isWin=closed&&entry.votes.length>0&&entry.votes.length===winner?.votes.length;
     const iVotedThis=myVote?.placeId===entry.placeId;
     const r=restaurants.find(x=>x.id===entry.placeId);
     const walkStr=r?(r.inRadius?`🚶 ${r.walkMins}m`:`🛵 ${r.walkMins}m`):'';
-    const rStr=r?.rating?`⭐ ${r.rating.toFixed(1)}`:'';
     const btn=closed?`<button class="vote-btn" disabled>${iVotedThis?'✓ Yours':'—'}</button>`
       :(iVotedThis?`<button class="vote-btn voted" disabled>✓ Yours</button>`
         :(myVote?'':`<button class="vote-btn" onclick="voteFor('${entry.placeId}','${entry.placeName.replace(/'/g,"\\'")}');renderVoteModal()">Vote</button>`));
     return`<div class="vote-item${isWin?' winner':''}">
-      <div class="vi-thumb">${entry.photo?`<img src="${entry.photo}" alt=""/>`:`<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:22px;">${r?getEmoji(r.types):'🍽️'}</div>`}</div>
-      <div class="vi-info"><div class="vi-name">${entry.placeName}</div><div class="vi-meta">${[rStr,walkStr].filter(Boolean).join(' · ')}</div></div>
+      <div class="vi-thumb"><div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:22px;">${r?getEmoji(r):'🍽️'}</div></div>
+      <div class="vi-info"><div class="vi-name">${entry.placeName}</div><div class="vi-meta">${walkStr}</div></div>
       <div class="vi-bar-wrap"><div class="vi-bar-bg"><div class="vi-bar-fill" style="width:${pct}%"></div></div><div class="vi-count">${entry.votes.length} vote${entry.votes.length!==1?'s':''}</div></div>
       ${btn}
     </div>`;
@@ -1747,6 +1541,7 @@ function toggleMobileMap(){
   mapVisible=!mapVisible;
   if(mapVisible){mc.style.display='block';mc.style.height='50vh';rp.style.height='50vh';btn.textContent='📋 List';}
   else{mc.style.display='none';rp.style.height='';btn.textContent='🗺️ Map';}
+  if(leafletMap)setTimeout(()=>leafletMap.invalidateSize(),100);
 }
 function initMobileNav(){
   const isMobile=window.matchMedia('(max-width:768px)').matches;
@@ -1755,23 +1550,16 @@ function initMobileNav(){
 }
 
 /* ═══ INIT ═══ */
-window.addEventListener('load',async()=>{
-  initFirebase();
+window.addEventListener('load',()=>{
+  initNominatimSearch();
   initMobileNav();
   window.addEventListener('resize',initMobileNav);
-  await fsLoad();
-  const inv=new URLSearchParams(window.location.search).get('invite');if(inv){localStorage.setItem('pendingInvite',inv.toUpperCase());setTimeout(()=>{const el=document.getElementById('su-teamcode');if(el){el.value=inv.toUpperCase();}const tcMode=document.getElementById('tc-join');if(tcMode)tcMode.click();},800);}const sess=loadSession();
+  const sess=loadSession();
   if(sess){
     currentUser=sess;
-    const savedLoc=JSON.parse(sessionStorage.getItem('radius_loc')||'null');
-    if(savedLoc?.loc){userLocation=savedLoc.loc;orderMode=savedLoc.mode||'walk';goToApp();}
-    else goToLocation();
+    goToLocation();
   }
 });
 </script>
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script><script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 </body>
-  </html>
+</html>
