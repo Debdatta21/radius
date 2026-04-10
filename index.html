@@ -1287,9 +1287,9 @@ function searchRestaurants(){
           const eLng=el.lon||el.center&&el.center.lon;
           if(!eLat||!eLng)return null;
           const dist=haversineMeters(lat,lng,eLat,eLng);
-          return {id:el.id,name:tags.name||'Unnamed',cuisine:tags.cuisine||'',amenity:tags.amenity||'restaurant',lat:eLat,lng:eLng,dist,tags};
+          return {id:el.id,name:tags.name||'Unnamed',cuisine:tags.cuisine||'',amenity:tags.amenity||'restaurant',lat:eLat,lng:eLng,dist,distM:dist,walkMins:Math.round(dist/WALK_SPEED),inRadius:dist<=WALK_SPEED*15,tags};
         }).filter(Boolean);
-        renderList();renderMarkers();showScreen('app');
+        applyFilters();showScreen('app');
       })
       .catch(()=>tryEndpoint(i+1));
   };
@@ -1305,7 +1305,7 @@ function processPlace(r){
 }
 function matchesCuisine(r,cuisine){
   if(cuisine==='All')return true;
-  const hay=(r.name+' '+r.types.join(' ')+' '+(r.vicinity||'')).toLowerCase().replace(/[^a-z0-9 ]/g,' ');
+  const hay=(r.name+' '+[r.cuisine,r.amenity].filter(Boolean).join(' ')+' '+(r.address||'')).toLowerCase().replace(/[^a-z0-9 ]/g,' ');
   const pat=CUISINE_MAP[cuisine]||cuisine.toLowerCase();
   return new RegExp(pat,'i').test(hay);
 }
@@ -1390,7 +1390,7 @@ function toggleSort(){
 
 /* ═══ EMOJI / FORMAT ═══ */
 function getEmoji(types){
-  const t=(types||[]).join(' ');
+  const arr=Array.isArray(types)?types:[types&&types.cuisine,types&&types.amenity].filter(Boolean);const t=arr.join(' ');
   if(/sushi|japanese/i.test(t))return'🍣';if(/pizza|italian/i.test(t))return'🍕';
   if(/chinese/i.test(t))return'🥡';if(/indian/i.test(t))return'🍛';
   if(/mexican|taco/i.test(t))return'🌮';if(/thai/i.test(t))return'🍜';
