@@ -1253,9 +1253,12 @@ if(document.readyState!=='loading')initNominatimSearch();
 
 function initMap(lat,lng){
   if(leafletMap){leafletMap.setView([lat,lng],15);return;}
+  document.getElementById('map').style.display='block';
+  document.getElementById('map-placeholder').style.display='none';
   leafletMap=L.map('map',{zoomControl:true,attributionControl:true});
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'© OpenStreetMap'}).addTo(leafletMap);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'\u00a9 OpenStreetMap contributors'}).addTo(leafletMap);
   leafletMap.setView([lat,lng],15);
+  setTimeout(()=>leafletMap.invalidateSize(),150);
 }
 function drawCircles(lat,lng){
   leafletCircles.forEach(c=>leafletMap.removeLayer(c));
