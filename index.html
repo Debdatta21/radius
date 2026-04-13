@@ -1321,6 +1321,7 @@ function renderDetailContent(r){
   const cartBtn=(currentUser?.role==='editor'||currentUser?.role==='manager')?`<button class="action-btn" onclick="addToCart('${r.id}','${r.name.replace(/'/g,"\\'")}')">🛒 Add to Cart</button>`:'';
   const voteBtn=vClosed?'':(myVotedThis?`<button class="action-btn voted">🗳️ Voted!</button>`:(myVote?'':`<button class="action-btn" onclick="voteFor('${r.id}','${r.name.replace(/'/g,"\\'")}')">🗳️ Vote here</button>`));
   const starHtml=[1,2,3,4,5].map(n=>`<span class="star${myReview.stars>=n?' filled':''}" onclick="setMyStar('${r.id}',${n})">★</span>`).join('');
+const _tr=getTeamRatings(r.id);const _to=getTeamOrders(r.id);const _avg=_tr.length?Math.round(_tr.reduce((s,x)=>s+x.stars,0)/_tr.length*10)/10:0;
 
   document.getElementById('detail-content').innerHTML=`
     <div class="detail-photo-placeholder">${getEmoji(r)}</div>
@@ -1340,11 +1341,26 @@ function renderDetailContent(r){
       ${(r.tags&&(r.tags.delivery==='yes'||r.tags.takeaway==='yes'))?
       `<div class="delivery-links">${getDeliveryLinks(enc,userLocation&&userLocation.country)}</div>`
       :`<div class="delivery-unavailable" style="color:var(--muted);font-size:13px;padding:8px 0">🚫 No delivery data available</div>`}
-      ${renderTeamStats(r)}
-      <div class="dsec">My Rating</div>
-      <div class="star-row" id="star-row-${r.id}">${starHtml}</div>
-      <textarea class="review-input" id="review-text-${r.id}" placeholder="Add a note about this place…">${myReview.text||''}</textarea>
-      <button class="btn-sm" onclick="saveMyReview('${r.id}')">Save Note</button>
+      <div class="dsec">Ratings</div>
+  <div style="background:#FAFAFA;border:1.5px solid var(--border);border-radius:12px;padding:14px;margin-bottom:4px;">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;">
+      <div style="background:#fff;border-radius:8px;padding:10px;text-align:center;border:1px solid var(--border);">
+        <div style="font-size:20px;font-weight:800;color:#F5A623;">${_avg||'–'}</div>
+        <div style="font-size:10px;color:var(--muted);margin-top:1px;">Team Avg</div>
+        <div style="font-size:10px;color:var(--muted);">${_tr.length} rating${_tr.length!=1?'s':''}</div>
+      </div>
+      <div style="background:#fff;border-radius:8px;padding:10px;text-align:center;border:1px solid var(--border);">
+        <div style="font-size:20px;font-weight:800;color:var(--accent);">${_to.length}</div>
+        <div style="font-size:10px;color:var(--muted);margin-top:1px;">Team Orders</div>
+        <div style="font-size:10px;color:var(--muted);">${_to.length?'Last: '+_to[_to.length-1].date:'Never ordered'}</div>
+      </div>
+    </div>
+    ${_tr.length?`<div style="margin-bottom:12px;padding-bottom:10px;border-bottom:1px solid var(--border);">${_tr.map(rv=>`<div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;"><div style="width:22px;height:22px;border-radius:50%;background:var(--accent);color:#fff;font-size:9px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">${rv.initials||rv.name[0]}</div><div style="flex:1;font-size:12px;"><span style="font-weight:600;">${rv.name}</span> <span style="color:#F5A623;">${'\u2605'.repeat(rv.stars)}</span> <span style="color:var(--muted);font-size:10px;">${rv.date||''}</span></div></div>`).join('')}</div>`:''}
+    <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;color:var(--muted);margin-bottom:8px;">Your Rating</div>
+    <div class="star-row" id="star-row-${r.id}">${starHtml}</div>
+    <textarea class="review-input" id="review-text-${r.id}" placeholder="Add a note about this place…">${myReview.text||''}</textarea>
+    <button class="btn-sm" onclick="saveMyReview('${r.id}')">Save Note</button>
+  </div>
       ${r.tags&&r.tags['opening_hours']?`<div class="dsec" style="margin-top:16px">Hours</div><div style="font-size:13px;color:var(--muted);background:#FAFAFA;border-radius:10px;padding:10px 14px;">${r.tags['opening_hours']}</div>`:''}
       ${r.tags&&r.tags['website']?`<div style="margin-top:12px;"><a href="${r.tags['website']}" target="_blank" style="color:var(--accent);font-size:13px;font-weight:600;">🌐 Website ↗</a></div>`:''}
       ${r.tags&&r.tags['phone']?`<div style="margin-top:8px;font-size:13px;color:var(--muted);">📞 ${r.tags['phone']}</div>`:''}
