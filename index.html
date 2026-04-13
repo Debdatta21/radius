@@ -790,6 +790,7 @@ const CUISINE_MAP = {
   'Sandwich':   'sandwich|sub|hoagie|deli|panini|wrap',
   'Korean':     'korean|bibimbap|bulgogi|kimchi|kbbq|korean.bbq',
 };
+window.CUISINE_MAP=CUISINE_MAP;
 
 function haversineMeters(lat1,lng1,lat2,lng2){
   const R=6371000,dLat=(lat2-lat1)*Math.PI/180,dLng=(lng2-lng1)*Math.PI/180;
@@ -867,7 +868,8 @@ function setMode(mode){
   document.getElementById('mc-walk').classList.toggle('selected',mode==='walk');
   document.getElementById('mc-order').classList.toggle('selected',mode==='order');
   document.getElementById('walk-radius-section').style.display=mode==='walk'?'':'none';
-}
+
+  activeQF.clear();if(mode==='walk'||mode==='order')activeQF.add(mode);applyFilters();}
 
 /* ═══ AUTH HELPERS ═══ */
 function getUsers(){return JSON.parse(localStorage.getItem('radius_users')||'[]');}
@@ -1335,11 +1337,12 @@ function renderDetailContent(r){
       </div>
       <div class="info-cards">${walkCard}${orderCard}</div>
       <div class="dsec">Order Delivery</div>
-      <div class="delivery-links">
-        <a class="delivery-link" href="https://www.doordash.com/find/?query=${enc}" target="_blank"><span class="dl-logo">🔴</span>DoorDash</a>
-        <a class="delivery-link" href="https://www.ubereats.com/search?q=${enc}" target="_blank"><span class="dl-logo">⚫</span>Uber Eats</a>
-        <a class="delivery-link" href="https://www.grubhub.com/search?queryText=${enc}" target="_blank"><span class="dl-logo">🟠</span>Grubhub</a>
-      </div>
+      ${(r.tags&&(r.tags.delivery==='yes'||r.tags.takeaway==='yes'))?
+      `<div class="delivery-links">
+        <a class="delivery-link" href="https://www.swiggy.com/search?query=${enc}" target="_blank"><span class="dl-logo">🟠</span>Swiggy</a>
+        <a class="delivery-link" href="https://www.zomato.com/search?q=${enc}" target="_blank"><span class="dl-logo">🔴</span>Zomato</a>
+      </div>`
+      :`<div class="delivery-unavailable" style="color:var(--muted);font-size:13px;padding:8px 0">🚫 No delivery data available</div>`}
       ${renderTeamStats(r)}
       <div class="dsec">My Rating</div>
       <div class="star-row" id="star-row-${r.id}">${starHtml}</div>
@@ -1436,8 +1439,8 @@ function addToCart(pid,pname){
   document.getElementById('aim-qty').textContent='1';
   const enc=encodeURIComponent(pname);
   document.getElementById('aim-menu-links').innerHTML=
-    `<a href="https://www.doordash.com/find/?query=${enc}" target="_blank" style="color:var(--accent);font-weight:600;text-decoration:none;">DoorDash ↗</a>` +
-    ` · <a href="https://www.ubereats.com/search?q=${enc}" target="_blank" style="color:var(--accent);font-weight:600;text-decoration:none;">Uber Eats ↗</a>`;
+    `<a href="https://www.swiggy.com/search?query=${enc}" target="_blank"><span class="dl-logo">🟠</span>Swiggy</a>` +
+    ` · <a href="https://www.zomato.com/search?q=${enc}" target="_blank"><span class="dl-logo">🔴</span>Zomato</a>`;
   document.getElementById('modal-add-item').classList.add('open');
   setTimeout(()=>document.getElementById('aim-dish').focus(),100);
 }
@@ -1467,7 +1470,7 @@ function renderCartBody(){
   body.innerHTML=cart.map(grp=>{
     const enc=encodeURIComponent(grp.placeName);
     const orderSection=isManager
-      ?`<div class="cart-section-title">Place Order via:</div><div class="order-links"><a class="order-link" href="https://www.doordash.com/find/?query=${enc}" target="_blank" onclick="recordTeamOrder('${grp.placeId}','${grp.placeName.replace(/'/g,"\'")}')">🔴 DoorDash</a><a class="order-link" href="https://www.ubereats.com/search?q=${enc}" target="_blank" onclick="recordTeamOrder('${grp.placeId}','${grp.placeName.replace(/'/g,"\'")}')">⚫ Uber Eats</a><a class="order-link" href="https://www.grubhub.com/search?queryText=${enc}" target="_blank" onclick="recordTeamOrder('${grp.placeId}','${grp.placeName.replace(/'/g,"\'")}')">🟠 Grubhub</a></div>`
+      ?`<div class="cart-section-title">Place Order via:</div><div class="order-links"><a href="https://www.swiggy.com/search?query=${enc}" target="_blank"><span class="dl-logo">🟠</span>Swiggy</a><a href="https://www.zomato.com/search?q=${enc}" target="_blank"><span class="dl-logo">🔴</span>Zomato</a></div>`
       :`<div class="manager-only-note">⏳ Waiting for Manager to place the order…</div>`;
     return`<div class="cart-group"><div class="cart-group-name">🍽️ ${grp.placeName} <span style="background:#FFF3F0;color:var(--accent);padding:2px 8px;border-radius:10px;font-size:11px;">${grp.items.length} items</span></div>${grp.items.map(item=>`<div class="cart-item"><div class="ci-info"><div class="ci-dish">${item.qty>1?'×'+item.qty+' ':''}${item.dish||item.note}</div><div class="ci-by">Added by ${item.by}</div></div>${(item.email===currentUser?.email||isManager)?`<button class="ci-remove" onclick="removeCartItem('${grp.placeId}',${item.ts})">✕</button>`:''}</div>`).join('')}${orderSection}</div>`;
   }).join('');
