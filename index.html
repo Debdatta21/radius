@@ -978,10 +978,10 @@ function goToApp(){
     const q=(document.getElementById('loc-search')||{}).value;
     if(q&&q.trim()){
       showToast('⏳ Finding location...');
-      fetch('https://nominatim.openstreetmap.org/search?format=json&limit=1&q='+encodeURIComponent(q),{headers:{'Accept-Language':'en','User-Agent':'RadiusApp/1.0'}})
+      fetch('https://nominatim.openstreetmap.org/search?format=json&limit=1&addressdetails=1&q='+encodeURIComponent(q),{headers:{'Accept-Language':'en','User-Agent':'RadiusApp/1.0'}})
         .then(r=>r.json()).then(data=>{
           if(data&&data[0]){
-            userLocation={lat:parseFloat(data[0].lat),lng:parseFloat(data[0].lon)};
+            userLocation={lat:parseFloat(data[0].lat),lng:parseFloat(data[0].lon),country:(data[0].address&&data[0].address.country_code)||'us'};
             launchApp();
           }else showToast('Location not found. Try again.');
         }).catch(()=>showToast('Could not reach location service.'));
@@ -1005,7 +1005,7 @@ function launchApp(){
 function useGPS(){
   const btn=document.querySelector('.gps-btn');btn.textContent='⏳';
   navigator.geolocation.getCurrentPosition(
-    pos=>{userLocation={lat:pos.coords.latitude,lng:pos.coords.longitude};btn.textContent='✅';document.getElementById('loc-search').value='📡 Current location';showToast('Location set!');},
+    pos=>{userLocation={lat:pos.coords.latitude,lng:pos.coords.longitude,country:(data[0].address&&data[0].address.country_code)||'us'};btn.textContent='✅';document.getElementById('loc-search').value='📡 Current location';showToast('Location set!');},
     ()=>{btn.textContent='📡';showToast('Could not get GPS location');}
   );
 }
@@ -1074,7 +1074,7 @@ function initNominatimSearch(){
       li.addEventListener('mousedown',e=>{
         e.preventDefault();
         input.value=item.display_name;hideSuggestions();
-        userLocation={lat:parseFloat(item.lat),lng:parseFloat(item.lon)};
+        userLocation={lat:parseFloat(item.lat),lng:parseFloat(item.lon),country:(data[0].address&&data[0].address.country_code)||'us'};
       });
       li.addEventListener('mouseover',()=>{li.style.background='#f5f5f5';});
       li.addEventListener('mouseout',()=>{li.style.background='';});
@@ -1094,7 +1094,7 @@ function initNominatimSearch(){
     if(e.key==='Escape')hideSuggestions();
     if(e.key==='Enter'&&currentSuggestions.length){
       const item=currentSuggestions[0];input.value=item.display_name;hideSuggestions();
-      userLocation={lat:parseFloat(item.lat),lng:parseFloat(item.lon)};
+      userLocation={lat:parseFloat(item.lat),lng:parseFloat(item.lon),country:(data[0].address&&data[0].address.country_code)||'us'};
     }
   });
   document.addEventListener('click',e=>{if(!e.target.closest('#loc-input-wrapper'))hideSuggestions();});
@@ -1338,10 +1338,7 @@ function renderDetailContent(r){
       <div class="info-cards">${walkCard}${orderCard}</div>
       <div class="dsec">Order Delivery</div>
       ${(r.tags&&(r.tags.delivery==='yes'||r.tags.takeaway==='yes'))?
-      `<div class="delivery-links">
-        <a class="delivery-link" href="https://www.swiggy.com/search?query=${enc}" target="_blank"><span class="dl-logo">🟠</span>Swiggy</a>
-        <a class="delivery-link" href="https://www.zomato.com/search?q=${enc}" target="_blank"><span class="dl-logo">🔴</span>Zomato</a>
-      </div>`
+      `<div class="delivery-links">${getDeliveryLinks(enc,userLocation&&userLocation.country)}</div>`
       :`<div class="delivery-unavailable" style="color:var(--muted);font-size:13px;padding:8px 0">🚫 No delivery data available</div>`}
       ${renderTeamStats(r)}
       <div class="dsec">My Rating</div>
@@ -1563,6 +1560,14 @@ window.addEventListener('load',()=>{
     goToLocation();
   }
 });
+
+function getDeliveryLinks(enc,ctry){
+  const c=(ctry||'us').toLowerCase();
+  if(c==='in')return`<a class="delivery-link" href="https://www.swiggy.com/search?query=${enc}" target="_blank"><span class="dl-logo">🟠</span>Swiggy</a> <a class="delivery-link" href="https://www.zomato.com/search?q=${enc}" target="_blank"><span class="dl-logo">🔴</span>Zomato</a>`;
+  if(c==='gb')return`<a class="delivery-link" href="https://deliveroo.co.uk/restaurants?q=${enc}" target="_blank"><span class="dl-logo">🩵</span>Deliveroo</a> <a class="delivery-link" href="https://www.ubereats.com/gb/search?q=${enc}" target="_blank"><span class="dl-logo">⚫</span>Uber Eats</a>`;
+  if(c==='au')return`<a class="delivery-link" href="https://www.menulog.com.au/search?q=${enc}" target="_blank"><span class="dl-logo">🟠</span>Menulog</a> <a class="delivery-link" href="https://www.ubereats.com/au/search?q=${enc}" target="_blank"><span class="dl-logo">⚫</span>Uber Eats</a>`;
+  return`<a class="delivery-link" href="https://www.doordash.com/find/?query=${enc}" target="_blank"><span class="dl-logo">🔴</span>DoorDash</a> <a class="delivery-link" href="https://www.ubereats.com/search?q=${enc}" target="_blank"><span class="dl-logo">⚫</span>Uber Eats</a>`;
+}
 </script>
 </body>
 </html>
