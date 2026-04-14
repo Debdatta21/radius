@@ -1355,7 +1355,7 @@ const _tr=getTeamRatings(r.id);const _to=getTeamOrders(r.id);const _avg=_tr.leng
         <div style="font-size:10px;color:var(--muted);">${_to.length?'Last: '+_to[_to.length-1].date:'Never ordered'}</div>
       </div>
     </div>
-    ${_tr.length?`<div style="margin-bottom:12px;padding-bottom:10px;border-bottom:1px solid var(--border);">${_tr.map(rv=>`<div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;"><div style="width:22px;height:22px;border-radius:50%;background:var(--accent);color:#fff;font-size:9px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">${rv.initials||rv.name[0]}</div><div style="flex:1;font-size:12px;"><span style="font-weight:600;">${rv.name}</span> <span style="color:#F5A623;">${'\u2605'.repeat(rv.stars)}</span> <span style="color:var(--muted);font-size:10px;">${rv.date||''}</span></div></div>`).join('')}</div>`:''}
+    ${_tr.length?`<div style="margin-bottom:12px;padding-bottom:10px;border-bottom:1px solid var(--border);">${_tr.map(rv=>`<div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;"><div style="width:22px;height:22px;border-radius:50%;background:var(--accent);color:#fff;font-size:9px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">${rv.initials||rv.name[0]}</div><div style="flex:1;font-size:12px;"><span style="font-weight:600;">${rv.name}</span> <span style="color:#F5A623;">${'\u2605'.repeat(rv.stars)}</span> <span style="color:var(--muted);font-size:10px;">${rv.date||''}</span>${rv.note?`<div style='font-size:11px;color:var(--muted);margin-top:2px;padding-left:30px;font-style:italic;'>${rv.note}</div>`:''}</div></div>`).join('')}</div>`:''}
     <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;color:var(--muted);margin-bottom:8px;">Your Rating</div>
     <div class="star-row" id="star-row-${r.id}">${starHtml}</div>
     <textarea class="review-input" id="review-text-${r.id}" placeholder="Add a note about this place…">${myReview.text||''}</textarea>
@@ -1436,10 +1436,13 @@ function saveMyReview(pid){
   reviews[pid]=reviews[pid]||{};
   reviews[pid].text=document.getElementById('review-text-'+pid)?.value||'';
   localStorage.setItem(reviewsKey(),JSON.stringify(reviews));
+  const ratings=getTeamRatings(pid);
+  const ridx=ratings.findIndex(rv=>rv.email===currentUser?.email);
+  if(ridx>=0){ratings[ridx].note=reviews[pid].text;localStorage.setItem(teamRatingKey(pid),JSON.stringify(ratings));}
+  const r=filteredRestaurants.find(x=>x.id===pid)||restaurants.find(x=>x.id===pid);
+  if(r&&selectedId==pid)renderDetailContent(r);
   showToast('Note saved!');
 }
-
-/* ═══ SHARED CART ═══ */
 function getCart(){return JSON.parse(localStorage.getItem(cartKey())||'[]');}
 function saveCart(c){localStorage.setItem(cartKey(),JSON.stringify(c));updateCartBadge();}
 let _cartPid='',_cartPname='',_cartQty=1;
