@@ -974,23 +974,21 @@ function goLocation(){showScreen('location');closeDropdown();}
 function goToApp(){
   radiusMin=parseInt(document.getElementById('loc-radius').value)||10;
   document.getElementById('radius-chip-val').textContent=radiusMin+'m';
-  if(!userLocation){
-    const q=(document.getElementById('loc-search')||{}).value;
-    if(q&&q.trim()){
-      showToast('⏳ Finding location...');
-      fetch('https://nominatim.openstreetmap.org/search?format=json&limit=1&addressdetails=1&q='+encodeURIComponent(q),{headers:{'Accept-Language':'en','User-Agent':'RadiusApp/1.0'}})
-        .then(r=>r.json()).then(data=>{
-          if(data&&data[0]){
-            userLocation={lat:parseFloat(data[0].lat),lng:parseFloat(data[0].lon),country:(data[0].address&&data[0].address.country_code)||'us'};
-            launchApp();
-          }else showToast('Location not found. Try again.');
-        }).catch(()=>showToast('Could not reach location service.'));
-      return;
-    }else{showToast('Please enter a location first.');return;}
+  const q=(document.getElementById('loc-search')||{}).value;
+  if(q&&q.trim()){
+    showToast('⏳ Finding location...');
+    fetch('https://nominatim.openstreetmap.org/search?format=json&limit=1&addressdetails=1&q='+encodeURIComponent(q),{headers:{'Accept-Language':'en','User-Agent':'RadiusApp/1.0'}})
+      .then(r=>r.json()).then(data=>{
+        if(data&&data[0]){
+          userLocation={lat:parseFloat(data[0].lat),lng:parseFloat(data[0].lon),country:(data[0].address&&data[0].address.country_code)||'us'};
+          launchApp();
+        }else showToast('Location not found. Try again.');
+      }).catch(()=>showToast('Could not reach location service.'));
+    return;
   }
+  if(!userLocation){showToast('Please enter a location first.');return;}
   launchApp();
 }
-
 function launchApp(){
   showScreen('app');
   updateNav();
