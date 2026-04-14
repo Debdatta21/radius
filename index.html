@@ -1131,42 +1131,43 @@ function searchRestaurants(){
   if(!userLocation)return;
   const {lat,lng}=userLocation;
   const radiusMeters=radiusMin*WALK_SPEED*2;
-  /* Show loading state in list panel */
   document.getElementById('rest-list').innerHTML='<div style="padding:24px;text-align:center;color:var(--muted);font-size:13px;"><div class="spinner" style="margin:0 auto 12px;"></div>Finding food places near you…</div>';
-  document.getElementById('list-count').textContent='Searching…';
-  const q=`[out:json][timeout:25];(node["amenity"~"restaurant|cafe|fast_food|bar|pub|food_court|ice_cream"](around:${radiusMeters},${lat},${lng});way["amenity"~"restaurant|cafe|fast_food|bar|pub|food_court|ice_cream"](around:${radiusMeters},${lat},${lng}););out center;`;
-  const endpoints=['https://overpass-api.de/api/interpreter','https://overpass.kumi.systems/api/interpreter'];
-  const tryEndpoint=i=>{
-    if(i>=endpoints.length){showToast('⚠ Could not load places. Check connection.');document.getElementById('list-count').textContent='0 places found';document.getElementById('rest-list').innerHTML='<div style="padding:24px;text-align:center;color:var(--muted);font-size:13px;">Could not load places. Please check your connection.</div>';return;}
-    fetch(endpoints[i],{method:'POST',body:'data='+encodeURIComponent(q)})
-      .then(r=>{if(!r.ok)throw new Error('HTTP '+r.status);return r.json();})
-      .then(data=>{
-        const visited=JSON.parse(localStorage.getItem(visitedKey())||'{}');
-        restaurants=data.elements.slice(0,80).map(el=>{
-          const tags=el.tags||{};
-          const eLat=el.lat||(el.center&&el.center.lat);
-          const eLng=el.lon||(el.center&&el.center.lon);
-          if(!eLat||!eLng)return null;
-          const dist=haversineMeters(lat,lng,eLat,eLng);
-          const walkMins=Math.round(dist/WALK_SPEED);
-          return{
-            id:String(el.id),
-            name:tags.name||'Unnamed',
-            cuisine:tags.cuisine||'',
-            amenity:tags.amenity||'restaurant',
-            lat:eLat,lng:eLng,
-            distM:dist,walkMins,
-            inRadius:walkMins<=radiusMin,
-            tried:!!visited[String(el.id)],
-            tags
-          };
-        }).filter(Boolean);
-        applyFilters();
-        renderMarkers();
-      })
-      .catch(()=>tryEndpoint(i+1));
-  };
-  tryEndpoint(0);
+  fetch('/api/restaurants?ll='+lat+','+lng+'&radius='+radiusMeters)
+    .then(function(res){if(!res.ok)throw new Error('API '+res.status);return res.json();})
+    .then(function(data){
+      if(data.error){throw new Error(data.error);}
+      restaurants=(data.results||[]).map(function(r){
+        var cats=(r.categories||[]);
+        var geo=(r.geocodes&&r.geocodes.main)||{};
+        var eLat=geo.latitude||0, eLng=geo.longitude||0;
+        var dist=r.distance||0;
+        var walkMins=Math.round(dist/WALK_SPEED);
+        return {
+          id:r.fsq_id,
+          name:r.name||'Unnamed',
+          cuisine:(cats[0]&&cats[0].name)||'',
+          amenity:'restaurant',
+          lat:eLat, lng:eLng,
+          distM:dist, walkMins:walkMins,
+          inRadius:walkMins<=radiusMin,
+          fsq_rating:r.rating||null,
+          ied:!!visited[r.fsq_id],
+          tags:{
+            opening_hours:(r.hours&&r.hours.display)||'',
+            phone:r.tel||'',
+            website:r.website||'',
+            cuisine:(cats[0]&&cats[0].name)||'',
+            name:r.name||''
+          }
+        };
+      }).filter(function(r){return r.lat&&r.lng;});
+      applyFilters();
+      renderMarkers();
+    })
+    .catch(function(e){
+      document.getElementById('rest-list').innerHTML='<div style="padding:24px;text-align:center;color:var(--muted);font-size:13px;">⚠️ Could not load restaurants.<br><span style="font-size:11px;">Check that FSQ_KEY is set in Vercel environment variables.</span></div>';
+      console.error('Foursquare error:',e);
+    });
 }
 
 /* ─── FIX 2: CUISINE MATCHING uses CUISINE_MAP properly ─── */
@@ -1315,7 +1316,8 @@ function renderDetailContent(r){
   const vClosed=isVotingClosed();
   const enc=encodeURIComponent(r.name);
   const walkCard=r.inRadius?`<div class="info-card walk"><div class="ic-icon">🚶</div><div class="ic-val">${r.walkMins} min</div><div class="ic-label">Walk time</div></div>`:'';
-  const orderCard=`<div class="info-card delivery"><div class="ic-icon">🛵</div><div class="ic-val">${r.walkMins} min</div><div class="ic-label">${r.inRadius?'Or order delivery':'Delivery estimate'}</div></div>`;
+    const fsqCard=r.fsq_rating?`<div class="info-card fsq"><div class="ic-icon">⭐</div><div class="ic-val">${r.fsq_rating.toFixed(1)}<span style="font-size:10px;color:var(--muted)">/10</span></div><div class="ic-label">Foursquare</div></div>`:"";
+const orderCard=`<div class="info-card delivery"><div class="ic-icon">🛵</div><div class="ic-val">${r.walkMins} min</div><div class="ic-label">${r.inRadius?'Or order delivery':'Delivery estimate'}</div></div>`;
   const cartBtn=(currentUser?.role==='editor'||currentUser?.role==='manager')?`<button class="action-btn" onclick="addToCart('${r.id}','${r.name.replace(/'/g,"\\'")}')">🛒 Add to Cart</button>`:'';
   const voteBtn=vClosed?'':(myVotedThis?`<button class="action-btn voted">🗳️ Voted!</button>`:(myVote?'':`<button class="action-btn" onclick="voteFor('${r.id}','${r.name.replace(/'/g,"\\'")}')">🗳️ Vote here</button>`));
   const starHtml=[1,2,3,4,5].map(n=>`<span class="star${myReview.stars>=n?' filled':''}" onclick="setMyStar('${r.id}',${n})">★</span>`).join('');
@@ -1334,7 +1336,7 @@ const _tr=getTeamRatings(r.id);const _to=getTeamOrders(r.id);const _avg=_tr.leng
         ${cartBtn}
         <button class="action-btn${isVisited?' visited':''}" onclick="toggleVisited('${r.id}')">${isVisited?'✓ Visited':'+ Visited'}</button>
       </div>
-      <div class="info-cards">${walkCard}${orderCard}</div>
+      <div class="info-cards">${walkCard}${fsqCard}${orderCard}</div>
       <div class="dsec">Order Delivery</div>
       ${(r.tags&&(r.tags.delivery==='yes'||r.tags.takeaway==='yes'))?
       `<div class="delivery-links">${getDeliveryLinks(enc,userLocation&&userLocation.country)}</div>`
