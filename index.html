@@ -1131,6 +1131,7 @@ function searchRestaurants(){
   if(!userLocation)return;
   const {lat,lng}=userLocation;
   const radiusMeters=radiusMin*WALK_SPEED*2;
+  const visited=JSON.parse(localStorage.getItem(visitedKey())||'{}');
   document.getElementById('rest-list').innerHTML='<div style="padding:24px;text-align:center;color:var(--muted);font-size:13px;"><div class="spinner" style="margin:0 auto 12px;"></div>Finding food places near you…</div>';
   fetch('/api/restaurants?ll='+lat+','+lng+'&radius='+radiusMeters)
     .then(function(res){if(!res.ok)throw new Error('API '+res.status);return res.json();})
